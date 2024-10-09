@@ -33,36 +33,35 @@ class MGU(Module):
         self.dropout = dropout
         self.device = device
         self.dtype = dtype
+        self.forget_weight_init_fn = forget_weight_init_fn
+        self.candidate_weight_init_fn = candidate_weight_init_fn
+        self.bias_init_fn = bias_init_fn
+        num_directions = 2 if bidirectional else 1
         # Initialize cells as a ModuleList
         self.cells = nn.ModuleList()
         # Create layers
         for layer in range(num_layers):
-            if layer == 0:
-                self.cells.append(MGUCell(input_size,
-                    hidden_size,
+            for direction in range(num_directions):
+                input_dim = input_size if layer == 0 else hidden_size * num_directions
+                self.cells.append(MGUCell(
+                    input_size=input_dim,
+                    hidden_size=hidden_size,
                     bias=bias,
-                    activation_fn = activation_fn,
-                    gate_activation_fn = gate_activation_fn,
-                    reset_gate = reset_gate)
-                )
-            else:
-                self.cells.append(MGUCell(hidden_size,
-                    hidden_size,
-                    bias=bias,
-                    activation_fn = activation_fn,
-                    gate_activation_fn = gate_activation_fn,
-                    reset_gate = reset_gate)
-                )
-        # Store initialization functions
-        self.forget_weight_init_fn = forget_weight_init_fn
-        self.candidate_weight_init_fn = candidate_weight_init_fn
-        self.bias_init_fn = bias_init_fn
+                    reset_gate=reset_gate,
+                    activation_fn=activation_fn,
+                    gate_activation_fn=gate_activation_fn
+                ))
+        if self.dropout > 0:
+            self.dropout_layer = nn.Dropout(dropout)
+        else:
+            self.dropout_layer = None
     def forward(self, input, hx=None):
         # Check batch first and get needed dimensions
         # (batch_size, seq_len, input_size) instead of (seq_len, batch_size, input_size)
         if self.batch_first:
             input = input.transpose(0, 1)
         seq_len, batch_size, _ = input.size()
+        num_directions = 2 if self.bidirectional else 1
         # Define hidden state if not provided
         if hx is None:
             hx = self._init_hidden(batch_size)
@@ -70,15 +69,22 @@ class MGU(Module):
         outputs = []
         # Process sequentially
         for t in range(seq_len):
-            # Define input
             input_t = input[t]
-            # Define container for hidden states
             new_h = []
             for layer_idx in range(self.num_layers):
-                h_new = self.cells[layer_idx](input_t, h[layer_idx])
-                input_t = h_new
-                new_h.append(h_new)
-            h = new_h  # Update hidden state for all layers
+                hidden_states = []
+                for direction in range(num_directions):
+                    cell_idx = layer_idx * num_directions + direction
+                    h_new = self.cells[cell_idx](input_t, h[layer_idx * num_directions + direction])
+                    hidden_states.append(h_new)
+                    if direction == 1:  # Reverse direction for bidirectional
+                        input_t = h_new + input_t
+                    else:
+                        input_t = h_new
+                new_h.extend(hidden_states)
+                if self.dropout_layer:
+                    input_t = self.dropout_layer(input_t)
+            h = new_h
             outputs.append(input_t)
         outputs = torch.stack(outputs)
         # If batch_first, transpose the output back to (batch_size, seq_len, hidden_size)
