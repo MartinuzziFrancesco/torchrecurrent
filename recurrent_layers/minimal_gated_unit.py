@@ -120,11 +120,15 @@ class MGUCell(Module):
         gate_activation_fn: Callable = torch.sigmoid):
         super().__init__()
         self.hidden_size = hidden_size
-        self.linear_f = nn.Linear(input_size + hidden_size, hidden_size, bias=bias)
-        self.linear_h = nn.Linear(input_size + hidden_size, hidden_size, bias=bias)
         self.reset_gate = reset_gate
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
+        self.bias = bias
+        self.weight_ih = nn.Parameter(torch.randn(2 * hidden_size, input_size))
+        self.weight_hh = nn.Parameter(torch.randn(2 * hidden_size, hidden_size))
+        if bias:
+            self.bias_ih = nn.Parameter(torch.randn(2 * hidden_size))
+            self.bias_hh = nn.Parameter(torch.randn(2 * hidden_size))
     def forward(self, input: Tensor, hx: Optional[Tensor] = None) -> Tensor:
         # Check input dimensions
         if input.dim() not in (1, 2):
@@ -142,13 +146,34 @@ class MGUCell(Module):
             )
         else:
             hx = hx.unsqueeze(0) if not is_batched else hx
-        combined = torch.cat((input, hx), dim=1)
-        forget_gate = self.gate_activation_fn(self.linear_f(combined))
-        if self.reset_gate:
-            hidden_modulated = torch.cat((input, forget_gate * hx), dim=1)
-            candidate_hidden = self.activation_fn(self.linear_h(hidden_modulated))
+        weight_ih_f, weight_ih_h = self.weight_ih.chunk(2, 0)
+        weight_hh_f, weight_hh_h = self.weight_hh.chunk(2, 0)
+        if self.bias:
+            bias_ih_f, bias_ih_h = self.bias_ih.chunk(2, 0)
+            bias_hh_f, bias_hh_h = self.bias_hh.chunk(2, 0)
         else:
-            candidate_hidden = self.activation_fn(self.linear_h(hx))
+            bias_ih_f = bias_ih_h = bias_hh_f = bias_hh_n = 0
+        forget_gate = self.gate_activation_fn(
+            torch.mm(input, weight_ih_f.t())
+            + bias_ih_f
+            + torch.mm(hx, weight_hh_f.t())
+            + bias_hh_f
+        )
+        if self.reset_gate:
+            hidden_modulated = forget_gate * hx
+            candidate_hidden = self.activation_fn(
+                torch.mm(input, weight_ih_h.t())
+                + bias_ih_h
+                + torch.mm(hidden_modulated, weight_hh_h.t())
+                + bias_hh_h
+            )
+        else:
+            candidate_hidden = self.activation_fn(
+                torch.mm(input, weight_ih_h.t())
+                + bias_ih_h
+                + torch.mm(hx, weight_hh_h.t())
+                + bias_hh_h
+            )
         ret = forget_gate * candidate_hidden + (1 - forget_gate) * hx
         if not is_batched:
             ret = ret.squeeze(0)
