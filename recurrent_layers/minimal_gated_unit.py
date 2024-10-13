@@ -75,48 +75,47 @@ class MGU(Module):
             hx = self._init_hidden(batch_size, num_directions)
         
         h = hx
-        outputs = []
-        # Process sequentially
-        for t in range(seq_len):
-            input_t = input[t]
-            new_h = []
+        layer_output = input
+        final_h = []
 
-            for layer_idx in range(self.num_layers):
-                hidden_states = []
+        for layer in range(self.num_layers):
+            layer_input = layer_output
+            layer_output = []
 
-                # Forward direction
-                forward_cell_idx = layer_idx * num_directions
-                print("input_t", input_t.shape)
-                print("h[layer_idx * num_directions]", h[layer_idx * num_directions].shape)
-                h_new_forward = self.cells[forward_cell_idx](input_t, h[layer_idx * num_directions])
-                hidden_states.append(h_new_forward)
-
-                # Backward direction
-                if self.bidirectional:
-                    backward_cell_idx = layer_idx * num_directions + 1
-                    h_new_backward = self.cells[backward_cell_idx](input[seq_len - t - 1], h[layer_idx * num_directions + 1])
-                    hidden_states.append(h_new_backward)
-                    # Concatenate forward and backward outputs if bidirectional
-                    input_t = torch.cat((h_new_forward, h_new_backward), dim=1)
+            for direction in range(num_directions):
+                if direction == 0:
+                    # Forward direction
+                    idx = layer * num_directions + direction
+                    cell = self.cells[idx]
+                    h_prev = h[idx]
+                    output_inner = []
+                    for t in range(seq_len):
+                        h_prev = cell(layer_input[t], h_prev)
+                        output_inner.append(h_prev)
+                    output_inner = torch.stack(output_inner)
                 else:
-                    input_t = h_new_forward
-
-                new_h.extend(hidden_states)
-
-                if self.dropout_layer and layer_idx < self.num_layers - 1:
-                    input_t = self.dropout_layer(input_t)
-
-            h = new_h
-            outputs.append(input_t)
-
-
-        
-        outputs = torch.stack(outputs)
-        # If batch_first, transpose the output back to (batch_size, seq_len, hidden_size)
+                    # Backward direction
+                    idx = layer * num_directions + direction
+                    cell = self.cells[idx]
+                    h_prev = h[idx]
+                    output_inner = []
+                    for t in reversed(range(seq_len)):
+                        h_prev = cell(layer_input[t], h_prev)
+                        output_inner.append(h_prev)
+                    output_inner.reverse()
+                    output_inner = torch.stack(output_inner)
+                layer_output.append(output_inner)
+                final_h.append(h_prev)
+            if num_directions == 1:
+                layer_output = layer_output[0]
+            else:
+                layer_output = torch.cat(layer_output, dim=2)
+            if self.dropout_layer and layer < self.num_layers - 1:
+                layer_output = self.dropout_layer(layer_output)
+        outputs = layer_output
         if self.batch_first:
             outputs = outputs.transpose(0, 1)
-        
-        return outputs, h
+        return outputs, final_h
 
     def _init_hidden(self, batch_size: int, num_directions: int):
         # Initialize the hidden state for all layers
