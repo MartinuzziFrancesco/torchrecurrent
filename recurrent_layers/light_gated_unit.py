@@ -4,7 +4,136 @@ import torch.nn.functional as F
 from torch import Tensor
 from typing import Optional, Callable
 
-class LGUCell(nn.Module):
+class LiGRU(nn.Module):
+    def __init__(self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        batch_first: bool = True,
+        dropout: float = 0.0,
+        bidirectional: bool = False,
+        input_weight_init_fn: Callable = nn.init.xavier_uniform_,
+        recurrent_weight_init_fn: Callable = nn.init.xavier_uniform_,
+        input_bias_init_fn: Callable = nn.init.zeros_,
+        recurrent_bias_init_fn: Callable = nn.init.zeros_,
+        **kwargs):
+
+        super(LiGRU, self).__init__()
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.batch_first = batch_first
+        self.bidirectional = bidirectional
+        self.dropout = dropout
+        self.input_weight_init_fn = input_weight_init_fn
+        self.recurrent_weight_init_fn = recurrent_weight_init_fn
+        self.input_bias_init_fn = input_bias_init_fn
+        self.recurrent_bias_init_fn = recurrent_bias_init_fn
+        num_directions = 2 if bidirectional else 1
+
+        self.cells = nn.ModuleList()
+
+        for layer in range(num_layers):
+            for direction in range(num_directions):
+                if layer == 0:
+                    input_dim = input_size
+                else: 
+                    input_dim = hidden_size * num_directions
+
+                self.cells.append(
+                    LiGRU(input_size=input_dim,
+                          hidden_size=hidden_size,
+                          **kwargs)
+                )
+        
+        if self.dropout > 0:
+            self.dropout_layer = nn.Dropout(dropout)
+        else:
+            self.dropout_layer = None
+
+        def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
+
+            if self.batch_first:
+                inp = inp.transpose(0, 1)
+
+            seq_len, batch_size, _ = inp.size()
+            num_directions = 2 if self.bidirectional else 1
+
+            if state is None:
+                state = self._init_hidden(batch_size, num_directions)
+
+            h = state
+            layer_output = inp
+            final_h = []
+
+            for layer in range(self.num_layers):
+                layer_input = layer_output
+                layer_output = []
+
+                for direction in range(num_directions):
+                    if direction == 0:
+                        # Forward direction
+                        idx = layer * num_directions + direction
+                        cell = self.cells[idx]
+                        h_prev = h[idx]
+                        output_inner = []
+                        for t in range(seq_len):
+                            h_prev = cell(layer_input[t], h_prev)
+                            output_inner.append(h_prev)
+
+                        output_inner = torch.stack(output_inner)
+
+                    else:
+                        # Backward direction
+                        idx = layer * num_directions + direction
+                        cell = self.cells[idx]
+                        h_prev = h[idx]
+                        output_inner = []
+                        for t in reversed(range(seq_len)):
+                            h_prev = cell(layer_input[t], h_prev)
+                            output_inner.append(h_prev)
+
+                        output_inner.reverse()
+                        output_inner = torch.stack(output_inner)
+
+                    layer_output.append(output_inner)
+                    final_h.append(h_prev)
+
+                if num_directions == 1:
+                    layer_output = layer_output[0]
+                else:
+                    layer_output = torch.cat(layer_output, dim=2)
+                if self.dropout_layer and layer < self.num_layers - 1:
+                    layer_output = self.dropout_layer(layer_output)
+
+            outputs = layer_output
+
+            if self.batch_first:
+                outputs = outputs.transpose(0, 1)
+
+            return outputs, final_h
+
+
+
+        def _init_hidden(self, batch_size, num_directions):
+            state = [torch.zeros(
+                batch_size, self.hidden_size, 
+                dtype = self.cells[0].weight_ih.dtype,
+                device = self.cells[0].weight_ih.device
+            ) for _ in range(self.num_layer * num_directions)]
+            return state
+        
+        def initialize_weights(self):
+            for cell in self.cells:
+                for name, param in cell.named_parameters():
+                    if 'weight_ih' in name or 'weight_hh' in name:
+                        self.input_weight_init_fn(param) if 'weight_ih' in name else self.recurrent_weight_init_fn(param)
+                    elif 'bias_ih' in name or 'bias_hh' in name:
+                        self.input_bias_init_fn(param) if 'bias_ih' in name else self.recurrent_bias_init_fn(param)
+
+
+
+
+class LiGRUCell(nn.Module):
     def __init__(
             self,
             input_size: int,
@@ -13,7 +142,7 @@ class LGUCell(nn.Module):
             activation_fn: Callable = torch.relu,
             gate_activation_fn: Callable = torch.sigmoid
     ):
-        super(LGUCell, self).__init__()
+        super(LiGRUCell, self).__init__()
         #assign variables
         self.input_size = input_size
         self.hidden_size = hidden_size
