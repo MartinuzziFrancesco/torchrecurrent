@@ -7,9 +7,26 @@ import os
 import argparse
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'recurrent_layers')))
-from mgu_rnn_cell import MGU
+from minimal_gated_unit import MGU
 
 import torch
+
+class RecurrentModel(nn.Module):
+    def __init__(self,
+        input_size,
+        hidden_size,
+        output_size,
+        **kwargs):
+        self.hidden_size = hidden_size
+        self.rnn = MGU(input_size, hidden_size, **kwargs)
+        self.fc = nn.Linear(hidden_size, output_size)
+
+    def forward(self, inp):
+        output, _ = self.rnn(inp)
+        output = output[:, -1, :]
+        output = self.fc(output)
+        return output
+
 
 def generate_adding_problem_data(
     sequence_length: int,
@@ -54,8 +71,16 @@ def generate_adding_problem_data(
         return inputs, targets
 
 
-def train(args, model, device, train_loader, optimizer, loss, epoch):
+def train(args,
+    model,
+    device,
+    train_loader,
+    optimizer,
+    criterion,
+    train_losses,
+    epoch):
     model.train()
+    total_loss = 0
     for input_data, target_data in train_loader:
         input_data, target_data = input_data.to(device), target_data.to(device)
         #reset gradient
@@ -63,15 +88,52 @@ def train(args, model, device, train_loader, optimizer, loss, epoch):
         #forward pass
         output = model(input_data)
         #calculate loss
-        loss = loss(output, target_data)
+        loss = criterion(output, target_data)
         #backward pass
         loss.backward()
         #optmize
         optimizer.step()
-        #visualize loss here
+        #record loss
+        total_loss += loss.item()
 
-def test(args, model, device, train_loader, optimizer, loss, epoch):
+        if args.dry_run:
+            print('Dry run enabled, breaking after one batch.')
+            break
+    
+    avg_loss = total_loss / len(train_loader)
+    train_losses.append(avg_loss)
+    print(f'Epoch {epoch}, Training Loss: {avg_loss:.6f}')
+
+def test(args,
+    model,
+    device,
+    test_loader,
+    criterion,
+    test_losses
+    epoch):
     model.eval()
+    total_loss = 0
+    with torch.no_grad():
+        for input_data, target_data in test_loader:
+            input_data, target_data = input_data.to(device), target_data.to(device)
+
+            #forward pass
+            output = model(input_data)
+
+            #loss
+            loss = criterion(output, target_data)
+
+            #record loss
+            total_loss += loss
+
+            if args.dry_run:
+                print('Dry run enabled, breaking after one batch.')
+                break
+
+        avg_loss = total_loss / len(test_loader)
+        test_losses.append(avg_loss)
+        print(f'Test Loss: {avg_loss:.6f}')
+
 
 def main():
     # parse arguments
@@ -82,105 +144,94 @@ def main():
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
                         help='input batch size for testing (default: 1000)')
-    parser.add_argument('--epochs', type=int, default=100, metavar='N',
-                        help='number of epochs to train (default: 14)')
+    parser.add_argument('--epochs', type=int, default=20, metavar='N',
+                        help='number of epochs to train (default: 20)')
     parser.add_argument('--lr', type=float, default=0.001, metavar='LR',
-                        help='learning rate (default: 0.1)')
+                        help='learning rate (default: 0.001)')
+    parser.add_argument('--sequence-length', type=int, default=100, metavar='SL',
+                        help='length of the input sequences (default: 100)')
+    parser.add_argument('--train-samples', type=int, default=5000, metavar='N',
+                        help='number of training samples (default: 5000)')
+    parser.add_argument('--test-samples', type=int, default=1000, metavar='N',
+                        help='number of test samples (default: 1000)')
+    parser.add_argument('--hidden-size', type=int, default=128, metavar='N',
+                        help='number of hidden units (default: 128)')
+    parser.add_argument('--seed', type=int, default=42, metavar='S',
+                        help='random seed (default: 42)')
     parser.add_argument('--cuda', action='store_true', default=False,
                         help='enables CUDA training')
     parser.add_argument('--mps', action="store_true", default=False,
                         help="enables MPS training")
     parser.add_argument('--dry-run', action='store_true', default=False,
                         help='quickly check a single pass')
-    parser.add_argument('--seed', type=int, default=42, metavar='S',
-                        help='random seed (default: 1)')
     args = parser.parse_args()
 
+    #set device
     if args.cuda and not args.mps:
-        device = "cuda"
+        device = torch.device('cuda')
     elif args.mps and not args.cuda:
-        device = "mps"
+        device = torch.device('mps')
     else:
-        device = "cpu"
+        device = torch.device('cpu')
 
-    device = torch.device(device)
+    #set seed
     torch.manual_seed(args.seed)
+    if device.type == 'cuda':
+        torch.cuda.manual_seed(args.seed)
+
+    print(f'Using device: {device}')
 
     #get data
+
+    train_loader = generate_adding_problem_data(
+        sequence_length=args.sequence_length,
+        n_samples=args.train_samples,
+        batch_size=args.batch_size,
+        shuffle=True
+    )
+
+    test_loader = generate_adding_problem_data(
+        sequence_length=args.sequence_length,
+        n_samples=args.test_samples,
+        batch_size=args.test_batch_size,
+        shuffle=False
+    )
+
+    # define model, optimizer and loss
+    input_size = 2
+    output_size = 1
+    model = RecurrentModel(input_size, args.hidden_size, output_size).to(device)
+    criterion = nn.MSELoss
+    optimizer = optim.Adam(model.parameters(), lr = args.lr)
+
+    #store loss
+    train_losses = []
+    test_losses = []
     
-    #train
-    #test
+    #train and validate
+    for epoch in range(1, args.epochs+1):
+        train(args,
+            model,
+            device,
+            train_loader,
+            optimizer,
+            criterion,
+            train_losses,
+            epoch)
+        test(args,
+             model,
+             device,
+             test_loader,
+             criterion,
+             test_losses,
+             epoch)
+        
+        if args.dry_run:
+            print('Dry run enabled, stopping training.')
+            break
+
+        #visualize loss
+
 
 if __name__ == '__main__':
     main()
-        
-
-# Define model parameters
-input_size = 2  # Sequence A and marker Sequence B
-hidden_size = 50
-num_layers = 3
-seq_len = 100
-batch_size = 64
-num_epochs = 10
-learning_rate = 0.001
-
-# Initialize the models
-model_classes = {
-    'LSTM': nn.LSTM,
-    'MGU': MGU,
-    'GRU': nn.GRU
-}
-
-models = {name: model_class(
-    input_size=input_size,
-    hidden_size=hidden_size,
-    num_layers=num_layers,
-    batch_first=True
-) for name, model_class in model_classes.items()}
-
-# Define the loss function
-criterion = nn.MSELoss()
-
-# Generate synthetic addition data
-def generate_addition_data(seq_len, batch_size):
-    # Sequence A: Random values between 0 and 1
-    sequence_a = torch.rand(batch_size, seq_len, 1)
-    # Sequence B: Two markers (one-hot vectors)
-    markers = torch.zeros(batch_size, seq_len, 1)
-    indices = torch.randint(0, seq_len, (batch_size, 2))
-    for i in range(batch_size):
-        markers[i, indices[i, 0], 0] = 1
-        markers[i, indices[i, 1], 0] = 1
-    # Target: Sum of the two marked values
-    target = torch.sum(sequence_a[torch.arange(batch_size).unsqueeze(1), indices], dim=1, keepdim=True)
-    # Concatenate Sequence A and markers to create the input
-    input_sequence = torch.cat((sequence_a, markers), dim=2)
-    return input_sequence, target
-
-# Training loop for each model
-for model_name, model in models.items():
-    # Define optimizer for each model
-    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
-    
-    print(f"\nTraining {model_name} model...")
-    for epoch in range(num_epochs):
-        input_sequence, target = generate_addition_data(seq_len, batch_size)
-
-        # Zero the gradient
-        optimizer.zero_grad()
-
-        # Forward pass
-        output, _ = model(input_sequence)
-        prediction = output[:, -1, :]  # Take the last output for prediction
-
-        # Compute loss
-        loss = criterion(prediction, target)
-
-        # Backward pass and optimize
-        loss.backward()
-        optimizer.step()
-
-        # Print loss for the epoch
-        print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.4f}")
-
-print("Training complete.")
