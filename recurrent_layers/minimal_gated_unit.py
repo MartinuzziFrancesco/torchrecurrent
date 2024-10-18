@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from torch.nn import Module
-import torch.nn.functional as F
 from torch import Tensor
 from typing import Optional, Callable
 
@@ -128,7 +127,7 @@ class MGU(Module):
     
 
 
-class MGUCell(Module):
+class MGUCell(nn.Module):
     def __init__(self,
         input_size: int,
         hidden_size: int,

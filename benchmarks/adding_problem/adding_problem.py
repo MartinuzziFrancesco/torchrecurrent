@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
+from torch import Tensor
 import sys
 import os
 import argparse
@@ -13,15 +14,15 @@ import torch
 
 class RecurrentModel(nn.Module):
     def __init__(self,
-        input_size,
-        hidden_size,
-        output_size,
+        input_size: int,
+        hidden_size: int,
+        output_size: int,
         **kwargs):
         self.hidden_size = hidden_size
         self.rnn = MGU(input_size, hidden_size, **kwargs)
         self.fc = nn.Linear(hidden_size, output_size)
 
-    def forward(self, inp):
+    def forward(self, inp: Tensor):
         output, _ = self.rnn(inp)
         output = output[:, -1, :]
         output = self.fc(output)
@@ -109,7 +110,7 @@ def test(args,
     device,
     test_loader,
     criterion,
-    test_losses
+    test_losses,
     epoch):
     model.eval()
     total_loss = 0
