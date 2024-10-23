@@ -132,12 +132,10 @@ class MGUCell(nn.Module):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        reset_gate: bool = True,
         activation_fn: Callable = torch.tanh,
         gate_activation_fn: Callable = torch.sigmoid):
         super(MGUCell, self).__init__()
         self.hidden_size = hidden_size
-        self.reset_gate = reset_gate
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
         self.bias = bias
