@@ -1,6 +1,5 @@
 import torch
 import torch.nn as nn
-from torch.nn import Module
 from torch import Tensor
 from typing import Optional, Callable
 
