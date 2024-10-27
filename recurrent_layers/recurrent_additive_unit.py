@@ -45,7 +45,12 @@ class RANCell(nn.Module):
         forget_gate = nn.Sigmoid(fg)
 
         new_cstate = input_gate * content_layer + forget_gate * c_state
-        state = nn.Tanh(new_cstate)
+        new_state = nn.Tanh(new_cstate)
+
+        if not is_batched:
+            new_state, new_cstate = new_state.unsqueeze(0), new_cstate.unsqueeze(0)
+
+        return new_state, new_cstate
 
 
 
