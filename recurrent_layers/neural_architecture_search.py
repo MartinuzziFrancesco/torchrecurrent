@@ -25,8 +25,74 @@
 
 import torch
 import torch.nn as nn
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 from torch import Tensor
+
+class NAS(nn.Module):
+    def __init__(self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        batch_first: bool = False,
+        dropout: float = 0.0,
+        **kwargs
+        ):
+        super(NAS, self).__init__()
+        self.hidden_size = hidden_size
+        self.num_layers = num_layers
+        self.batch_first = batch_first
+        self.dropout = dropout
+
+        layers = [NASCell(input_size, hidden_size, **kwargs)] + [
+            NASCell(hidden_size, hidden_size, **kwargs) for _ in range(1, num_layers)
+        ]
+        self.cells = nn.ModuleList(layers)
+
+
+        if self.dropout > 0:
+            self.dropout_layer = nn.Dropout(dropout)
+        else:
+            self.dropout_layer = None
+
+    def forward(self,
+        inp:Tensor,
+        states:Optional[List[Tuple[Tensor, Tensor]]] = None):
+
+        if self.batch_first:
+            inp = inp.transpose(0, 1)
+
+        seq_len, batch_size, _ = inp.size()
+        
+        if states is None:
+            hx = [torch.zeros(batch_size, self.hidden_size, dtype=inp.dtype, device=inp.device) for _ in range(self.num_layers)]
+            cx = [torch.zeros(batch_size, self.hidden_size, dtype=inp.dtype, device=inp.device) for _ in range(self.num_layers)]
+        
+        output = []
+
+        for t in range(seq_len):
+            input_t = inp[t]
+
+            for idx_cell, cell in enumerate(self.cells):
+                h_new, c_new = cell(input_t, (hx[idx_cell], cx[idx_cell]))
+                
+                if self.dropout_layer and idx_cell < self.num_layers - 1:
+                    h_new = self.dropout_layer(h_new)
+
+                hx[idx_cell], cx[idx_cell] = h_new, c_new
+                input_t = h_new
+            
+            output += [input_t]
+
+        output = torch.stack(output, dim=0)
+
+        if self.batch_first:
+            output = output.transpose(0, 1)
+
+        h_n = torch.stack(hx)
+        c_n = torch.stack(cx)
+
+        return output, (h_n, c_n)
+
 
 class NASCell(nn.Module):
     def __init__(self,

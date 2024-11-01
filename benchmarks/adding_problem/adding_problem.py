@@ -14,12 +14,14 @@ import torch
 
 class RecurrentModel(nn.Module):
     def __init__(self,
+        cell,
         input_size: int,
         hidden_size: int,
         output_size: int,
         **kwargs):
+        super(RecurrentModel, self).__init__()
         self.hidden_size = hidden_size
-        self.rnn = MGU(input_size, hidden_size, **kwargs)
+        self.rnn = cell(input_size, hidden_size, **kwargs)
         self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, inp: Tensor):
@@ -145,10 +147,14 @@ def main():
                         help='input batch size for training (default: 64)')
     parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
                         help='input batch size for testing (default: 1000)')
-    parser.add_argument('--epochs', type=int, default=20, metavar='N',
+    parser.add_argument('--epochs', type=int, default=1000, metavar='N',
                         help='number of epochs to train (default: 20)')
     parser.add_argument('--lr', type=float, default=0.001, metavar='LR',
                         help='learning rate (default: 0.001)')
+    parser.add_argument('--dropout', type=float, default=0.2, metavar='DO',
+                        help='dropout (default: 0.2)')
+    parser.add_argument('--num_layers', type=int, default=2, metavar='NL',
+                        help='num_layers (default: 2)')
     parser.add_argument('--sequence-length', type=int, default=100, metavar='SL',
                         help='length of the input sequences (default: 100)')
     parser.add_argument('--train-samples', type=int, default=5000, metavar='N',
@@ -159,7 +165,7 @@ def main():
                         help='number of hidden units (default: 128)')
     parser.add_argument('--seed', type=int, default=42, metavar='S',
                         help='random seed (default: 42)')
-    parser.add_argument('--cuda', action='store_true', default=False,
+    parser.add_argument('--cuda', action='store_true', default=True,
                         help='enables CUDA training')
     parser.add_argument('--mps', action="store_true", default=False,
                         help="enables MPS training")
@@ -201,8 +207,10 @@ def main():
     # define model, optimizer and loss
     input_size = 2
     output_size = 1
-    model = RecurrentModel(input_size, args.hidden_size, output_size).to(device)
-    criterion = nn.MSELoss
+    model = RecurrentModel(nn.GRU, input_size, args.hidden_size, output_size,
+                           dropout = args.dropout, num_layers = args.num_layers).to(device)
+    #model = torch.jit.script(model)
+    criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr = args.lr)
 
     #store loss

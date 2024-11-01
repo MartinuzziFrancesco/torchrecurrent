@@ -1,130 +1,77 @@
 import torch
 import torch.nn as nn
-from torch.nn import Module
 from torch import Tensor
-from typing import Optional, Callable
+from typing import Optional, Callable, Tuple
 
 __all__ = ["MGU", "MGUCell"]
 
-class MGU(Module):
-    def __init__(
-        self,
+
+    
+class MGU(nn.Module):
+    def __init__(self,
         input_size: int,
         hidden_size: int,
         num_layers: int = 1,
-        batch_first: bool = False,
         dropout: float = 0.0,
-        bidirectional: bool = False,
-        input_weight_init_fn: Callable = nn.init.xavier_uniform_,
-        recurrent_weight_init_fn: Callable = nn.init.xavier_uniform_,
-        input_bias_init_fn: Callable = nn.init.zeros_,
-        recurrent_bias_init_fn: Callable = nn.init.zeros_,
+        batch_first: bool = False,
         **kwargs):
 
         super(MGU, self).__init__()
         self.hidden_size = hidden_size
         self.num_layers = num_layers
         self.batch_first = batch_first
-        self.bidirectional = bidirectional
         self.dropout = dropout
-        self.input_weight_init_fn = input_weight_init_fn
-        self.recurrent_weight_init_fn = recurrent_weight_init_fn
-        self.input_bias_init_fn = input_bias_init_fn
-        self.recurrent_bias_init_fn = recurrent_bias_init_fn
-        num_directions = 2 if bidirectional else 1
 
-        # Initialize cells as a ModuleList
-        self.cells = nn.ModuleList()
-        # Create layers
-        for layer in range(num_layers):
-            for direction in range(num_directions):
-                input_dim = input_size if layer == 0 else hidden_size * num_directions
-                self.cells.append(MGUCell(
-                    input_size=input_dim,
-                    hidden_size=hidden_size,
-                    **kwargs
-                ))
-            
+        layers = [MGUCell(input_size, hidden_size, **kwargs)] + [
+            MGUCell(hidden_size, hidden_size, **kwargs) for _ in range(1, num_layers)
+        ]
+        self.cells = nn.ModuleList(layers)
+
         if self.dropout > 0:
             self.dropout_layer = nn.Dropout(dropout)
         else:
             self.dropout_layer = None
-        
-    def forward(self, inp, state=None):
-        # Check batch first and get needed dimensions
-        # (batch_size, seq_len, input_size) instead of (seq_len, batch_size, input_size)
+
+    def forward(self,
+        inp: Tensor,
+        state: Optional[Tensor] = None) -> Tuple[Tensor, Tensor]:
+
         if self.batch_first:
             inp = inp.transpose(0, 1)
-        
+
         seq_len, batch_size, _ = inp.size()
-        num_directions = 2 if self.bidirectional else 1
 
-        # Define hidden state if not provided
         if state is None:
-            state = self._init_hidden(batch_size, num_directions)
+            state = torch.zeros(
+                self.num_layers, batch_size, self.hidden_size,
+                dtype = inp.dtype,
+                device=inp.device
+            )
         
-        h = state
-        layer_output = inp
-        final_h = []
+        output = []
 
-        for layer in range(self.num_layers):
-            layer_input = layer_output
-            layer_output = []
+        for t in range(seq_len):
+            input_t = inp[t]
+            new_states = []
+            for idx_cell, cell in enumerate(self.cells):
+                new_state = cell(input_t, state[idx_cell])
 
-            for direction in range(num_directions):
-                if direction == 0:
-                    # Forward direction
-                    idx = layer * num_directions + direction
-                    cell = self.cells[idx]
-                    h_prev = h[idx]
-                    output_inner = []
-                    for t in range(seq_len):
-                        h_prev = cell(layer_input[t], h_prev)
-                        output_inner.append(h_prev)
-                    output_inner = torch.stack(output_inner)
-                else:
-                    # Backward direction
-                    idx = layer * num_directions + direction
-                    cell = self.cells[idx]
-                    h_prev = h[idx]
-                    output_inner = []
-                    for t in reversed(range(seq_len)):
-                        h_prev = cell(layer_input[t], h_prev)
-                        output_inner.append(h_prev)
-                    output_inner.reverse()
-                    output_inner = torch.stack(output_inner)
-                layer_output.append(output_inner)
-                final_h.append(h_prev)
-            if num_directions == 1:
-                layer_output = layer_output[0]
-            else:
-                layer_output = torch.cat(layer_output, dim=2)
-            if self.dropout_layer and layer < self.num_layers - 1:
-                layer_output = self.dropout_layer(layer_output)
-        outputs = layer_output
+                if self.dropout_layer and idx_cell < self.num_layers - 1:
+                    new_state = self.dropout_layer(new_state)
+
+                new_states += [new_state]
+                input_t = new_state
+
+            state = torch.stack(new_states, dim=0)
+            output += [input_t]
+
+        output = torch.stack(output, dim = 0)
+
         if self.batch_first:
-            outputs = outputs.transpose(0, 1)
-        return outputs, final_h
+            output = output.transpose(0, 1)
 
-    def _init_hidden(self, batch_size: int, num_directions: int):
-        # Initialize the hidden state for all layers
-        state = [torch.zeros(
-            batch_size, self.hidden_size, dtype=self.cells[0].weight_ih.dtype, device=self.cells[0].weight_ih.device
-        ) for _ in range(self.num_layers * num_directions)]
-        
-        return state
+        return output, state
 
-    
-    def initialize_weights(self):
-    # Initialize weights and biases for each MGUCell in the layers using user-defined functions
-        for cell in self.cells:
-            for name, param in cell.named_parameters():
-                if 'weight_ih' in name or 'weight_hh' in name:
-                    self.input_weight_init_fn(param) if 'weight_ih' in name else self.recurrent_weight_init_fn(param)
-                elif 'bias_ih' in name or 'bias_hh' in name:
-                    self.input_bias_init_fn(param) if 'bias_ih' in name else self.recurrent_bias_init_fn(param)
-
-    
 
 
 class MGUCell(nn.Module):
@@ -133,17 +80,39 @@ class MGUCell(nn.Module):
         hidden_size: int,
         bias: bool = True,
         activation_fn: Callable = torch.tanh,
-        gate_activation_fn: Callable = torch.sigmoid):
+        gate_activation_fn: Callable = torch.sigmoid,
+        init_input_weights = nn.init.xavier_uniform_,
+        init_recurrent_weights = nn.init.xavier_uniform_,
+        init_input_bias = nn.init.zeros_,
+        init_recurrent_bias = nn.init.zeros_):
+
         super(MGUCell, self).__init__()
         self.hidden_size = hidden_size
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
+        self.init_input_weights = init_input_weights
+        self.init_recurrent_weights = init_recurrent_weights
+        self.init_input_bias = init_input_bias
+        self.init_recurrent_bias = init_recurrent_bias
         self.bias = bias
         self.weight_ih = nn.Parameter(torch.randn(2 * hidden_size, input_size))
         self.weight_hh = nn.Parameter(torch.randn(2 * hidden_size, hidden_size))
 
         self.bias_ih = nn.Parameter(torch.randn(2 * hidden_size)) if bias else None
         self.bias_hh = nn.Parameter(torch.randn(2 * hidden_size)) if bias else None
+
+        self.init_weights()
+
+    def init_weights(self):
+        for name, param in self.named_parameters():
+            if 'weight_ih' in name:
+                self.init_input_weights(param)
+            elif 'weight_hh' in name:
+                self.init_recurrent_weights(param)
+            elif 'bias_ih' in name and self.bias_ih is not None:
+                self.init_input_bias(param)
+            elif 'bias_hh' in name and self.bias_ih is not None:
+                self.init_recurrent_bias(param)
 
     def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         # Check input dimensions
@@ -185,8 +154,8 @@ class MGUCell(nn.Module):
 
         candidate_hidden = self.activation_fn(ch)
         
-        ret = forget_gate * candidate_hidden + (1 - forget_gate) * state
+        new_state = forget_gate * candidate_hidden + (1 - forget_gate) * state
         if not is_batched:
-            ret = ret.squeeze(0)
+            new_state = new_state.squeeze(0)
         
-        return ret
+        return new_state
