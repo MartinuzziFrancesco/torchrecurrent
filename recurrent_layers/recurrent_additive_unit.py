@@ -48,7 +48,10 @@ class RANCell(nn.Module):
         self.bias_hh = nn.Parameter(torch.randn(2 * hidden_size)) if bias else None
 
         self.init_weights()
-
+        
+    def uses_double_state(self):
+        return True
+    
     def init_weights(self):
         for name, param in self.named_parameters():
             if "weight_ih" in name:

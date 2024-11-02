@@ -72,6 +72,9 @@ class NASCell(nn.Module):
 
         self.init_weights()
 
+    def uses_double_state(self):
+        return True
+
     def init_weights(self):
         for name, param in self.named_parameters():
             if "weight_ih" in name:
