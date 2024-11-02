@@ -7,18 +7,18 @@ import sys
 import os
 import argparse
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'recurrent_layers')))
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "recurrent_layers"))
+)
 from minimal_gated_unit import MGU
 
 import torch
 
+
 class RecurrentModel(nn.Module):
-    def __init__(self,
-        cell,
-        input_size: int,
-        hidden_size: int,
-        output_size: int,
-        **kwargs):
+    def __init__(
+        self, cell, input_size: int, hidden_size: int, output_size: int, **kwargs
+    ):
         super(RecurrentModel, self).__init__()
         self.hidden_size = hidden_size
         self.rnn = cell(input_size, hidden_size, **kwargs)
@@ -36,7 +36,8 @@ def generate_adding_problem_data(
     n_samples: int,
     return_dataloader: bool = True,
     batch_size: int = 64,
-    shuffle = True):
+    shuffle=True,
+):
     """
     Generate data for the adding problem benchmark.
 
@@ -52,195 +53,235 @@ def generate_adding_problem_data(
     - targets (torch.Tensor): Tensor of shape (n_samples, 1), containing the sum
                               of the two masked numbers in each sequence.
     """
-    random_sequence = torch.rand(n_samples, sequence_length, 1)    
+    random_sequence = torch.rand(n_samples, sequence_length, 1)
     mask_sequence = torch.zeros(n_samples, sequence_length, 1)
     targets = torch.zeros(n_samples, 1)
-    
+
     for i in range(n_samples):
         # Randomly select two unique positions in the sequence
         idx = torch.randperm(sequence_length)[:2]
         mask_sequence[i, idx, 0] = 1  # Set mask to 1 at selected positions
         # Compute the target sum
         targets[i] = random_sequence[i, idx, 0].sum()
-    
+
     # Concatenate X and M along the feature dimension
     inputs = torch.cat((random_sequence, mask_sequence), dim=2)
     if return_dataloader:
         dataset = TensorDataset(inputs, targets)
         data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
-        
+
         return data_loader
     else:
         return inputs, targets
 
 
-def train(args,
-    model,
-    device,
-    train_loader,
-    optimizer,
-    criterion,
-    train_losses,
-    epoch):
+def train(args, model, device, train_loader, optimizer, criterion, train_losses, epoch):
     model.train()
     total_loss = 0
     for input_data, target_data in train_loader:
         input_data, target_data = input_data.to(device), target_data.to(device)
-        #reset gradient
+        # reset gradient
         optimizer.zero_grad()
-        #forward pass
+        # forward pass
         output = model(input_data)
-        #calculate loss
+        # calculate loss
         loss = criterion(output, target_data)
-        #backward pass
+        # backward pass
         loss.backward()
-        #optmize
+        # optmize
         optimizer.step()
-        #record loss
+        # record loss
         total_loss += loss.item()
 
         if args.dry_run:
-            print('Dry run enabled, breaking after one batch.')
+            print("Dry run enabled, breaking after one batch.")
             break
-    
+
     avg_loss = total_loss / len(train_loader)
     train_losses.append(avg_loss)
-    print(f'Epoch {epoch}, Training Loss: {avg_loss:.6f}')
+    print(f"Epoch {epoch}, Training Loss: {avg_loss:.6f}")
 
-def test(args,
-    model,
-    device,
-    test_loader,
-    criterion,
-    test_losses,
-    epoch):
+
+def test(args, model, device, test_loader, criterion, test_losses, epoch):
     model.eval()
     total_loss = 0
     with torch.no_grad():
         for input_data, target_data in test_loader:
             input_data, target_data = input_data.to(device), target_data.to(device)
 
-            #forward pass
+            # forward pass
             output = model(input_data)
 
-            #loss
+            # loss
             loss = criterion(output, target_data)
 
-            #record loss
+            # record loss
             total_loss += loss
 
             if args.dry_run:
-                print('Dry run enabled, breaking after one batch.')
+                print("Dry run enabled, breaking after one batch.")
                 break
 
         avg_loss = total_loss / len(test_loader)
         test_losses.append(avg_loss)
-        print(f'Test Loss: {avg_loss:.6f}')
+        print(f"Test Loss: {avg_loss:.6f}")
 
 
 def main():
     # parse arguments
     parser = argparse.ArgumentParser(
-        description='Addition problem benchmarks for recurrent layers'
+        description="Addition problem benchmarks for recurrent layers"
     )
-    parser.add_argument('--batch-size', type=int, default=64, metavar='N',
-                        help='input batch size for training (default: 64)')
-    parser.add_argument('--test-batch-size', type=int, default=1000, metavar='N',
-                        help='input batch size for testing (default: 1000)')
-    parser.add_argument('--epochs', type=int, default=1000, metavar='N',
-                        help='number of epochs to train (default: 20)')
-    parser.add_argument('--lr', type=float, default=0.001, metavar='LR',
-                        help='learning rate (default: 0.001)')
-    parser.add_argument('--dropout', type=float, default=0.2, metavar='DO',
-                        help='dropout (default: 0.2)')
-    parser.add_argument('--num_layers', type=int, default=2, metavar='NL',
-                        help='num_layers (default: 2)')
-    parser.add_argument('--sequence-length', type=int, default=100, metavar='SL',
-                        help='length of the input sequences (default: 100)')
-    parser.add_argument('--train-samples', type=int, default=5000, metavar='N',
-                        help='number of training samples (default: 5000)')
-    parser.add_argument('--test-samples', type=int, default=1000, metavar='N',
-                        help='number of test samples (default: 1000)')
-    parser.add_argument('--hidden-size', type=int, default=128, metavar='N',
-                        help='number of hidden units (default: 128)')
-    parser.add_argument('--seed', type=int, default=42, metavar='S',
-                        help='random seed (default: 42)')
-    parser.add_argument('--cuda', action='store_true', default=True,
-                        help='enables CUDA training')
-    parser.add_argument('--mps', action="store_true", default=False,
-                        help="enables MPS training")
-    parser.add_argument('--dry-run', action='store_true', default=False,
-                        help='quickly check a single pass')
+    parser.add_argument(
+        "--batch-size",
+        type=int,
+        default=64,
+        metavar="N",
+        help="input batch size for training (default: 64)",
+    )
+    parser.add_argument(
+        "--test-batch-size",
+        type=int,
+        default=1000,
+        metavar="N",
+        help="input batch size for testing (default: 1000)",
+    )
+    parser.add_argument(
+        "--epochs",
+        type=int,
+        default=1000,
+        metavar="N",
+        help="number of epochs to train (default: 20)",
+    )
+    parser.add_argument(
+        "--lr",
+        type=float,
+        default=0.001,
+        metavar="LR",
+        help="learning rate (default: 0.001)",
+    )
+    parser.add_argument(
+        "--dropout",
+        type=float,
+        default=0.2,
+        metavar="DO",
+        help="dropout (default: 0.2)",
+    )
+    parser.add_argument(
+        "--num_layers",
+        type=int,
+        default=2,
+        metavar="NL",
+        help="num_layers (default: 2)",
+    )
+    parser.add_argument(
+        "--sequence-length",
+        type=int,
+        default=100,
+        metavar="SL",
+        help="length of the input sequences (default: 100)",
+    )
+    parser.add_argument(
+        "--train-samples",
+        type=int,
+        default=5000,
+        metavar="N",
+        help="number of training samples (default: 5000)",
+    )
+    parser.add_argument(
+        "--test-samples",
+        type=int,
+        default=1000,
+        metavar="N",
+        help="number of test samples (default: 1000)",
+    )
+    parser.add_argument(
+        "--hidden-size",
+        type=int,
+        default=128,
+        metavar="N",
+        help="number of hidden units (default: 128)",
+    )
+    parser.add_argument(
+        "--seed", type=int, default=42, metavar="S", help="random seed (default: 42)"
+    )
+    parser.add_argument(
+        "--cuda", action="store_true", default=True, help="enables CUDA training"
+    )
+    parser.add_argument(
+        "--mps", action="store_true", default=False, help="enables MPS training"
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        default=False,
+        help="quickly check a single pass",
+    )
     args = parser.parse_args()
 
-    #set device
+    # set device
     if args.cuda and not args.mps:
-        device = torch.device('cuda')
+        device = torch.device("cuda")
     elif args.mps and not args.cuda:
-        device = torch.device('mps')
+        device = torch.device("mps")
     else:
-        device = torch.device('cpu')
+        device = torch.device("cpu")
 
-    #set seed
+    # set seed
     torch.manual_seed(args.seed)
-    if device.type == 'cuda':
+    if device.type == "cuda":
         torch.cuda.manual_seed(args.seed)
 
-    print(f'Using device: {device}')
+    print(f"Using device: {device}")
 
-    #get data
+    # get data
 
     train_loader = generate_adding_problem_data(
         sequence_length=args.sequence_length,
         n_samples=args.train_samples,
         batch_size=args.batch_size,
-        shuffle=True
+        shuffle=True,
     )
 
     test_loader = generate_adding_problem_data(
         sequence_length=args.sequence_length,
         n_samples=args.test_samples,
         batch_size=args.test_batch_size,
-        shuffle=False
+        shuffle=False,
     )
 
     # define model, optimizer and loss
     input_size = 2
     output_size = 1
-    model = RecurrentModel(nn.GRU, input_size, args.hidden_size, output_size,
-                           dropout = args.dropout, num_layers = args.num_layers).to(device)
-    #model = torch.jit.script(model)
+    model = RecurrentModel(
+        nn.GRU,
+        input_size,
+        args.hidden_size,
+        output_size,
+        dropout=args.dropout,
+        num_layers=args.num_layers,
+    ).to(device)
+    # model = torch.jit.script(model)
     criterion = nn.MSELoss()
-    optimizer = optim.Adam(model.parameters(), lr = args.lr)
+    optimizer = optim.Adam(model.parameters(), lr=args.lr)
 
-    #store loss
+    # store loss
     train_losses = []
     test_losses = []
-    
-    #train and validate
-    for epoch in range(1, args.epochs+1):
-        train(args,
-            model,
-            device,
-            train_loader,
-            optimizer,
-            criterion,
-            train_losses,
-            epoch)
-        test(args,
-             model,
-             device,
-             test_loader,
-             criterion,
-             test_losses,
-             epoch)
-        
+
+    # train and validate
+    for epoch in range(1, args.epochs + 1):
+        train(
+            args, model, device, train_loader, optimizer, criterion, train_losses, epoch
+        )
+        test(args, model, device, test_loader, criterion, test_losses, epoch)
+
         if args.dry_run:
-            print('Dry run enabled, stopping training.')
+            print("Dry run enabled, stopping training.")
             break
 
-        #visualize loss
+        # visualize loss
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

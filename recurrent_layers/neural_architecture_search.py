@@ -25,91 +25,45 @@
 
 import torch
 import torch.nn as nn
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Callable
 from torch import Tensor
+from .base import BaseRecurrentLayer
 
-class NAS(nn.Module):
-    def __init__(self,
+
+class NAS(BaseRecurrentLayer):
+    def __init__(
+        self,
         input_size: int,
         hidden_size: int,
         num_layers: int = 1,
-        batch_first: bool = False,
         dropout: float = 0.0,
-        **kwargs
-        ):
-        super(NAS, self).__init__()
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.batch_first = batch_first
-        self.dropout = dropout
-
-        layers = [NASCell(input_size, hidden_size, **kwargs)] + [
-            NASCell(hidden_size, hidden_size, **kwargs) for _ in range(1, num_layers)
-        ]
-        self.cells = nn.ModuleList(layers)
-
-
-        if self.dropout > 0:
-            self.dropout_layer = nn.Dropout(dropout)
-        else:
-            self.dropout_layer = None
-
-    def forward(self,
-        inp:Tensor,
-        states:Optional[List[Tuple[Tensor, Tensor]]] = None):
-
-        if self.batch_first:
-            inp = inp.transpose(0, 1)
-
-        seq_len, batch_size, _ = inp.size()
-        
-        if states is None:
-            hx = [torch.zeros(batch_size, self.hidden_size, dtype=inp.dtype, device=inp.device) for _ in range(self.num_layers)]
-            cx = [torch.zeros(batch_size, self.hidden_size, dtype=inp.dtype, device=inp.device) for _ in range(self.num_layers)]
-        
-        output = []
-
-        for t in range(seq_len):
-            input_t = inp[t]
-
-            for idx_cell, cell in enumerate(self.cells):
-                h_new, c_new = cell(input_t, (hx[idx_cell], cx[idx_cell]))
-                
-                if self.dropout_layer and idx_cell < self.num_layers - 1:
-                    h_new = self.dropout_layer(h_new)
-
-                hx[idx_cell], cx[idx_cell] = h_new, c_new
-                input_t = h_new
-            
-            output += [input_t]
-
-        output = torch.stack(output, dim=0)
-
-        if self.batch_first:
-            output = output.transpose(0, 1)
-
-        h_n = torch.stack(hx)
-        c_n = torch.stack(cx)
-
-        return output, (h_n, c_n)
+        batch_first: bool = False,
+        **kwargs,
+    ):
+        super(NAS, self).__init__(
+            input_size, hidden_size, num_layers, dropout, batch_first
+        )
+        self.initialize_cells(NAS, **kwargs)
 
 
 class NASCell(nn.Module):
-    def __init__(self,
-        input_size,
-        hidden_size,
-        bias=True,
-        init_input_weights = nn.init.xavier_uniform_,
-        init_recurrent_weights = nn.init.xavier_uniform_,
-        init_input_bias = nn.init.zeros_,
-        init_recurrent_bias = nn.init.zeros_):
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        bias: bool = True,
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_,
+    ):
 
         super(NASCell, self).__init__()
         self.hidden_size = hidden_size
-        self.init_input_weights = init_input_weights
-        self.init_recurrent_weights = init_recurrent_weights
-        self.init_input_bias = init_input_bias
-        self.init_recurrent_bias = init_recurrent_bias
+        self.kernel_init = kernel_init
+        self.recurrent_kernel_init = recurrent_kernel_init
+        self.bias_init = bias_init
+        self.recurrent_bias_init = recurrent_bias_init
 
         self.weight_ih = nn.Parameter(torch.randn(8 * hidden_size, input_size))
         self.weight_hh = nn.Parameter(torch.randn(8 * hidden_size, hidden_size))
@@ -120,24 +74,24 @@ class NASCell(nn.Module):
 
     def init_weights(self):
         for name, param in self.named_parameters():
-            if 'weight_ih' in name:
-                self.init_input_weights(param)
-            elif 'weight_hh' in name:
-                self.init_recurrent_weights(param)
-            elif 'bias_ih' in name and self.bias_ih is not None:
-                self.init_input_bias(param)
-            elif 'bias_hh' in name and self.bias_ih is not None:
-                self.init_recurrent_bias(param)
+            if "weight_ih" in name:
+                self.kernel_init(param)
+            elif "weight_hh" in name:
+                self.recurrent_kernel_init(param)
+            elif "bias_ih" in name and self.bias_ih is not None:
+                self.bias_init(param)
+            elif "bias_hh" in name and self.bias_ih is not None:
+                self.recurrent_bias_init(param)
 
     def _init_state(self, inp):
         state = torch.zeros(
-                inp.size(0), self.hidden_size, dtype=inp.dtype, device=inp.device
-            )
+            inp.size(0), self.hidden_size, dtype=inp.dtype, device=inp.device
+        )
         return state
 
-    def forward(self,
-        inp:Tensor,
-        states:Optional[Tuple[Tensor, Tensor]]=(None,None)) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
+    def forward(
+        self, inp: Tensor, states: Optional[Tuple[Tensor, Tensor]] = (None, None)
+    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
 
         state, c_state = states
         is_batched = inp.dim() == 2
@@ -154,10 +108,12 @@ class NASCell(nn.Module):
         else:
             c_state = c_state if is_batched else c_state.unsqueeze(0)
 
-        gates = (torch.matmul(inp, self.weight_ih.t()) 
-                 + self.bias_ih
-                 + torch.matmul(state, self.weight_hh.t())
-                 + self.bias_hh)
+        gates = (
+            torch.matmul(inp, self.weight_ih.t())
+            + self.bias_ih
+            + torch.matmul(state, self.weight_hh.t())
+            + self.bias_hh
+        )
 
         g0, g1, g2, g3, g4, g5, g6, g7 = gates.chunk(8, 1)
 

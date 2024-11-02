@@ -2,73 +2,23 @@ import torch
 from torch import nn
 from torch import Tensor
 from typing import Optional, Callable, Tuple
+from .base import BaseRecurrentLayer
 
-class LiGRU(nn.Module):
-    def __init__(self,
+
+class LiGRU(BaseRecurrentLayer):
+    def __init__(
+        self,
         input_size: int,
         hidden_size: int,
         num_layers: int = 1,
-        batch_first: bool = True,
         dropout: float = 0.0,
-        **kwargs):
-
-        super(LiGRU, self).__init__()
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.batch_first = batch_first
-
-        layers = [LiGRUCell(input_size, hidden_size, **kwargs)] + [
-            LiGRUCell(hidden_size, hidden_size, **kwargs) for _ in range(1, num_layers)
-        ]
-
-        self.cells = nn.ModuleList(layers)
-
-        if dropout > 0:
-            self.dropout_layer = nn.Dropout(dropout)
-        else:
-            self.dropout_layer = None
-
-    def forward(self,
-        inp: Tensor,
-        state: Optional[Tensor] = None) -> Tuple[Tensor, Tensor]:
-
-        if self.batch_first:
-            inp = inp.transpose(0, 1)
-
-        seq_len, batch_size, _ = inp.size()
-
-        if state is None:
-            state = torch.zeros(
-                self.num_layers, batch_size, self.hidden_size,
-                dtype = inp.dtype,
-                device = inp.device
-            )
-        
-        output = []
-
-        for t in range(seq_len):
-            input_t = inp[t]
-            new_states = []
-
-            for cell_idx, cell in enumerate(self.cells):
-                new_state = cell(input_t, state[cell_idx])
-
-                if self.dropout_layer and cell_idx < self.num_layers - 1:
-                    new_state = self.dropout_layer(new_state)
-
-                new_states += [new_state]
-                input_t = new_state
-
-            state = torch.stack(new_states, dim = 0)
-            output += [input_t]
-
-        output = torch.stack(output, dim = 0)
-
-        if self.batch_first:
-            output = output.transpose(0, 1)
-
-        return output, state
-
+        batch_first: bool = False,
+        **kwargs,
+    ):
+        super(LiGRU, self).__init__(
+            input_size, hidden_size, num_layers, dropout, batch_first
+        )
+        self.initialize_cells(LiGRU, **kwargs)
 
 
 class LiGRUCell(nn.Module):
@@ -79,20 +29,20 @@ class LiGRUCell(nn.Module):
         bias: bool = True,
         activation_fn: Callable = torch.relu,
         gate_activation_fn: Callable = torch.sigmoid,
-        init_input_weights: Callable = nn.init.xavier_uniform_,
-        init_recurrent_weights: Callable = nn.init.xavier_uniform_,
-        init_input_bias: Callable = nn.init.zeros_,
-        init_recurrent_bias: Callable = nn.init.zeros_):
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_):
 
         super(LiGRUCell, self).__init__()
         #assign variables
         self.hidden_size = hidden_size
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
-        self.init_input_weights = init_input_weights
-        self.init_recurrent_weights = init_recurrent_weights
-        self.init_input_bias = init_input_bias
-        self.init_recurrent_bias = init_recurrent_bias
+        self.kernel_init = kernel_init
+        self.recurrent_kernel_init = recurrent_kernel_init
+        self.bias_init = bias_init
+        self.recurrent_bias_init = recurrent_bias_init
 
         # define weights
         self.weight_ih = nn.Parameter(torch.randn(2 * hidden_size, input_size))
@@ -106,13 +56,13 @@ class LiGRUCell(nn.Module):
     def init_weights(self):
         for name, param in self.named_parameters():
             if 'weight_ih' in name:
-                self.init_input_weights(param)
+                self.kernel_init(param)
             elif 'weight_hh' in name:
-                self.init_recurrent_weights(param)
+                self.recurrent_kernel_init(param)
             elif 'bias_ih' in name and self.bias_ih is not None:
-                self.init_input_bias(param)
+                self.bias_init(param)
             elif 'bias_hh' in name and self.bias_ih is not None:
-                self.init_recurrent_bias(param)
+                self.recurrent_bias_init(param)
 
     def forward(self,
         inp:Tensor,

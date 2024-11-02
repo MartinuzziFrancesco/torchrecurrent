@@ -2,93 +2,45 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from typing import Optional, Callable, Tuple
+from .base import BaseRecurrentLayer
 
 
-class RAN(nn.Module):
-    def __init__(self,
+class RAN(BaseRecurrentLayer):
+    def __init__(
+        self,
         input_size: int,
         hidden_size: int,
         num_layers: int = 1,
         dropout: float = 0.0,
         batch_first: bool = False,
-        **kwargs
-        ):
-        super(RAN, self).__init__()
-        self.hidden_size = hidden_size
-        self.num_layers = num_layers
-        self.batch_first = batch_first
-        self.dropout = dropout
-
-        layers = [RANCell(input_size, hidden_size, **kwargs)] + [
-            RANCell(hidden_size, hidden_size, **kwargs) for _ in range(1, num_layers)
-        ]
-        self.cells = nn.ModuleList(layers)
-
-        if self.dropout > 0:
-            self.dropout_layer = nn.Dropout(dropout)
-        else:
-            self.dropout_layer = None
-
-    def forward(self,
-        inp: Tensor,
-        states: Optional[Tuple[Tensor, Tensor]] = (None, None)) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
-
-        hx, cx = states
-
-        if self.batch_first:
-            inp = inp.transpose(0, 1)
-
-        seq_len, batch_size, _ = inp.size()
-
-        if hx is None:
-            hx = [torch.zeros(batch_size, self.hidden_size, dtype=inp.dtype, device=inp.device) for _ in range(self.num_layers)]
-        
-        if cx is None:
-            cx = [torch.zeros(batch_size, self.hidden_size, dtype=inp.dtype, device=inp.device) for _ in range(self.num_layers)]
-
-        output = []
-
-        for t in range(seq_len):
-            input_t = inp[t]
-            for idx_cell, cell in enumerate(self.cells):
-                h_new, c_new = cell(input_t, (hx[idx_cell], cx[idx_cell]))
-
-                if self.dropout_layer and idx_cell < self.num_layers-1:
-                    h_new = self.dropout_layer(h_new)
-                    
-                hx[idx_cell], cx[idx_cell] = h_new, c_new
-                input_t = h_new
-
-            output.append(input_t)
-
-        output = torch.stack(output, dim=0)
-
-        if self.batch_first:
-            output = output.transpose(0, 1)
-
-        h_n = torch.stack(hx)
-        c_n = torch.stack(cx)
-
-        return output, (h_n, c_n)
+        **kwargs,
+    ):
+        super(RAN, self).__init__(
+            input_size, hidden_size, num_layers, dropout, batch_first
+        )
+        self.initialize_cells(RAN, **kwargs)
 
 
 class RANCell(nn.Module):
-    def __init__(self,
+    def __init__(
+        self,
         input_size,
         hidden_size,
         bias=True,
-        init_input_weights: Callable = nn.init.xavier_uniform_,
-        init_recurrent_weights: Callable = nn.init.xavier_uniform_,
-        init_input_bias: Callable = nn.init.zeros_,
-        init_recurrent_bias: Callable = nn.init.zeros_):
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_,
+    ):
 
         super(RANCell, self).__init__()
         self.hidden_size = hidden_size
         self.bias = bias
-        self.init_input_weights = init_input_weights
-        self.init_recurrent_weights = init_recurrent_weights
-        self.init_input_bias = init_input_bias
-        self.init_recurrent_bias = init_recurrent_bias
+        self.kernel_init = kernel_init
+        self.recurrent_kernel_init = recurrent_kernel_init
+        self.bias_init = bias_init
+        self.recurrent_bias_init = recurrent_bias_init
+
         self.weight_ih = nn.Parameter(torch.randn(3 * hidden_size, input_size))
         self.weight_hh = nn.Parameter(torch.randn(2 * hidden_size, hidden_size))
 
@@ -99,24 +51,24 @@ class RANCell(nn.Module):
 
     def init_weights(self):
         for name, param in self.named_parameters():
-            if 'weight_ih' in name:
-                self.init_input_weights(param)
-            elif 'weight_hh' in name:
-                self.init_recurrent_weights(param)
-            elif 'bias_ih' in name and self.bias_ih is not None:
-                self.init_input_bias(param)
-            elif 'bias_hh' in name and self.bias_ih is not None:
-                self.init_recurrent_bias(param)
+            if "weight_ih" in name:
+                self.kernel_init(param)
+            elif "weight_hh" in name:
+                self.recurrent_kernel_init(param)
+            elif "bias_ih" in name and self.bias_ih is not None:
+                self.bias_init(param)
+            elif "bias_hh" in name and self.bias_ih is not None:
+                self.recurrent_bias_init(param)
 
     def _init_state(self, inp):
         state = torch.zeros(
-                inp.size(0), self.hidden_size, dtype=inp.dtype, device=inp.device
-            )
+            inp.size(0), self.hidden_size, dtype=inp.dtype, device=inp.device
+        )
         return state
 
-    def forward(self,
-        inp: Tensor,
-        states: Optional[Tuple[Tensor, Tensor]]=(None, None)) -> Tuple[Tensor, Tensor]:
+    def forward(
+        self, inp: Tensor, states: Optional[Tuple[Tensor, Tensor]] = (None, None)
+    ) -> Tuple[Tensor, Tensor]:
 
         state, c_state = states
 
@@ -157,6 +109,3 @@ class RANCell(nn.Module):
             new_state, new_cstate = new_state.unsqueeze(0), new_cstate.unsqueeze(0)
 
         return new_state, new_cstate
-
-
-
