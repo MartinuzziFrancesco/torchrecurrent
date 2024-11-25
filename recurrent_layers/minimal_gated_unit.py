@@ -62,7 +62,7 @@ class MGUCell(nn.Module):
                 self.recurrent_kernel_init(param)
             elif "bias_ih" in name and self.bias_ih is not None:
                 self.bias_init(param)
-            elif "bias_hh" in name and self.bias_ih is not None:
+            elif "bias_hh" in name and self.bias_hh is not None:
                 self.recurrent_bias_init(param)
 
     def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
