@@ -1,6 +1,24 @@
 import torch
 import torch.nn as nn
 from typing import Optional, Callable
+from .base import BaseRecurrentLayer
+
+
+class PeepholeLSTM(BaseRecurrentLayer):
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        batch_first: bool = False,
+        **kwargs,
+    ):
+        super(PeepholeLSTM, self).__init__(
+            input_size, hidden_size, num_layers, dropout, batch_first
+        )
+        self.initialize_cells(PeepholeLSTMCell, **kwargs)
+
 
 class PeepholeLSTMCell(nn.Module):
     def __init__(

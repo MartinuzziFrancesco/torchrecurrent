@@ -18,7 +18,7 @@ class RAN(BaseRecurrentLayer):
         super(RAN, self).__init__(
             input_size, hidden_size, num_layers, dropout, batch_first
         )
-        self.initialize_cells(RAN, **kwargs)
+        self.initialize_cells(RANCell, **kwargs)
 
 
 class RANCell(nn.Module):
