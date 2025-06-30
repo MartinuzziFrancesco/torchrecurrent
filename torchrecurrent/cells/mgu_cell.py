@@ -2,12 +2,9 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from typing import Optional, Callable, Tuple
-from .base import BaseRecurrentLayer
+from ..base import BaseSingleRecurrentLayer, BaseRecurrentCell
 
-__all__ = ["MGU", "MGUCell"]
-
-
-class MGU(BaseRecurrentLayer):
+class MGU(BaseSingleRecurrentLayer):
     def __init__(
         self,
         input_size: int,
@@ -23,7 +20,7 @@ class MGU(BaseRecurrentLayer):
         self.initialize_cells(MGUCell, **kwargs)
 
 
-class MGUCell(nn.Module):
+class MGUCell(BaseRecurrentCell):
     def __init__(
         self,
         input_size: int,
@@ -37,7 +34,7 @@ class MGUCell(nn.Module):
         recurrent_bias_init = nn.init.zeros_,
     ):
 
-        super(MGUCell, self).__init__()
+        super(MGUCell, self).__init__(input_size, hidden_size, bias)
         self.hidden_size = hidden_size
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn

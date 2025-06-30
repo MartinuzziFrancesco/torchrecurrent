@@ -27,7 +27,7 @@ import torch
 import torch.nn as nn
 from typing import Optional, Tuple, List, Callable
 from torch import Tensor
-from .base import BaseRecurrentLayer
+from ..base import BaseRecurrentLayer
 
 
 class NAS(BaseRecurrentLayer):

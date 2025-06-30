@@ -24,6 +24,3 @@ classifiers = [
 [tool.setuptools]
 packages = ["torchrecurrent"]
 
-[tool.setuptools.packages.find]
-exclude = ["tests", "benchmarks"]
-

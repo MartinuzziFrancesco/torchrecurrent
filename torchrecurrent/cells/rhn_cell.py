@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 from typing import Optional, Callable, Tuple
 from torch import Tensor
-from .base import BaseRecurrentLayer
+from ..base import BaseRecurrentLayer
 
 
 class RHN(BaseRecurrentLayer):

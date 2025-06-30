@@ -2,7 +2,7 @@ import torch
 from torch import nn
 from torch import Tensor
 from typing import Optional, Callable, Tuple
-from .base import BaseRecurrentLayer
+from ..base import BaseRecurrentLayer
 
 
 class LiGRU(BaseRecurrentLayer):

@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from typing import Optional, Callable
-from .base import BaseRecurrentLayer
+from ..base import BaseRecurrentLayer
 
 
 class PeepholeLSTM(BaseRecurrentLayer):

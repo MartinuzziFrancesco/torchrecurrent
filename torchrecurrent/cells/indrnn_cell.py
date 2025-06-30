@@ -2,7 +2,7 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from typing import Callable, Optional, Tuple
-from .base import BaseRecurrentLayer
+from ..base import BaseRecurrentLayer
 
 
 class IndRNN(BaseRecurrentLayer):
