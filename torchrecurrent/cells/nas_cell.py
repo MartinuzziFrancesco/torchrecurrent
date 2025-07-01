@@ -64,11 +64,16 @@ class NASCell(nn.Module):
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
+        self.bias = bias
 
         self.weight_ih = nn.Parameter(torch.randn(8 * hidden_size, input_size))
         self.weight_hh = nn.Parameter(torch.randn(8 * hidden_size, hidden_size))
-        self.bias_ih = nn.Parameter(torch.randn(8 * hidden_size)) if bias else None
-        self.bias_hh = nn.Parameter(torch.randn(8 * hidden_size)) if bias else None
+        if bias:
+            self.bias_ih = nn.Parameter(torch.randn(8 * hidden_size))
+            self.bias_hh = nn.Parameter(torch.randn(8 * hidden_size))
+        else:
+            self.register_buffer("bias_ih", torch.zeros(8*hidden_size))
+            self.register_buffer("bias_hh", torch.zeros(8*hidden_size))
 
         self.init_weights()
 
