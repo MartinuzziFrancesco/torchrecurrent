@@ -83,6 +83,49 @@ class BaseRecurrentCell(nn.Module, ABC):
             raise ValueError(
                 f"{cls}: Expected input to be 1D or 2D, got {inp.dim()}D instead"
             )
+        
+    def _create_weights(
+        self,
+        input_size: int,
+        hidden_size: int,
+        ih_mult: int = 1,
+        hh_mult: int = 1,
+        bias: bool = True,
+    ):
+        """
+        Helper to register
+          weight_ih : (ih_mult*hidden_size, input_size)
+          weight_hh : (hh_mult*hidden_size, hidden_size)
+          bias_ih   : (ih_mult*hidden_size,) either Parameter or zero‐buffer
+          bias_hh   : (hh_mult*hidden_size,) either Parameter or zero‐buffer
+        """
+        self.weight_ih = nn.Parameter(
+            torch.empty(ih_mult * hidden_size, input_size)
+        )
+        self.weight_hh = nn.Parameter(
+            torch.empty(hh_mult * hidden_size, hidden_size)
+        )
+        if bias:
+            self.bias_ih = nn.Parameter(torch.empty(ih_mult * hidden_size))
+            self.bias_hh = nn.Parameter(torch.empty(hh_mult * hidden_size))
+        else:
+            self.register_buffer(
+                "bias_ih", torch.zeros(ih_mult * hidden_size)
+            )
+            self.register_buffer(
+                "bias_hh", torch.zeros(hh_mult * hidden_size)
+            )
+
+    def init_weights(self):
+        for name, param in self.named_parameters():
+            if 'weight_ih' in name:
+                self.kernel_init(param)
+            elif 'weight_hh' in name:
+                self.recurrent_kernel_init(param)
+            elif 'bias_ih' in name:
+                self.bias_init(param)
+            elif 'bias_hh' in name:
+                self.bias_init(param)
 
 class BaseSingleRecurrentCell(BaseRecurrentCell):
     def uses_double_state(self) -> bool:
@@ -178,7 +221,7 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
 
         return inp, h, c, is_batched
 
-    
+
 class BaseRecurrentLayer(nn.Module):
     def __init__(self,
                  input_size: int,

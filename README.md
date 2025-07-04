@@ -1,80 +1,41 @@
 # torchrecurrent
 
-Pytorch implementation of various recurrent layers
-found in the literature. All implementations are meant
-to be as close to PyTorch's implementation of cells as possible.
-Much inspiration has being drawn from
-[fastrnns](https://github.com/pytorch/pytorch/blob/main/benchmarks/fastrnns)
-approach to building cells.
+Pytorch compatible implementation of various recurrent layers
+found in the literature.
+**Disclaimer**: `torchrecurrent` is an independent project
+and is not affiliated with the PyTorch project or Meta AI.
+The name reflects compatibility with PyTorch, not any official endorsement.
 
+## Features
 
-## Technical notes on implementations
-
-Some free flow thoughts on perusing the literature for the implementation
-of recurrent cells and layers.
-
-### Efficiency vs accuracy
- Here accuracy means accuracy in following the literature. 
- 
- For example, in the GRU the default implementations in Pytorch and
- Tensorflow seem to be with the reset gate applied _after_ the recurrent matrix
- multiplication with the hidden state. It's confusing to trace the original
- implementation, since in [Cho 2014a](https://arxiv.org/pdf/1406.1078)
- the reset gate is applied _to_ the hidden state and only then it's
- multiplied to the recurrent matrix. This is also the approach followed
- in the empirical comparison with LSTMs of
- [Chung 2014](https://arxiv.org/pdf/1412.3555). But in
- [Cho 2014b](https://arxiv.org/pdf/1409.1259) the reset gate is applied before.
- [Chung 2014](https://arxiv.org/pdf/1412.3555) does (foot)note that the two
- implementations yielded roughly similar results.
-  - Pytorch [GRU](https://pytorch.org/docs/stable/generated/torch.nn.GRU.html)
-    offers an implementation with the reset gate applied before
-    (with a note describing the change).
-  - Tensorflow
-    [GRU](https://www.tensorflow.org/api_docs/python/tf/keras/layers/GRU)
-    offers two variants of the model, with v3 (based on
-    [Chung 2014c](https://arxiv.org/abs/1406.1078v3)) being the default,
-    so with reset gate application done after the recurrent multiplication.
-    They also offer the other (original) variant, which has the order reversed. 
-  - Flax also offers the
-    [v3](https://flax.readthedocs.io/en/latest/api_reference/flax.nnx/nnrecurrent.html#flax.nnx.nn.recurrent.GRUCell)
-    as the default
-  - This topic has also been discussed in
-    [Flux.jl](https://github.com/FluxML/Flux.jl/issues/1671),
-    where the offer the original implementation as default,
-    while also providing the v3 as a choice. 
-  
-The default choice being v3 in the python offerings
-could be due to the more efficient computation that it provides,
-allowing to perform matrix multiplication once for all the gates,
-and then splitting. Alternatively, one has to split the matrices
-and then compute the multiplication for each gate. The MGUCell
-has a similar setup, so I can try to provide a faster alternative
-by applying the reset gate after the recurrent multiplication.
-
-Should input and hidden state be concatenated and then multiplied?
-Is it more efficient while still being accurate?
-
-### Merging gate computation
-The standard approach when dealing with multiple gates seems to compute
-the matrix vector multiplication with a larger matrix and then split the result
-and feed it to the activation function. Supposedly this helps in computational
-speed. However, Flax used distinct matrices in their
-[nnx LSTM](https://github.com/google/flax/blob/main/flax/nnx/nn/recurrent.py#L163-L170)
-implementation. Flax provides an additional
-[OptimizedLSTMCell](https://github.com/google/flax/blob/main/flax/nnx/nn/recurrent.py#L215)
-where the have this fusion. The docstrings mention, verbatim
-"Note that this cell is often faster than ``LSTMCell`` as long as the
-hidden size is roughly <= 2048 units". So far larger models this does not actually
-have an impact over computation times. How is the curve for the two implementations
-looking? This would be an interesting quick test. Notably, the
-[GRU](https://github.com/google/flax/blob/main/flax/nnx/nn/recurrent.py#L518)
-only offer the merged gates approach. Was there no difference between distinct matrices
-and merged ones? And if so, why is the default LSTM the _not_ optimized one?
-
-### Dropout
-
-Applying dropout in recurrent architecture is apparently tricky, since one can't just put it in after the computational, since the state is saved and propagated to the same cell after. This is known in literature [Zaremba (2015)](https://arxiv.org/abs/1409.2329).
+| Short name | Publication venue | Official implementation |
+|------------|-------------------|-----------------------------|
+| [**AntisymmetricRNN/GatedAntisymmetricRNN**](https://arxiv.org/abs/1902.09689) | ICLR 2019 | – |
+| [**ATR**](https://arxiv.org/abs/1810.12546) | EMNLP 2018 | [bzhangGo/ATR](https://github.com/bzhangGo/ATR) |
+| [**BR/BRC**](https://doi.org/10.1371/journal.pone.0252676) | PLOS ONE 2021 | [nvecoven/BRC](https://github.com/nvecoven/BRC) |
+| [**CFN**](https://arxiv.org/abs/1612.06212) | ICLR 2017 | – |
+| [**coRNN**](https://arxiv.org/abs/2010.00951) | ICLR 2021 | [tk-rusch/coRNN](https://github.com/tk-rusch/coRNN) |
+| [**FastRNN/FastGRNN**](https://arxiv.org/abs/1901.02358) | NeurIPS 2018 | [Microsoft/EdgeML](https://github.com/Microsoft/EdgeML) |
+| [**FSRNN**](https://arxiv.org/abs/1705.08639) | NeurIPS 2017 | [amujika/Fast-Slow-LSTM](https://github.com/amujika/Fast-Slow-LSTM) |
+| [**IndRNN**](https://arxiv.org/abs/1803.04831) | CVPR 2018 | [Sunnydreamrain/IndRNN_Theano_Lasagne](https://github.com/Sunnydreamrain/IndRNN_Theano_Lasagne) |
+| [**JANET**](https://arxiv.org/abs/1804.04849) | arXiv 2018 | [JosvanderWesthuizen/janet](https://github.com/JosvanderWesthuizen/janet) |
+| [**LEM**](https://arxiv.org/pdf/2110.04744) | ICLR 2022 | [tk-rusch/LEM](https://github.com/tk-rusch/LEM) |
+| [**LiGRU**](https://arxiv.org/abs/1803.10225) | IEEE Transactions on Emerging Topics in Computing 2018 | [mravanelli/theano-kaldi-rnn](https://github.com/mravanelli/theano-kaldi-rnn/) |
+| [**LightRU**](https://www.mdpi.com/2079-9292/13/16/3204) | MDPI Electronics 2023 | – |
+| [**MinimalRNN**](https://arxiv.org/abs/1711.06788) | NeurIPS 2017 | – |
+| [**MultiplicativeLSTM**](https://arxiv.org/abs/1609.07959) | Workshop ICLR 2017 | [benkrause/mLSTM](https://github.com/benkrause/mLSTM) |
+| [**MGU**](https://arxiv.org/abs/1603.09420) | International Journal of Automation and Computing 2016 | – |
+| [**MUT1/MUT2/MUT3**](https://proceedings.mlr.press/v37/jozefowicz15.pdf) | ICML 2015 | – |
+| [**NAS**](https://arxiv.org/abs/1611.01578) | arXiv 2016 | [tensorflow_addons/rnn](https://github.com/tensorflow/addons/blob/v0.20.0/tensorflow_addons/rnn/nas_cell.py#L29-L236) |
+| [**PeepholeLSTM**](https://www.jmlr.org/papers/volume3/gers02a/gers02a.pdf) | JMLR 2002 | – |
+| [**RAN**](https://arxiv.org/abs/1705.07393) | arXiv 2017 | [kentonl/ran](https://github.com/kentonl/ran) |
+| [**RHN**](https://arxiv.org/abs/1607.03474) | ICML 2017 | [jzilly/RecurrentHighwayNetworks](https://github.com/jzilly/RecurrentHighwayNetworks) |
+| [**SCRN**](https://arxiv.org/abs/1412.7753) | ICLR 2015 | [facebookarchive/SCRNNs](https://github.com/facebookarchive/SCRNNs) |
+| [**SGRN**](https://doi.org/10.1049/gtd2.12056) | IET 2018 | – |
+| [**STAR**](https://arxiv.org/abs/1911.11033) | IEEE Transactions on Pattern Analysis and Machine Intelligence 2022 | [0zgur0/STAckable-Recurrent-network](https://github.com/0zgur0/STAckable-Recurrent-network) |
+| [**Typed RNN / GRU / LSTM**](https://arxiv.org/abs/1602.02218) | ICML 2016 | – |
+| [**UnICORNN**](https://arxiv.org/abs/2103.05487) | ICML 2021 | [tk-rusch/unicornn](https://github.com/tk-rusch/unicornn) |
+| [**WMCLSTM**](https://arxiv.org/abs/2109.00020) | Neural Networks 2021 | – |
 
 ## See also
 

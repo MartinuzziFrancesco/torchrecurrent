@@ -43,7 +43,7 @@ class NAS(BaseDoubleRecurrentLayer):
         super(NAS, self).__init__(
             input_size, hidden_size, num_layers, dropout, batch_first
         )
-        self.initialize_cells(NAS, **kwargs)
+        self.initialize_cells(NASCell, **kwargs)
 
 
 class NASCell(BaseDoubleRecurrentCell):

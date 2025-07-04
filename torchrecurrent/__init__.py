@@ -6,20 +6,30 @@ Top-level imports for all Cells, Layers and Wrappers, alphabetized.
 
 # Cells
 from .cells import (
-    IndRNN,
+    AntisymmetricRNNCell,
+    GatedAntisymmetricRNNCell,
+    ATRCell,
     IndRNNCell,
-    LiGRU,
     LiGRUCell,
-    MGU,
     MGUCell,
-    NAS,
     NASCell,
-    PeepholeLSTM,
     PeepholeLSTMCell,
-    RAN,
     RANCell,
-    #coRNN,
     #coRNNCell,
-    #SCRN,
     #SCRNCell,
+)
+
+#layers
+from .cells import (
+    AntisymmetricRNN,
+    GatedAntisymmetricRNN,
+    ATR,
+    IndRNN,
+    LiGRU,
+    MGU,
+    NAS,
+    PeepholeLSTM,
+    RAN,
+    #coRNN,
+    #SCRN,
 )
