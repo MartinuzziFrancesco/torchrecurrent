@@ -18,6 +18,8 @@ from .cells import (
     PeepholeLSTMCell,
     RAN,
     RANCell,
+    #coRNN,
+    #coRNNCell,
     #SCRN,
     #SCRNCell,
 )

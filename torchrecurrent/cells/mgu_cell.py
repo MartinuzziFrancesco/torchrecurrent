@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from typing import Optional, Callable, Tuple
-from ..base import BaseSingleRecurrentLayer, BaseRecurrentCell
+from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 class MGU(BaseSingleRecurrentLayer):
     def __init__(
@@ -20,7 +20,7 @@ class MGU(BaseSingleRecurrentLayer):
         self.initialize_cells(MGUCell, **kwargs)
 
 
-class MGUCell(BaseRecurrentCell):
+class MGUCell(BaseSingleRecurrentCell):
     def __init__(
         self,
         input_size: int,
@@ -43,11 +43,15 @@ class MGUCell(BaseRecurrentCell):
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
         self.bias = bias
-        self.weight_ih = nn.Parameter(torch.randn(2 * hidden_size, input_size))
-        self.weight_hh = nn.Parameter(torch.randn(2 * hidden_size, hidden_size))
 
-        self.bias_ih = nn.Parameter(torch.randn(2 * hidden_size)) if bias else None
-        self.bias_hh = nn.Parameter(torch.randn(2 * hidden_size)) if bias else None
+        self.weight_ih = nn.Parameter(torch.empty(2 * hidden_size, input_size))
+        self.weight_hh = nn.Parameter(torch.empty(2 * hidden_size, hidden_size))
+        if self.bias:
+            self.bias_ih = nn.Parameter(torch.empty(2 * hidden_size))
+            self.bias_hh = nn.Parameter(torch.empty(2 * hidden_size))
+        else:
+            self.register_buffer("bias_ih", torch.zeros(2 * hidden_size))
+            self.register_buffer("bias_hh", torch.zeros(2 * hidden_size))
 
         self.init_weights()
 
@@ -63,52 +67,28 @@ class MGUCell(BaseRecurrentCell):
                 self.recurrent_bias_init(param)
 
     def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
-        # Check input dimensions
-        if inp.dim() not in (1, 2):
-            raise ValueError(
-                f"MGUCell: Expected input to be 1D or 2D, got {inp.dim()}D instead"
-            )
-        if state is not None and state.dim() not in (1, 2):
-            raise ValueError(
-                f"MGUCell: Expected hidden state to be 1D or 2D, got {state.dim()}D instead"
-            )
-
-        # Check batching
-        is_batched = inp.dim() == 2
-        if not is_batched:
-            inp = inp.unsqueeze(0)
-
-        # Check and initialize hidden state
-        if state is None:
-            state = torch.zeros(
-                inp.size(0), self.hidden_size, dtype=inp.dtype, device=inp.device
-            )
-        else:
-            state = state.unsqueeze(0) if not is_batched else state
+        self._validate_input(inp)
+        self._validate_state(state)
+        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
 
         weight_ih_f, weight_ih_h = self.weight_ih.chunk(2, 0)
         weight_hh_f, weight_hh_h = self.weight_hh.chunk(2, 0)
+        bias_ih_f, bias_ih_h = self.bias_ih.chunk(2, 0)
+        bias_hh_f, bias_hh_h = self.bias_hh.chunk(2, 0)
 
-        if self.bias:
-            bias_ih_f, bias_ih_h = self.bias_ih.chunk(2, 0)
-            bias_hh_f, bias_hh_h = self.bias_hh.chunk(2, 0)
-
-        fg = torch.mm(inp, weight_ih_f.t()) + torch.mm(state, weight_hh_f.t())
-        if self.bias:
-            fg += bias_ih_f + bias_hh_f
-
-        forget_gate = self.gate_activation_fn(fg)
-
-        hidden_modulated = forget_gate * state
-        ch = torch.matmul(inp, weight_ih_h.t()) + torch.matmul(
-            hidden_modulated, weight_hh_h.t()
+        fg = (
+            torch.mm(inp, weight_ih_f.t()) + bias_ih_f +
+            torch.mm(state, weight_hh_f.t()) + bias_hh_f
         )
-        if self.bias:
-            ch += bias_ih_h + bias_hh_h
-
+        forget_gate = self.gate_activation_fn(fg)
+        hidden_modulated = forget_gate * state
+        ch = (
+            torch.matmul(inp, weight_ih_h.t()) + bias_ih_h +
+            torch.matmul(hidden_modulated, weight_hh_h.t()) + bias_hh_h
+        )
         candidate_hidden = self.activation_fn(ch)
-
         new_state = forget_gate * candidate_hidden + (1 - forget_gate) * state
+
         if not is_batched:
             new_state = new_state.squeeze(0)
 

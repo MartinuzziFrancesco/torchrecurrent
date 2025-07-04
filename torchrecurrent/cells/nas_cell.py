@@ -27,10 +27,10 @@ import torch
 import torch.nn as nn
 from typing import Optional, Tuple, List, Callable
 from torch import Tensor
-from ..base import BaseRecurrentLayer
+from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
-class NAS(BaseRecurrentLayer):
+class NAS(BaseDoubleRecurrentLayer):
     def __init__(
         self,
         input_size: int,
@@ -46,7 +46,7 @@ class NAS(BaseRecurrentLayer):
         self.initialize_cells(NAS, **kwargs)
 
 
-class NASCell(nn.Module):
+class NASCell(BaseDoubleRecurrentCell):
     def __init__(
         self,
         input_size: int,
@@ -58,7 +58,7 @@ class NASCell(nn.Module):
         recurrent_bias_init: Callable = nn.init.zeros_,
     ):
 
-        super(NASCell, self).__init__()
+        super(NASCell, self).__init__(input_size, hidden_size, bias)
         self.hidden_size = hidden_size
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -77,9 +77,6 @@ class NASCell(nn.Module):
 
         self.init_weights()
 
-    def uses_double_state(self):
-        return True
-
     def init_weights(self):
         for name, param in self.named_parameters():
             if "weight_ih" in name:
@@ -91,30 +88,12 @@ class NASCell(nn.Module):
             elif "bias_hh" in name and self.bias_ih is not None:
                 self.recurrent_bias_init(param)
 
-    def _init_state(self, inp):
-        state = torch.zeros(
-            inp.size(0), self.hidden_size, dtype=inp.dtype, device=inp.device
-        )
-        return state
-
     def forward(
         self, inp: Tensor, states: Optional[Tuple[Tensor, Tensor]] = (None, None)
     ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
-
-        state, c_state = states
-        is_batched = inp.dim() == 2
-        if not is_batched:
-            inp = inp.unsqueeze(0)
-
-        if state is None:
-            state = self._init_state(inp)
-        else:
-            state = state if is_batched else state.unsqueeze(0)
-
-        if c_state is None:
-            c_state = self._init_state(inp)
-        else:
-            c_state = c_state if is_batched else c_state.unsqueeze(0)
+        self._validate_input(inp)
+        self._validate_states(states)
+        inp, state, c_state, is_batched = self._preprocess_states(inp, states)
 
         gates = (
             torch.matmul(inp, self.weight_ih.t())

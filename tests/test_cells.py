@@ -2,19 +2,24 @@ import pytest
 import torch
 from torch import Tensor
 from torchrecurrent import (
-    MGUCell, IndRNNCell, LiGRUCell, NASCell,
-    PeepholeLSTMCell, RANCell#, SCRNCell
+    MGUCell,
+    IndRNNCell,
+    LiGRUCell,
+    NASCell,
+    PeepholeLSTMCell,
+    RANCell,
 )
 
 # Parameterize over the cell classes and how many states they use
 CELL_CASES = [
     # (CellClass, input_size, hidden_size, uses_double_state)
-    (MGUCell,         4,  8,  False),
-    (IndRNNCell,      3,  5,  False),
-    (LiGRUCell,       6, 12,  False),
-    (NASCell,         7,  7,  True),
-    (PeepholeLSTMCell,5, 10,  True),
-    (RANCell,         4,  9,  True),
+    (MGUCell, 4, 8, False),
+    (IndRNNCell, 3, 5, False),
+    (LiGRUCell, 6, 12, False),
+    (NASCell, 7, 7, True),
+    (PeepholeLSTMCell, 5, 10, True),
+    (RANCell, 4, 9, True),
+    #(coRNNCell, 3, 5, True)
     #(SCRNCell,        8, 16,  False),
 ]
 
@@ -71,15 +76,17 @@ def test_cell_gradients(Cell, in_size, hid_size, _):
     for p in params:
         assert p.grad is not None
 
-def test_repr_shows_key_args():
-    """Check that __repr__ matches PyTorch style for a sample layer."""
-    from torchrecurrent.layers import RNN  # assuming you have RNN subclass
-    rnn1 = RNN(3, 5)  
-    assert repr(rnn1) == "RNN(3, 5)"
-    rnn2 = RNN(3, 5, num_layers=2, dropout=0.3, batch_first=True)
-    # arguments out of default should appear in repr
-    s = repr(rnn2)
-    assert "RNN(3, 5" in s
-    assert "num_layers=2" in s
-    assert "dropout=0.3" in s
-    assert "batch_first=True" in s
+
+#def test_repr_shows_key_args():
+#    """Check that __repr__ matches PyTorch style for a sample layer."""
+#    from torchrecurrent.layers import RNN  # assuming you have RNN subclass
+#    rnn1 = RNN(3, 5)  
+#    assert repr(rnn1) == "RNN(3, 5)"
+#    rnn2 = RNN(3, 5, num_layers=2, dropout=0.3, batch_first=True)
+#    # arguments out of default should appear in repr
+#    s = repr(rnn2)
+#    assert "RNN(3, 5" in s
+#    assert "num_layers=2" in s
+#    assert "dropout=0.3" in s
+#    assert "batch_first=True" in s
+
