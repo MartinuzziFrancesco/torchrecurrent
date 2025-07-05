@@ -31,25 +31,28 @@ class RANCell(BaseDoubleRecurrentCell):
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
         recurrent_bias_init: Callable = nn.init.zeros_,
-    ):
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
 
-        super(RANCell, self).__init__(input_size, hidden_size, bias)
-        self.hidden_size = hidden_size
-        self.bias = bias
+    ):
+        super(RANCell, self).__init__(
+            input_size, hidden_size, bias, device = device, dtype = dtype
+        )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
+        fk = self._factory_kwargs
 
-        self.weight_ih = nn.Parameter(torch.empty(3 * hidden_size, input_size))
-        self.weight_hh = nn.Parameter(torch.empty(2 * hidden_size, hidden_size))
+        self.weight_ih = nn.Parameter(torch.empty(3 * hidden_size, input_size, **fk))
+        self.weight_hh = nn.Parameter(torch.empty(2 * hidden_size, hidden_size, **fk))
 
         if self.bias:
-            self.bias_ih = nn.Parameter(torch.empty(2 * hidden_size))
-            self.bias_hh = nn.Parameter(torch.empty(2 * hidden_size))
+            self.bias_ih = nn.Parameter(torch.empty(2 * hidden_size, **fk))
+            self.bias_hh = nn.Parameter(torch.empty(2 * hidden_size, **fk))
         else:
-            self.register_buffer("bias_ih", torch.zeros(2 * hidden_size))
-            self.register_buffer("bias_hh", torch.zeros(2 * hidden_size))
+            self.register_buffer("bias_ih", torch.zeros(2 * hidden_size, **fk))
+            self.register_buffer("bias_hh", torch.zeros(2 * hidden_size, **fk))
 
         self.init_weights()
 

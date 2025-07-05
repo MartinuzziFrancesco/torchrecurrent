@@ -30,11 +30,13 @@ class ATRCell(BaseSingleRecurrentCell):
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_):
-
-        super(ATRCell, self).__init__(input_size, hidden_size, bias)
-        self.hidden_size = hidden_size
-        self.input_size = input_size
+        recurrent_bias_init: Callable = nn.init.zeros_,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
+    ):
+        super(ATRCell, self).__init__(
+            input_size, hidden_size, bias, device = device, dtype = dtype
+        )
         self.activation_fn = activation_fn
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init

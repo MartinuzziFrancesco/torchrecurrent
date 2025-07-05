@@ -32,11 +32,14 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         bias_init: Callable = nn.init.zeros_,
         recurrent_bias_init: Callable = nn.init.zeros_,
         epsilon:float = 1.0,
-        gamma:float = 0.0):
+        gamma:float = 0.0,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
+    ):
 
-        super(AntisymmetricRNNCell, self).__init__(input_size, hidden_size, bias)
-        self.hidden_size = hidden_size
-        self.input_size = input_size
+        super(AntisymmetricRNNCell, self).__init__(
+            input_size, hidden_size, bias, device = device, dtype=dtype
+        )
         self.activation_fn = activation_fn
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -94,11 +97,14 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
         epsilon:float = 1.0,
-        gamma:float = 0.0):
+        gamma:float = 0.0,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
+    ):
 
-        super(GatedAntisymmetricRNNCell, self).__init__(input_size, hidden_size, bias)
-        self.hidden_size = hidden_size
-        self.input_size = input_size
+        super(GatedAntisymmetricRNNCell, self).__init__(
+            input_size, hidden_size, bias, device = device, dtype = dtype
+        )
         self.activation_fn = activation_fn
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init

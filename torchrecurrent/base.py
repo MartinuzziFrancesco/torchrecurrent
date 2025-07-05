@@ -12,12 +12,17 @@ class BaseRecurrentCell(nn.Module, ABC):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
         **kwargs
     ):
         super().__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.bias = bias
+        self._factory_kwargs = {
+            k: v for k, v in {"device": device, "dtype": dtype}.items() if v is not None
+        }
         self._extra_args = kwargs
 
     def __repr__(self) -> str:
@@ -100,21 +105,22 @@ class BaseRecurrentCell(nn.Module, ABC):
           bias_ih   : (ih_mult*hidden_size,) either Parameter or zero‐buffer
           bias_hh   : (hh_mult*hidden_size,) either Parameter or zero‐buffer
         """
+        fk = self._factory_kwargs
         self.weight_ih = nn.Parameter(
-            torch.empty(ih_mult * hidden_size, input_size)
+            torch.empty(ih_mult * hidden_size, input_size, **fk)
         )
         self.weight_hh = nn.Parameter(
-            torch.empty(hh_mult * hidden_size, hidden_size)
+            torch.empty(hh_mult * hidden_size, hidden_size, **fk)
         )
         if bias:
-            self.bias_ih = nn.Parameter(torch.empty(ih_mult * hidden_size))
-            self.bias_hh = nn.Parameter(torch.empty(hh_mult * hidden_size))
+            self.bias_ih = nn.Parameter(torch.empty(ih_mult * hidden_size, **fk))
+            self.bias_hh = nn.Parameter(torch.empty(hh_mult * hidden_size, **fk))
         else:
             self.register_buffer(
-                "bias_ih", torch.zeros(ih_mult * hidden_size)
+                "bias_ih", torch.zeros(ih_mult * hidden_size, **fk)
             )
             self.register_buffer(
-                "bias_hh", torch.zeros(hh_mult * hidden_size)
+                "bias_hh", torch.zeros(hh_mult * hidden_size, **fk)
             )
 
     def init_weights(self):

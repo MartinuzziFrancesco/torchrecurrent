@@ -34,9 +34,12 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         peephole_kernel_init=nn.init.normal_,
         bias_init=nn.init.zeros_,
         recurrent_bias_init=nn.init.zeros_,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
     ):
-        super(PeepholeLSTMCell, self).__init__(input_size, hidden_size, bias)
-        self.hidden_size = hidden_size
+        super(PeepholeLSTMCell, self).__init__(
+            input_size, hidden_size, bias, device = device, dtype = dtype
+        )
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
         self.kernel_init = kernel_init
@@ -44,22 +47,9 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         self.peephole_kernel_init = peephole_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
-        self.bias = bias
 
-        # Input weights
-        self.weight_ih = nn.Parameter(torch.empty(4 * hidden_size, input_size))
-        # Recurrent weights
-        self.weight_hh = nn.Parameter(torch.empty(4 * hidden_size, hidden_size))
-        # Peephole connections
-        self.weight_ph = nn.Parameter(torch.empty(3 * hidden_size))
-
-        if self.bias:
-            self.bias_ih = nn.Parameter(torch.empty(4 * hidden_size))
-            self.bias_hh = nn.Parameter(torch.empty(4 * hidden_size))
-        else:
-            self.register_buffer("bias_ih", torch.zeros(4 * hidden_size))
-            self.register_buffer("bias_hh", torch.zeros(4 * hidden_size))
-
+        self._create_weights(input_size, hidden_size, ih_mult=4, hh_mult=4, bias=bias)
+        self.weight_ph = nn.Parameter(torch.empty(3 * hidden_size), **self._factory_kwargs)
         self.init_weights()
 
     def init_weights(self):

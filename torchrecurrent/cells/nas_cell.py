@@ -56,25 +56,19 @@ class NASCell(BaseDoubleRecurrentCell):
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
         recurrent_bias_init: Callable = nn.init.zeros_,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
     ):
 
-        super(NASCell, self).__init__(input_size, hidden_size, bias)
-        self.hidden_size = hidden_size
+        super(NASCell, self).__init__(
+            input_size, hidden_size, bias, device = device, dtype = dtype
+        )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
-        self.bias = bias
 
-        self.weight_ih = nn.Parameter(torch.randn(8 * hidden_size, input_size))
-        self.weight_hh = nn.Parameter(torch.randn(8 * hidden_size, hidden_size))
-        if bias:
-            self.bias_ih = nn.Parameter(torch.randn(8 * hidden_size))
-            self.bias_hh = nn.Parameter(torch.randn(8 * hidden_size))
-        else:
-            self.register_buffer("bias_ih", torch.zeros(8*hidden_size))
-            self.register_buffer("bias_hh", torch.zeros(8*hidden_size))
-
+        self._create_weights(input_size, hidden_size, ih_mult=8, hh_mult=8, bias=bias)
         self.init_weights()
 
     def init_weights(self):

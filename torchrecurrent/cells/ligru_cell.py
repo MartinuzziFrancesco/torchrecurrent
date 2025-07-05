@@ -32,11 +32,13 @@ class LiGRUCell(BaseSingleRecurrentCell):
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_):
-
-        super(LiGRUCell, self).__init__(input_size, hidden_size, bias)
-        #assign variables
-        self.hidden_size = hidden_size
+        recurrent_bias_init: Callable = nn.init.zeros_,
+        device: Optional[torch.device] = None,
+        dtype: Optional[torch.dtype] = None,
+    ):
+        super(LiGRUCell, self).__init__(
+            input_size, hidden_size, bias, device = device, dtype = dtype
+        )
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
         self.kernel_init = kernel_init
@@ -44,15 +46,7 @@ class LiGRUCell(BaseSingleRecurrentCell):
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self.weight_ih = nn.Parameter(torch.empty(2 * hidden_size, input_size))
-        self.weight_hh = nn.Parameter(torch.empty(2 * hidden_size, hidden_size))
-        if self.bias:
-            self.bias_ih = nn.Parameter(torch.empty(2 * hidden_size))
-            self.bias_hh = nn.Parameter(torch.empty(2 * hidden_size))
-        else:
-            self.register_buffer("bias_ih", torch.zeros(2 * hidden_size))
-            self.register_buffer("bias_hh", torch.zeros(2 * hidden_size))
-
+        self._create_weights(input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias)
         self.init_weights()
 
     def init_weights(self):
@@ -75,10 +69,8 @@ class LiGRUCell(BaseSingleRecurrentCell):
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
 
-        gates = (
-            torch.matmul(inp, self.weight_ih.t()) + self.bias_ih +
-            torch.matmul(state, self.weight_hh.t()) + self.bias_hh
-        )
+        gates = inp @ self.weight_ih.t() + self.bias_ih + \
+            state @ self.weight_hh.t() + self.bias_hh
         ug, cg = gates.chunk(2, 1)
 
         update_gate = self.gate_activation_fn(ug)
