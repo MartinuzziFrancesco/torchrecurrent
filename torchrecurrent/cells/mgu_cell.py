@@ -46,7 +46,7 @@ class MGUCell(BaseSingleRecurrentCell):
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._create_weights(input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias)
+        self._default_register_tensors(input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias)
         self.init_weights()
 
     def init_weights(self):

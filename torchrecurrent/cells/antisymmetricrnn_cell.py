@@ -48,7 +48,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         self.epsilon = epsilon
         self.gamma = gamma
 
-        self._create_weights(input_size, hidden_size, ih_mult=1, hh_mult=1, bias=bias)
+        self._default_register_tensors(input_size, hidden_size, bias=bias)
         self.init_weights()
 
     def forward(self,
@@ -112,7 +112,7 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         self.epsilon = epsilon
         self.gamma = gamma
 
-        self._create_weights(input_size, hidden_size, ih_mult=2, hh_mult=1, bias=bias)
+        self._default_register_tensors(input_size, hidden_size, ih_mult=2, hh_mult=1, bias=bias)
         self.init_weights()
 
     def forward(self,

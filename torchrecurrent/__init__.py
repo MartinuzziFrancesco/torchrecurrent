@@ -8,6 +8,7 @@ Top-level imports for all Cells, Layers and Wrappers, alphabetized.
 from .cells import (
     AntisymmetricRNNCell,
     GatedAntisymmetricRNNCell,
+    NBRCell,
     ATRCell,
     IndRNNCell,
     LiGRUCell,
@@ -24,6 +25,7 @@ from .cells import (
     AntisymmetricRNN,
     GatedAntisymmetricRNN,
     ATR,
+    NBR,
     IndRNN,
     LiGRU,
     MGU,

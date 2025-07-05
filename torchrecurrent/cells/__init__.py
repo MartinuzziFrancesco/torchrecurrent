@@ -7,6 +7,7 @@ Collection of RNNCell implementations.
 
 from .antisymmetricrnn_cell import AntisymmetricRNNCell, AntisymmetricRNN, GatedAntisymmetricRNNCell,GatedAntisymmetricRNN
 from .atr_cell import ATRCell, ATR
+from .br_cell import NBR, NBRCell
 from .mgu_cell import MGU, MGUCell
 #from .cornn_cell import coRNN, coRNNCell
 from .indrnn_cell import IndRNN, IndRNNCell

@@ -42,18 +42,13 @@ class RANCell(BaseDoubleRecurrentCell):
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
-        fk = self._factory_kwargs
 
-        self.weight_ih = nn.Parameter(torch.empty(3 * hidden_size, input_size, **fk))
-        self.weight_hh = nn.Parameter(torch.empty(2 * hidden_size, hidden_size, **fk))
-
-        if self.bias:
-            self.bias_ih = nn.Parameter(torch.empty(2 * hidden_size, **fk))
-            self.bias_hh = nn.Parameter(torch.empty(2 * hidden_size, **fk))
-        else:
-            self.register_buffer("bias_ih", torch.zeros(2 * hidden_size, **fk))
-            self.register_buffer("bias_hh", torch.zeros(2 * hidden_size, **fk))
-
+        self._register_tensors({
+            "weight_ih": ((3 * hidden_size, input_size), True),
+            "weight_hh": ((2 * hidden_size, hidden_size), True),
+            "bias_ih": ((2 * hidden_size, ), bias),
+            "bias_hh": ((2 * hidden_size, ), bias),
+        })
         self.init_weights()
 
     def init_weights(self):

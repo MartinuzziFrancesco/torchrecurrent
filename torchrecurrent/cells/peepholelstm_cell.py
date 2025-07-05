@@ -48,8 +48,13 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._create_weights(input_size, hidden_size, ih_mult=4, hh_mult=4, bias=bias)
-        self.weight_ph = nn.Parameter(torch.empty(3 * hidden_size), **self._factory_kwargs)
+        self._register_tensors({
+            "weight_ih": ((4 * hidden_size, input_size), True),
+            "weight_hh": ((4 * hidden_size, hidden_size), True),
+            "bias_ih": ((4 * hidden_size, ), bias),
+            "bias_hh": ((4 * hidden_size, ), bias),
+            "weight_ph": ((3 * hidden_size, ) , True)
+        })
         self.init_weights()
 
     def init_weights(self):

@@ -3,7 +3,7 @@ import warnings
 import torch
 import torch.nn as nn
 from torch import Tensor
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, Dict
 
 
 class BaseRecurrentCell(nn.Module, ABC):
@@ -90,38 +90,58 @@ class BaseRecurrentCell(nn.Module, ABC):
                 f"{cls}: Expected input to be 1D or 2D, got {inp.dim()}D instead"
             )
 
-    def _create_weights(
+    def _register_tensors(
+            self,
+            specs: Dict[str, Tuple[Tuple[int, ...], bool]]
+        ):
+        """
+        Given a dict mapping attribute names to (shape, trainable_flag),
+        create either a Parameter (if trainable_flag=True) or
+        a zero‐buffer otherwise.
+
+        Example specs:
+            {
+            "weight_ih": ((3*H,  I), True),
+            "weight_hh": ((2*H,  H), True),
+            "bias_ih":   ((3*H,   ), bias_flag),
+            "bias_hh":   ((2*H,   ), bias_flag),
+            }
+        """
+        for name, (shape, trainable) in specs.items():
+            if trainable:
+                data = torch.empty(*shape, **self._factory_kwargs)
+                param = nn.Parameter(data)
+                self.register_parameter(name, param)
+            else:
+                buf = torch.zeros(*shape, **self._factory_kwargs)
+                self.register_buffer(name, buf)
+
+    def _default_register_tensors(
         self,
         input_size: int,
         hidden_size: int,
         ih_mult: int = 1,
         hh_mult: int = 1,
         bias: bool = True,
+        prefix_ih: str = "weight_ih",
+        prefix_hh: str = "weight_hh",
+        prefix_bih: str = "bias_ih",
+        prefix_bhh: str = "bias_hh",
     ):
         """
-        Helper to register
-          weight_ih : (ih_mult*hidden_size, input_size)
-          weight_hh : (hh_mult*hidden_size, hidden_size)
-          bias_ih   : (ih_mult*hidden_size,) either Parameter or zero‐buffer
-          bias_hh   : (hh_mult*hidden_size,) either Parameter or zero‐buffer
+        Shorthand for the common 2-weight + 2-bias pattern:
+            * weight_ih  → shape (ih_mult*H,   I)
+            * weight_hh  → shape (hh_mult*H,   H)
+            * bias_ih    → shape (ih_mult*H,   )
+            * bias_hh    → shape (hh_mult*H,   )
         """
-        fk = self._factory_kwargs
-        self.weight_ih = nn.Parameter(
-            torch.empty(ih_mult * hidden_size, input_size, **fk)
-        )
-        self.weight_hh = nn.Parameter(
-            torch.empty(hh_mult * hidden_size, hidden_size, **fk)
-        )
-        if bias:
-            self.bias_ih = nn.Parameter(torch.empty(ih_mult * hidden_size, **fk))
-            self.bias_hh = nn.Parameter(torch.empty(hh_mult * hidden_size, **fk))
-        else:
-            self.register_buffer(
-                "bias_ih", torch.zeros(ih_mult * hidden_size, **fk)
-            )
-            self.register_buffer(
-                "bias_hh", torch.zeros(hh_mult * hidden_size, **fk)
-            )
+        specs = {
+            prefix_ih: ((ih_mult * hidden_size, input_size), True),
+            prefix_hh: ((hh_mult * hidden_size, hidden_size), True),
+            prefix_bih: ((ih_mult * hidden_size, ), bias),
+            prefix_bhh: ((hh_mult * hidden_size, ), bias),
+        }
+        self._register_tensors(specs)
 
     def init_weights(self):
         for name, param in self.named_parameters():

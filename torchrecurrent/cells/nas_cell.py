@@ -68,7 +68,7 @@ class NASCell(BaseDoubleRecurrentCell):
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._create_weights(input_size, hidden_size, ih_mult=8, hh_mult=8, bias=bias)
+        self._default_register_tensors(input_size, hidden_size, ih_mult=8, hh_mult=8, bias=bias)
         self.init_weights()
 
     def init_weights(self):

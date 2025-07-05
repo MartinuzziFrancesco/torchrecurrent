@@ -41,13 +41,11 @@ class IndRNNCell(BaseSingleRecurrentCell):
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
 
-        self.weight_ih = nn.Parameter(torch.empty(hidden_size, input_size))
-        self.vector_u = nn.Parameter(torch.empty(hidden_size))
-        if self.bias:
-            self.bias_ih = nn.Parameter(torch.empty(hidden_size))
-        else:
-            self.register_buffer("bias_ih", torch.zeros(hidden_size))
-
+        self._register_tensors({
+            "weight_ih": ((hidden_size, input_size), True),
+            "vector_u": ((hidden_size, ), True),
+            "bias_ih": ((hidden_size, ), bias),
+        })
         self.init_weights()
 
     def init_weights(self):

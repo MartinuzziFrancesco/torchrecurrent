@@ -5,7 +5,7 @@ from typing import Optional, Callable, Tuple, Union
 from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 
-class LiGRU(BaseSingleRecurrentLayer):
+class NBR(BaseSingleRecurrentLayer):
     def __init__(
         self,
         input_size: int,
@@ -15,20 +15,18 @@ class LiGRU(BaseSingleRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(LiGRU, self).__init__(
+        super(NBR, self).__init__(
             input_size, hidden_size, num_layers, dropout, batch_first
         )
-        self.initialize_cells(LiGRUCell, **kwargs)
+        self.initialize_cells(NBRCell, **kwargs)
 
 
-class LiGRUCell(BaseSingleRecurrentCell):
+class NBRCell(BaseSingleRecurrentCell):
     def __init__(
         self,
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.relu,
-        gate_activation_fn: Callable = torch.sigmoid,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -36,17 +34,15 @@ class LiGRUCell(BaseSingleRecurrentCell):
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(LiGRUCell, self).__init__(
+        super(NBRCell, self).__init__(
             input_size, hidden_size, bias, device = device, dtype = dtype
         )
-        self.activation_fn = activation_fn
-        self.gate_activation_fn = gate_activation_fn
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._default_register_tensors(input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias)
+        self._default_register_tensors(input_size, hidden_size, ih_mult=3, hh_mult=2, bias=bias)
         self.init_weights()
 
     def init_weights(self):
@@ -69,13 +65,17 @@ class LiGRUCell(BaseSingleRecurrentCell):
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
 
-        gates = inp @ self.weight_ih.t() + self.bias_ih + \
-            state @ self.weight_hh.t() + self.bias_hh
-        ug, cg = gates.chunk(2, 1)
+        input_exp = inp @ self.weight_ih.t() + self.bias_ih
+        input_exp_1, input_exp_2, input_exp_3 = input_exp.chunk(3, 1)
+        rec_matrix_1, rec_matrix_2 = self.weight_hh.chunk(2, 0)
+        t_ones = state.new_ones(self.hidden_size)
+        h1 = input_exp_1 + state @ rec_matrix_1.t()
+        h2 = input_exp_2 + state @ rec_matrix_2.t()
+        modulation_gate = t_ones + torch.tanh(h1)
+        candidate_state = torch.sigmoid(h2)
+        h3 = input_exp_3 + modulation_gate * state
 
-        update_gate = self.gate_activation_fn(ug)
-        candidate_state = self.activation_fn(cg)
-        new_state = (1 - update_gate) * candidate_state + update_gate * state
+        new_state = candidate_state * state + (t_ones - candidate_state) * torch.tanh(h3)
 
         if not is_batched:
             new_state = new_state.squeeze(0)

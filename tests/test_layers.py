@@ -5,6 +5,7 @@ from torch import Tensor
 from torchrecurrent import (
     AntisymmetricRNN,
     ATR,
+    NBR,
     GatedAntisymmetricRNN,
     IndRNN,
     LiGRU,
@@ -17,6 +18,7 @@ from torchrecurrent import (
 LAYER_CLASSES = [
     AntisymmetricRNN,
     ATR,
+    NBR,
     GatedAntisymmetricRNN,
     IndRNN,
     LiGRU,
@@ -30,6 +32,7 @@ LAYER_CLASSES = [
 LAYER_CASES = [
     (AntisymmetricRNN,      False),
     (ATR,      False),
+    (NBR,      False),
     (GatedAntisymmetricRNN, False),
     (IndRNN,                False),
     (LiGRU,                 False),

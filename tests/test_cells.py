@@ -4,6 +4,7 @@ from torch import Tensor
 from torchrecurrent import (
     AntisymmetricRNNCell,
     ATRCell,
+    NBRCell,
     GatedAntisymmetricRNNCell,
     MGUCell,
     IndRNNCell,
@@ -18,6 +19,7 @@ CELL_CASES = [
     # (CellClass, input_size, hidden_size, uses_double_state)
     (AntisymmetricRNNCell, 3, 5, False),
     (ATRCell, 3, 5, False),
+    (NBRCell, 3, 5, False),
     (GatedAntisymmetricRNNCell, 3, 5, False),
     (MGUCell, 4, 8, False),
     (IndRNNCell, 3, 5, False),
@@ -81,4 +83,3 @@ def test_cell_gradients(Cell, in_size, hid_size, _):
     # ensure each param got a grad
     for p in params:
         assert p.grad is not None
-
