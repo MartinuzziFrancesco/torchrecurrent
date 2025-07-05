@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple
+from typing import Optional, Callable, Tuple, Union
 from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 
@@ -68,7 +68,9 @@ class LiGRUCell(BaseSingleRecurrentCell):
 
     def forward(self,
         inp:Tensor,
-        state: Optional[Tensor] = None) -> Tensor:
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    ) -> Tensor:
+        state = self._check_state(state)
         self._validate_input(inp)
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)

@@ -1,4 +1,5 @@
 from abc import ABC, abstractmethod
+import warnings
 import torch
 import torch.nn as nn
 from torch import Tensor
@@ -27,18 +28,18 @@ class BaseRecurrentCell(nn.Module, ABC):
         for k, v in sorted(self._extra_args.items()):
             args.append(f"{k}={v}")
         return f"{classname}({', '.join(args)})"
-    
+
     @abstractmethod
     def uses_double_state(self) -> bool:
         """Return True if forward returns (h, c), else just h."""
         raise NotImplementedError
-    
+
     @abstractmethod
     def forward(
         self,
         inp: Tensor,
-        state: Optional[Tuple[Tensor, ...]] = None
-    ) -> Tuple[Tensor, ...]:
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    ) -> Union[Tensor, Tuple[Tensor, ...]]:
         """
         Run one step of the recurrent cell.
 
@@ -46,19 +47,19 @@ class BaseRecurrentCell(nn.Module, ABC):
             inp (Tensor):
                 - shape (input_size,) for a single time-step
                 - or (batch_size, input_size) when batched
-            state (Optional[Tuple[Tensor, ...]]):
-                Previous hidden state(s).  
-                - For single-state cells: Tuple containing one Tensor of shape 
-                  (hidden_size,) or (batch_size, hidden_size).  
+            state (Optional[Union[Tensor, Tuple[Tensor, ...]]]):
+                Previous hidden state(s).
+                - For single-state cells: Tuple containing one Tensor of shape
+                  (hidden_size,) or (batch_size, hidden_size).
                 - For double-state cells: Tuple of two such Tensors (h, c).
 
         Returns:
-            Tuple[Tensor, ...]:
-                - For single-state cells: a 1-tuple `(h_new,)`.  
+            Union[Tensor, Tuple[Tensor, ...]]:
+                - For single-state cells: a 1-tuple `(h_new,)`.
                 - For double-state cells: a 2-tuple `(h_new, c_new)`.
         """
         raise NotImplementedError(f"{self.__class__.__name__}.forward() must be implemented by subclass")
-    
+
     def _init_state(self, inp: Tensor) -> Union[Tensor, Tuple[Tensor, Tensor]]:
         """
         Create the zero‐state for a fresh sequence.
@@ -68,7 +69,7 @@ class BaseRecurrentCell(nn.Module, ABC):
                   so you can infer batch_size, dtype, and device.
 
         Returns:
-            - If uses_double_state() is False: a Tensor of shape 
+            - If uses_double_state() is False: a Tensor of shape
               (batch_size, hidden_size) or (hidden_size,).
             - If uses_double_state() is True: a 2‐tuple of Tensors
               (h0, c0), each of shape (batch_size, hidden_size)
@@ -76,14 +77,14 @@ class BaseRecurrentCell(nn.Module, ABC):
         """
         batch = inp.shape[0] if inp.dim() == 2 else 1
         return torch.zeros(batch, self.hidden_size, device=inp.device, dtype=inp.dtype)
-    
+
     def _validate_input(self, inp: Tensor):
         if inp.dim() not in (1, 2):
             cls = self.__class__.__name__
             raise ValueError(
                 f"{cls}: Expected input to be 1D or 2D, got {inp.dim()}D instead"
             )
-        
+
     def _create_weights(
         self,
         input_size: int,
@@ -130,7 +131,7 @@ class BaseRecurrentCell(nn.Module, ABC):
 class BaseSingleRecurrentCell(BaseRecurrentCell):
     def uses_double_state(self) -> bool:
         return False
-    
+
     def _validate_state(self, state: Optional[Tensor]):
         if state is None:
             return
@@ -144,11 +145,11 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
             raise ValueError(
                 f"{cls}: state must be 1D or 2D, got {state.dim()}D instead"
             )
-    
+
     def _init_state(self, inp: Tensor) -> Tensor:
         batch = inp.shape[0] if inp.dim() == 2 else 1
         return torch.zeros(batch, self.hidden_size, device=inp.device, dtype=inp.dtype)
-    
+
     def _preprocess_input_and_state(
         self,
         inp: Tensor,
@@ -167,17 +168,37 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
             inp = inp.unsqueeze(0)
 
         if state is None:
-            h = self._init_state(inp)
+            state = self._init_state(inp)
         else:
-            h = state if is_batched else state.unsqueeze(0)
+            state = state if is_batched else state.unsqueeze(0)
 
-        return inp, h, is_batched
-    
+        return inp, state, is_batched
+
+    def _check_state(
+        self,
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]]
+    ) -> Optional[Tensor]:
+        """
+        If user passed a tuple to a single‐state cell, warn and pick the first element.
+        Otherwise, return state unmodified.
+        """
+        if isinstance(state, tuple):
+            warnings.warn(
+                f"{self.__class__.__name__}.forward() got a tuple for `state`; "
+                "using only the first tensor as the hidden state.",
+                UserWarning,
+                stacklevel=3
+            )
+            return state[0]
+        return state
+
 class BaseDoubleRecurrentCell(BaseRecurrentCell):
     def uses_double_state(self) -> bool:
         return True
-    
-    def _validate_states(self, states: Optional[Tuple[Tensor, Tensor]]):
+
+    def _validate_states(self,
+        states: Optional[Tuple[Optional[Tensor], Optional[Tensor]]]
+    ):
         if states is None:
             return
         if not (isinstance(states, tuple) and len(states) == 2):
@@ -192,11 +213,11 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
                 raise ValueError(
                     f"{cls}: {name} state must be 1D or 2D, got {t.dim()}D instead"
                 )
-    
+
     def _preprocess_states(
         self,
         inp: Tensor,
-        states: Optional[Tuple[Tensor, Tensor]]
+        states: Optional[Tuple[Optional[Tensor], Optional[Tensor]]] = None
     ) -> Tuple[Tensor, Tensor, Tensor, bool]:
         """
         - Ensures inp is treated as batched
@@ -207,19 +228,56 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
         if not is_batched:
             inp = inp.unsqueeze(0)
 
-        h, c = states or (None, None)
+        state, c_state = states or (None, None)
 
-        if h is None:
-            h = self._init_state(inp)
+        if state is None:
+            state = self._init_state(inp)
         elif not is_batched:
-            h = h.unsqueeze(0)
+            state = state.unsqueeze(0)
 
-        if c is None:
-            c = self._init_state(inp)
+        if c_state is None:
+            c_state = self._init_state(inp)
         elif not is_batched:
-            c = c.unsqueeze(0)
+            c_state = c_state.unsqueeze(0)
 
-        return inp, h, c, is_batched
+        assert isinstance(state, Tensor), "state must be a Tensor here"
+        assert isinstance(c_state, Tensor), "c_state must be a Tensor here"
+
+        return inp, state, c_state, is_batched
+
+    def _check_states(
+        self,
+        states: Optional[Union[Tensor, Tuple[Tensor, ...]]]
+    ) -> Tuple[Optional[Tensor], Optional[Tensor]]:
+        """
+        Sanity‐check the `states` argument for double‐state cells.
+
+        - If `states` is None, return (None, None).
+        - If a single Tensor is passed, warn and treat it as the hidden state (h),
+            with cell‐state (c) initialized to None.
+        - If a tuple of length exactly 2 is passed, unpack to (h, c).
+        - Otherwise (tuple of wrong length), raise an error.
+        """
+        if states is None:
+            return None, None
+
+        if not isinstance(states, tuple):
+            warnings.warn(
+                f"{self.__class__.__name__}.forward() got a single Tensor for `states`; "
+                "treating it as the hidden state and initializing cell‐state to None.",
+                UserWarning,
+                stacklevel=3
+            )
+            return states, None
+
+        if len(states) != 2:
+            raise ValueError(
+                f"{self.__class__.__name__}.forward(): expected 2‐tuple (h, c), "
+                f"got tuple of length {len(states)}"
+            )
+
+        state, c_state = states
+        return state, c_state
 
 
 class BaseRecurrentLayer(nn.Module):
@@ -299,7 +357,7 @@ class BaseSingleRecurrentLayer(BaseRecurrentLayer):
         if self.batch_first:
             out = out.transpose(0, 1)
         return out, state
-    
+
 class BaseDoubleRecurrentLayer(BaseRecurrentLayer):
     """For LSTM‐style cells (hidden *and* cell state per layer)."""
     def forward(

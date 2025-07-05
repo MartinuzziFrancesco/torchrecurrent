@@ -1,6 +1,7 @@
 import torch
+from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Callable
+from typing import Optional, Callable, Union, Tuple
 from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
@@ -75,11 +76,13 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
                 self.recurrent_bias_init(param)
 
     def forward(
-        self, inp: torch.Tensor, states: Optional[tuple[torch.Tensor, torch.Tensor]] = (None, None)
-    ) -> tuple[torch.Tensor, torch.Tensor]:
+        self, inp: Tensor,
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    ) -> Tuple[Tensor, Tensor]:
+        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states(states)
-        inp, state, c_state, is_batched = self._preprocess_states(inp, states)
+        self._validate_states((state, c_state))
+        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
 
         weight_ih_i, weight_ih_f, weight_ih_c, weight_ih_o = self.weight_ih.chunk(4, 0)
         weight_hh_i, weight_hh_f, weight_hh_c, weight_hh_o = self.weight_hh.chunk(4, 0)
@@ -87,43 +90,21 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         bias_ih_i, bias_ih_f, bias_ih_c, bias_ih_o = self.bias_ih.chunk(4, 0)
         bias_hh_i, bias_hh_f, bias_hh_c, bias_hh_o = self.bias_hh.chunk(4, 0)
 
-        # Input and forget gates with peephole connections
-        i = (
-            torch.mm(inp, weight_ih_i.t())
-            + bias_ih_i + torch.mm(state, weight_hh_i.t())
-            + c_state * weight_ph_i + bias_hh_i
-        )
+        i = inp @ weight_ih_i.t() + bias_ih_i + \
+            state @ weight_hh_i.t() + c_state * weight_ph_i + bias_hh_i
         input_gate = self.gate_activation_fn(i)
-
-        f = (
-            torch.mm(inp, weight_ih_f.t())
-            + torch.mm(state, weight_hh_f.t())
-            + c_state * weight_ph_f
-        )
-        if self.bias:
-            f += bias_ih_f + bias_hh_f
+        f = inp @ weight_ih_f.t() + bias_ih_f + \
+            state @ weight_hh_f.t() + bias_hh_f + \
+            c_state * weight_ph_f
         forget_gate = self.gate_activation_fn(f)
-
-        # Cell candidate
-        c_hat = torch.mm(inp, weight_ih_c.t()) + torch.mm(state, weight_hh_c.t())
-        if self.bias:
-            c_hat += bias_ih_c + bias_hh_c
+        c_hat = inp @ weight_ih_c.t() + bias_ih_c + \
+            state @ weight_hh_c.t() + bias_hh_c
         cell_candidate = self.activation_fn(c_hat)
-
-        # Update cell state
         new_c = forget_gate * c_state + input_gate * cell_candidate
-
-        # Output gate with peephole connections
-        o = (
-            torch.mm(inp, weight_ih_o.t())
-            + torch.mm(state, weight_hh_o.t())
+        o = inp @ weight_ih_o.t() + bias_ih_o + \
+            state @ weight_hh_o.t() + bias_hh_o\
             + new_c * weight_ph_o
-        )
-        if self.bias:
-            o += bias_ih_o + bias_hh_o
         output_gate = self.gate_activation_fn(o)
-
-        # Update hidden state
         new_h = output_gate * self.activation_fn(new_c)
 
         if not is_batched:

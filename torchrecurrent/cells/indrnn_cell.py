@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Callable, Optional, Tuple
+from typing import Callable, Optional, Tuple, Union
 from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 
@@ -60,17 +60,17 @@ class IndRNNCell(BaseSingleRecurrentCell):
 
     def forward(self,
         inp: Tensor,
-        state: Optional[Tensor] = None
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
+        state = self._check_state(state)
         self._validate_input(inp)
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
 
-        new_state = torch.matmul(inp, self.weight_ih.t()) + self.vector_u * state + self.bias_ih        
+        new_state = inp @ self.weight_ih.t() + self.vector_u * state + self.bias_ih
         new_state = self.activation_fn(new_state)
 
         if not is_batched:
             new_state = new_state.squeeze(0)
 
         return new_state
-

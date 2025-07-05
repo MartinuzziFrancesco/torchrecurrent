@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple
+from typing import Optional, Callable, Tuple, Union
 from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 class MGU(BaseSingleRecurrentLayer):
@@ -66,7 +66,11 @@ class MGUCell(BaseSingleRecurrentCell):
             elif "bias_hh" in name and self.bias_hh is not None:
                 self.recurrent_bias_init(param)
 
-    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
+    def forward(self,
+        inp: Tensor,
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    ) -> Tensor:
+        state = self._check_state(state)
         self._validate_input(inp)
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
@@ -76,16 +80,12 @@ class MGUCell(BaseSingleRecurrentCell):
         bias_ih_f, bias_ih_h = self.bias_ih.chunk(2, 0)
         bias_hh_f, bias_hh_h = self.bias_hh.chunk(2, 0)
 
-        fg = (
-            torch.mm(inp, weight_ih_f.t()) + bias_ih_f +
-            torch.mm(state, weight_hh_f.t()) + bias_hh_f
-        )
+        fg = inp @ weight_ih_f.t() + bias_ih_f + \
+            state @ weight_hh_f.t() + bias_hh_f
         forget_gate = self.gate_activation_fn(fg)
         hidden_modulated = forget_gate * state
-        ch = (
-            torch.matmul(inp, weight_ih_h.t()) + bias_ih_h +
-            torch.matmul(hidden_modulated, weight_hh_h.t()) + bias_hh_h
-        )
+        ch = inp @ weight_ih_h.t() + bias_ih_h + \
+            hidden_modulated @ weight_hh_h.t() + bias_hh_h
         candidate_hidden = self.activation_fn(ch)
         new_state = forget_gate * candidate_hidden + (1 - forget_gate) * state
 

@@ -25,7 +25,7 @@
 
 import torch
 import torch.nn as nn
-from typing import Optional, Tuple, List, Callable
+from typing import Optional, Tuple, Union, Callable
 from torch import Tensor
 from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
@@ -88,20 +88,17 @@ class NASCell(BaseDoubleRecurrentCell):
             elif "bias_hh" in name and self.bias_ih is not None:
                 self.recurrent_bias_init(param)
 
-    def forward(
-        self, inp: Tensor, states: Optional[Tuple[Tensor, Tensor]] = (None, None)
-    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
+    def forward(self,
+        inp: Tensor,
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    ) -> Tuple[Tensor, Tensor]:
+        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states(states)
-        inp, state, c_state, is_batched = self._preprocess_states(inp, states)
+        self._validate_states((state, c_state))
+        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
 
-        gates = (
-            torch.matmul(inp, self.weight_ih.t())
-            + self.bias_ih
-            + torch.matmul(state, self.weight_hh.t())
-            + self.bias_hh
-        )
-
+        gates = inp @ self.weight_ih.t() + self.bias_ih + \
+            state @ self.weight_hh.t() + self.bias_hh
         g0, g1, g2, g3, g4, g5, g6, g7 = gates.chunk(8, 1)
 
         layer1_0 = torch.sigmoid(g0)
@@ -112,17 +109,13 @@ class NASCell(BaseDoubleRecurrentCell):
         layer1_5 = torch.sigmoid(g5)
         layer1_6 = torch.tanh(g6)
         layer1_7 = torch.sigmoid(g7)
-
         l2_0 = torch.tanh(layer1_0 * layer1_1)
         l2_1 = torch.tanh(layer1_2 + layer1_3)
         l2_2 = torch.tanh(layer1_4 * layer1_5)
         l2_3 = torch.sigmoid(layer1_6 + layer1_7)
-
         l2_0 = torch.tanh(l2_0 + c_state)
-
         new_cstate = l2_0 * l2_1
         l3_1 = torch.tanh(l2_2 + l2_3)
-
         new_state = torch.tanh(new_cstate * l3_1)
 
         if not is_batched:

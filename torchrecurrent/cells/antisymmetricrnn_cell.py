@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Callable, Optional
+from typing import Callable, Optional, Union, Tuple
 from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 
@@ -50,8 +50,9 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
 
     def forward(self,
         inp: Tensor,
-        state: Optional[Tensor] = None
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
+        state = self._check_state(state)
         self._validate_input(inp)
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
@@ -65,7 +66,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
             new_state = new_state.squeeze(0)
 
         return new_state
-    
+
 
 class GatedAntisymmetricRNN(BaseSingleRecurrentLayer):
     def __init__(
@@ -110,8 +111,9 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
 
     def forward(self,
         inp: Tensor,
-        state: Optional[Tensor] = None
+        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
+        state = self._check_state(state)
         self._validate_input(inp)
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
@@ -127,7 +129,7 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
             new_state = new_state.squeeze(0)
 
         return new_state
-    
+
 
 def _compute_asym(weight_hh: Tensor, gamma: float) -> Tensor:
     if weight_hh.dim() != 2 or weight_hh.size(0) != weight_hh.size(1):
