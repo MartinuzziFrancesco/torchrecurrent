@@ -49,3 +49,14 @@ Provides recurrent layers for Flux.jl in Julia.
 [ReservoirComputing.jl](https://github.com/SciML/ReservoirComputing.jl):
 Reservoir computing utilities for scientific machine learning.
 Essentially gradient free trained recurrent neural networks.
+
+## License
+
+This project’s own code is distributed under the MIT License (see [LICENSE](LICENSE)). The primary intent of this software is academic research.
+
+### Third-party Attributions
+
+Some cells are re-implementations of published methods that carry their own licenses:
+- **NASCell**: originally available under Apache 2.0 — see [LICENSE-Apache2.0.txt](licenses/Apache2.0.txt).
+
+Please consult each of those licenses for your obligations when using this code in commercial or closed-source settings.
