@@ -1,0 +1,87 @@
+﻿torchrecurrent.ATRCell
+======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: ATRCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ATRCell.__init__
+      ~ATRCell.add_module
+      ~ATRCell.apply
+      ~ATRCell.bfloat16
+      ~ATRCell.buffers
+      ~ATRCell.children
+      ~ATRCell.compile
+      ~ATRCell.cpu
+      ~ATRCell.cuda
+      ~ATRCell.double
+      ~ATRCell.eval
+      ~ATRCell.extra_repr
+      ~ATRCell.float
+      ~ATRCell.forward
+      ~ATRCell.get_buffer
+      ~ATRCell.get_extra_state
+      ~ATRCell.get_parameter
+      ~ATRCell.get_submodule
+      ~ATRCell.half
+      ~ATRCell.init_weights
+      ~ATRCell.ipu
+      ~ATRCell.load_state_dict
+      ~ATRCell.modules
+      ~ATRCell.mtia
+      ~ATRCell.named_buffers
+      ~ATRCell.named_children
+      ~ATRCell.named_modules
+      ~ATRCell.named_parameters
+      ~ATRCell.parameters
+      ~ATRCell.register_backward_hook
+      ~ATRCell.register_buffer
+      ~ATRCell.register_forward_hook
+      ~ATRCell.register_forward_pre_hook
+      ~ATRCell.register_full_backward_hook
+      ~ATRCell.register_full_backward_pre_hook
+      ~ATRCell.register_load_state_dict_post_hook
+      ~ATRCell.register_load_state_dict_pre_hook
+      ~ATRCell.register_module
+      ~ATRCell.register_parameter
+      ~ATRCell.register_state_dict_post_hook
+      ~ATRCell.register_state_dict_pre_hook
+      ~ATRCell.requires_grad_
+      ~ATRCell.set_extra_state
+      ~ATRCell.set_submodule
+      ~ATRCell.share_memory
+      ~ATRCell.state_dict
+      ~ATRCell.to
+      ~ATRCell.to_empty
+      ~ATRCell.train
+      ~ATRCell.type
+      ~ATRCell.uses_double_state
+      ~ATRCell.xpu
+      ~ATRCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ATRCell.T_destination
+      ~ATRCell.call_super_init
+      ~ATRCell.dump_patches
+      ~ATRCell.weight_ih
+      ~ATRCell.weight_hh
+      ~ATRCell.bias_ih
+      ~ATRCell.bias_hh
+      ~ATRCell.training
+   
+   

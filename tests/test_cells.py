@@ -5,6 +5,11 @@ from torchrecurrent import (
     AntisymmetricRNNCell,
     ATRCell,
     NBRCell,
+    BRCell,
+    CFNCell,
+    coRNNCell,
+    FastRNNCell,
+    FastGRNNCell,
     GatedAntisymmetricRNNCell,
     MGUCell,
     IndRNNCell,
@@ -20,6 +25,11 @@ CELL_CASES = [
     (AntisymmetricRNNCell, 3, 5, False),
     (ATRCell, 3, 5, False),
     (NBRCell, 3, 5, False),
+    (BRCell, 3, 5, False),
+    (CFNCell, 3, 5, False),
+    (coRNNCell, 3, 5, True),
+    (FastRNNCell, 3, 5, False),
+    (FastGRNNCell, 3, 5, False),
     (GatedAntisymmetricRNNCell, 3, 5, False),
     (MGUCell, 4, 8, False),
     (IndRNNCell, 3, 5, False),
@@ -27,7 +37,6 @@ CELL_CASES = [
     (NASCell, 7, 7, True),
     (PeepholeLSTMCell, 5, 10, True),
     (RANCell, 4, 9, True),
-    #(coRNNCell, 3, 5, True)
     #(SCRNCell,        8, 16,  False),
 ]
 

@@ -22,6 +22,101 @@ class PeepholeLSTM(BaseDoubleRecurrentLayer):
 
 
 class PeepholeLSTMCell(BaseDoubleRecurrentCell):
+    r"""A Peephole LSTM cell with learnable peephole connections.
+
+    This LSTM variant adds element-wise “peephole” terms from the cell state
+    into the input, forget, and output gates.
+
+    .. math::
+
+        \mathbf{z}(t) &= \tanh\Bigl(
+            \mathbf{W}_{ih}^{z}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{z}
+            + \mathbf{W}_{hh}^{z}\,\mathbf{h}(t-1)
+            + \mathbf{b}_{hh}^{z}
+        \Bigr), \\[6pt]
+        \mathbf{i}(t) &= \sigma\Bigl(
+            \mathbf{W}_{ih}^{i}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{i}
+            + \mathbf{W}_{hh}^{i}\,\mathbf{h}(t-1)
+            + \mathbf{b}_{hh}^{i}
+            + \mathbf{p}^{i}\circ\mathbf{c}(t-1)
+        \Bigr), \\[6pt]
+        \mathbf{f}(t) &= \sigma\Bigl(
+            \mathbf{W}_{ih}^{f}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{f}
+            + \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1)
+            + \mathbf{b}_{hh}^{f}
+            + \mathbf{p}^{f}\circ\mathbf{c}(t-1)
+        \Bigr), \\[6pt]
+        \mathbf{c}(t) &= \mathbf{f}(t)\,\circ\,\mathbf{c}(t-1)
+            \;+\;\mathbf{i}(t)\,\circ\,\mathbf{z}(t), \\[6pt]
+        \mathbf{o}(t) &= \sigma\Bigl(
+            \mathbf{W}_{ih}^{o}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{o}
+            + \mathbf{W}_{hh}^{o}\,\mathbf{h}(t-1)
+            + \mathbf{b}_{hh}^{o}
+            + \mathbf{p}^{o}\circ\mathbf{c}(t)
+        \Bigr), \\[6pt]
+        \mathbf{h}(t) &= \mathbf{o}(t)\,\circ\,\tanh\bigl(\mathbf{c}(t)\bigr)
+
+
+    Args:
+        input_size (int):   Number of input features :math:`\dim(\mathbf{x}(t))`.
+        hidden_size (int):  Number of hidden units :math:`\dim(\mathbf{h}(t))`.
+        bias (bool, optional): If ``False``, disables all biases
+            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        activation_fn (Callable, optional): Activation for the cell candidate
+            :math:`\mathbf{z}`. Default: ``torch.tanh``.
+        gate_activation_fn (Callable, optional): Activation for input/forget/output gates.
+            Default: ``torch.sigmoid``.
+        kernel_init (Callable, optional): Initializer for input-to-hidden weights
+            :math:`\mathbf{W}_{ih}`. Default: ``nn.init.xavier_uniform_``.
+        recurrent_kernel_init (Callable, optional): Initializer for hidden-to-hidden weights
+            :math:`\mathbf{W}_{hh}`. Default: ``nn.init.xavier_uniform_``.
+        peephole_kernel_init (Callable, optional): Initializer for peephole weights
+            :math:`\mathbf{p}`. Default: ``nn.init.normal_``.
+        bias_init (Callable, optional): Initializer for input biases
+            :math:`\mathbf{b}_{ih}` when `bias=True`. Default: ``nn.init.zeros_``.
+        recurrent_bias_init (Callable, optional): Initializer for hidden biases
+            :math:`\mathbf{b}_{hh}` when `bias=True`. Default: ``nn.init.zeros_``.
+        device (torch.device, optional): Device of the parameters. Default: CPU.
+        dtype (torch.dtype, optional): Data type of the parameters. Default: PyTorch float.
+
+    Inputs: input, (h, c)
+        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
+        - **h**, **c** (Tensor): previous hidden and cell states of shape
+            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`. If not provided,
+            both default to zero.
+
+    Outputs: h’, c’
+        - **h’**, **c’** (Tensor): next hidden and cell states, same shapes as inputs.
+
+    Shape:
+        - input: :math:`(N, H_{\mathrm{in}})` or :math:`(H_{\mathrm{in}})`.
+        - h, c:   :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
+        - output: same as **h** and **c**.
+
+    Attributes:
+        weight_ih (Tensor): input‐to‐hidden weights, shape `(4*H, I)`.
+        weight_hh (Tensor): hidden‐to‐hidden weights, shape `(4*H, H)`.
+        weight_ph (Tensor): peephole weights, shape `(3*H,)` for i, f, o.
+        bias_ih (Tensor): input biases, shape `(4*H,)` if `bias=True`.
+        bias_hh (Tensor): hidden biases, shape `(4*H,)` if `bias=True`.
+
+    Examples::
+        >>> cell = PeepholeLSTMCell(10, 20)
+        >>> x = torch.randn(5, 10)
+        >>> h, c = torch.zeros(20), torch.zeros(20)
+        >>> for t in range(x.size(0)):
+        ...     h, c = cell(x[t], (h, c))
+    """
+    weight_ih: Tensor
+    weight_hh: Tensor
+    weight_ph: Tensor
+    bias_ih: Tensor
+    bias_hh: Tensor
+
     def __init__(
         self,
         input_size: int,
@@ -51,9 +146,9 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         self._register_tensors({
             "weight_ih": ((4 * hidden_size, input_size), True),
             "weight_hh": ((4 * hidden_size, hidden_size), True),
+            "weight_ph": ((3 * hidden_size, ) , True),
             "bias_ih": ((4 * hidden_size, ), bias),
             "bias_hh": ((4 * hidden_size, ), bias),
-            "weight_ph": ((3 * hidden_size, ) , True)
         })
         self.init_weights()
 
@@ -65,9 +160,9 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
                 self.recurrent_kernel_init(param)
             elif "weight_ph" in name:
                 self.peephole_kernel_init(param)
-            elif "bias_ih" in name and self.bias_ih is not None:
+            elif "bias_ih" in name:
                 self.bias_init(param)
-            elif "bias_hh" in name and self.bias_hh is not None:
+            elif "bias_hh" in name:
                 self.recurrent_bias_init(param)
 
     def forward(

@@ -22,6 +22,71 @@ class IndRNN(BaseSingleRecurrentLayer):
 
 
 class IndRNNCell(BaseSingleRecurrentCell):
+    r"""An Independently Recurrent Neural Network (IndRNN) cell.
+
+    In an IndRNN, each hidden unit has its own scalar recurrent weight,
+    enabling deep stacking without gradient vanishing/exploding.
+
+    .. math::
+
+        \mathbf{h}(t) = \phi\bigl(\mathbf{W}_{ih}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}
+            + \mathbf{w}_{hh}\,\circ\,\mathbf{h}(t-1)\bigr)
+
+    where :math:`\circ` denotes element‐wise (Hadamard) product and
+    :math:`\phi` is a pointwise nonlinearity (e.g. `tanh`).
+
+    Args:
+        input_size (int): size of each input vector :math:`\mathbf{x}(t)`.
+        hidden_size (int): size of the hidden state :math:`\mathbf{h}(t)`.
+        bias (bool, optional): if ``False``, disables bias :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        activation_fn (Callable, optional): activation function :math:`\phi`.
+            Default: ``torch.tanh``.
+        kernel_init (Callable, optional): initializer for :math:`\mathbf{W}_{ih}`.
+            Default: ``nn.init.xavier_uniform_``.
+        recurrent_kernel_init (Callable, optional): initializer for the vector
+            :math:`\mathbf{w}_{hh}`. Default: ``nn.init.normal_``.
+        bias_init (Callable, optional): initializer for :math:`\mathbf{b}_{ih}`
+            when `bias=True`. Default: ``nn.init.zeros_``.
+        device (torch.device, optional): device of the parameters.
+            Default: CPU.
+        dtype (torch.dtype, optional): data type of the parameters.
+            Default: PyTorch default float.
+
+    Inputs: input, hidden
+        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
+        - **hidden** (Tensor, optional): previous hidden state of shape
+            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
+            Defaults to zero if not provided.
+
+    Outputs: h’
+        - **h’** (Tensor): next hidden state, same shape as **hidden**.
+
+    Shape:
+        - input: :math:`(N, H_{\text{in}})` or :math:`(H_{\text{in}})`.
+        - hidden: :math:`(N, H_{\text{out}})` or :math:`(H_{\text{out}})`.
+        - output: :math:`(N, H_{\text{out}})` or :math:`(H_{\text{out}})`.
+
+    Attributes:
+        weight_ih (Tensor): input‐to‐hidden weights, shape `(hidden_size, input_size)`.
+        vector_u (Tensor): hidden recurrence vector, shape `(hidden_size,)`.
+        bias_ih (Tensor): input bias, shape `(hidden_size,)` if `bias=True`.
+
+    Examples::
+        >>> cell = IndRNNCell(10, 20)
+        >>> x = torch.randn(5, 10)
+        >>> h0 = torch.zeros(20)
+        >>> hx = h0
+        >>> outputs = []
+        >>> for t in range(x.size(0)):
+        ...     hx = cell(x[t], hx)
+        ...     outputs.append(hx)
+    """
+    weight_ih: Tensor
+    vector_u: Tensor
+    bias_ih: Tensor
+
     def __init__(self,
         input_size: int,
         hidden_size: int,

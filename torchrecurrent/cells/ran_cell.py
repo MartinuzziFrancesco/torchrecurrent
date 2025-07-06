@@ -22,6 +22,86 @@ class RAN(BaseDoubleRecurrentLayer):
 
 
 class RANCell(BaseDoubleRecurrentCell):
+    r"""A Recurrent Additive Network (RAN) cell.
+
+    Implements the RAN update from
+    “Recurrent Additive Networks” <https://arxiv.org/pdf/1705.07393>_.
+
+    .. math::
+
+        \begin{aligned}
+          \tilde{\mathbf{c}}(t) &= \mathbf{W}_{ih}^{c}\,\mathbf{x}(t)
+             + \mathbf{b}_{ih}^{c}, \\
+          \mathbf{i}(t) &= \sigma\bigl(
+             \mathbf{W}_{ih}^{i}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{i}
+             + \mathbf{W}_{hh}^{i}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{i}
+          \bigr), \\
+          \mathbf{f}(t) &= \sigma\bigl(
+             \mathbf{W}_{ih}^{f}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{f}
+             + \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{f}
+          \bigr), \\
+          \mathbf{c}(t) &= \mathbf{i}(t)\circ\tilde{\mathbf{c}}(t)
+             + \mathbf{f}(t)\circ\mathbf{c}(t-1), \\
+          \mathbf{h}(t) &= \tanh\bigl(\mathbf{c}(t)\bigr)
+        \end{aligned}
+
+    where :math:`\circ` denotes element‐wise multiplication and :math:`\sigma`
+    is the sigmoid function.
+
+    Args:
+        input_size (int): Number of expected features in the input `inp`.
+        hidden_size (int): Number of features in the hidden/cell states.
+        bias (bool): If False, the cell does not use bias terms.
+                     Default: True.
+        kernel_init (Callable): Initializer for input‐to‐hidden weights
+                                (default: `nn.init.xavier_uniform_`).
+        recurrent_kernel_init (Callable):
+                                Initializer for hidden‐to‐hidden weights
+                                (default: `nn.init.xavier_uniform_`).
+        bias_init (Callable): Initializer for input biases
+                              (default: `nn.init.zeros_`).
+        recurrent_bias_init (Callable):
+                                Initializer for hidden biases
+                                (default: `nn.init.zeros_`).
+        device (torch.device, optional): Device for parameters.
+        dtype (torch.dtype, optional): Data type for parameters.
+
+    Inputs:
+        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`.
+        - **state** (Tuple[Tensor, Tensor], optional):
+          Previous `(h, c)` each of shape `(batch, hidden_size)` or
+          `(hidden_size,)`. If not provided, defaults to zeros.
+
+    Outputs:
+        - **new_h** (Tensor): Next hidden state, same shape as `h`.
+        - **new_c** (Tensor): Next cell state, same shape as `c`.
+
+    Attributes:
+        weight_ih (Tensor): Input‐to‐hidden weights for content, input &
+                            forget gates, shape `(3*hidden_size, input_size)`.
+        weight_hh (Tensor): Hidden‐to‐hidden weights for input & forget gates,
+                            shape `(2*hidden_size, hidden_size)`.
+        bias_ih   (Tensor): Input biases for input & forget gates,
+                            shape `(2*hidden_size,)`.
+        bias_hh   (Tensor): Hidden biases for input & forget gates,
+                            shape `(2*hidden_size,)`.
+
+    .. note::
+        RANs omit a separate output gate, applying a simple `tanh` to the
+        updated cell state to produce the hidden state.
+
+    Examples::
+        >>> cell = RANCell(16, 32)
+        >>> x = torch.randn(5, 16)           # batch=5, input_size=16
+        >>> h0 = torch.zeros(5, 32)          # batch=5, hidden_size=32
+        >>> c0 = torch.zeros(5, 32)
+        >>> h1, c1 = cell(x, (h0, c0))
+    """
+    weight_ih: Tensor
+    weight_hh: Tensor
+    bias_ih: Tensor
+    bias_hh: Tensor
+
     def __init__(
         self,
         input_size,
@@ -50,17 +130,6 @@ class RANCell(BaseDoubleRecurrentCell):
             "bias_hh": ((2 * hidden_size, ), bias),
         })
         self.init_weights()
-
-    def init_weights(self):
-        for name, param in self.named_parameters():
-            if "weight_ih" in name:
-                self.kernel_init(param)
-            elif "weight_hh" in name:
-                self.recurrent_kernel_init(param)
-            elif "bias_ih" in name:
-                self.bias_init(param)
-            elif "bias_hh" in name:
-                self.recurrent_bias_init(param)
 
     def forward(self,
         inp: Tensor,

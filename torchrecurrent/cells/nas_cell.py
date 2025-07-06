@@ -47,6 +47,82 @@ class NAS(BaseDoubleRecurrentLayer):
 
 
 class NASCell(BaseDoubleRecurrentCell):
+    r"""A Neural Architecture Search (NAS) cell.
+
+    This cell was discovered by architecture search and applies eight parallel
+    gates to input and hidden projections, then composes them through two
+    “layer” computations to update both cell and hidden states:
+
+    .. math::
+
+        \mathbf{g}(t)
+            &= \mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}
+            + \mathbf{W}_{hh}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}, \\[6pt]
+        [g_0,\dots,g_7] &= \mathrm{chunk}_8\bigl(\mathbf{g}(t)\bigr), \\[6pt]
+        o_k(t) &=
+            \begin{cases}
+                \sigma(g_k), & k\in\{0,2,5,7\},\\
+                \mathrm{ReLU}(g_k), & k\in\{1,3\},\\
+                \tanh(g_k), & k\in\{4,6\},
+            \end{cases} \\[6pt]
+        \ell_1(t) &= \tanh\bigl(o_0\,\circ\,o_1\bigr),\quad
+        \ell_2(t) = \tanh\bigl(o_2 + o_3\bigr), \\[3pt]
+        \ell_3(t) &= \tanh\bigl(o_4\,\circ\,o_5\bigr),\quad
+        \ell_4(t) = \sigma\bigl(o_6 + o_7\bigr), \\[6pt]
+        \tilde{c}(t) &= \tanh\bigl(\ell_1 + c(t-1)\bigr),\quad
+        c(t) = \ell_1\,\circ\,\ell_2, \\[3pt]
+        \ell_5(t) &= \tanh\bigl(\ell_3 + \ell_4\bigr),\quad
+        h(t) = \tanh\bigl(c(t)\,\circ\,\ell_5(t)\bigr).
+
+    Args:
+        input_size (int):   Dimensionality of input vector :math:`\mathbf{x}(t)`.
+        hidden_size (int):  Number of hidden units :math:`\mathbf{h}(t)`.
+        bias (bool, optional): If False, disables both input and hidden biases.
+            Default: True.
+        kernel_init (Callable, optional): Initializer for input‐to‐hidden weights
+            :math:`\mathbf{W}_{ih}`. Default: `nn.init.xavier_uniform_`.
+        recurrent_kernel_init (Callable, optional): Initializer for hidden‐to‐hidden
+            weights :math:`\mathbf{W}_{hh}`. Default: `nn.init.xavier_uniform_`.
+        bias_init (Callable, optional): Initializer for input biases
+            :math:`\mathbf{b}_{ih}`. Default: `nn.init.zeros_`.
+        recurrent_bias_init (Callable, optional): Initializer for hidden biases
+            :math:`\mathbf{b}_{hh}`. Default: `nn.init.zeros_`.
+        device (torch.device, optional): Device for all tensors. Default: CPU.
+        dtype (torch.dtype, optional): Dtype for all tensors. Default: float32.
+
+    Inputs: input, (h, c)
+        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
+        - **h**, **c** (Tensor): previous hidden & cell; each of shape
+            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
+            Defaults to zeros if not provided.
+
+    Outputs: (h, c)
+        - **h** (Tensor): next hidden state, same shape as inputs.
+        - **c** (Tensor): next cell state, same shape as inputs.
+
+    Shape:
+        - input: :math:`(N, H_{\mathrm{in}})` or :math:`(H_{\mathrm{in}})`.
+        - h, c:   :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
+        - output: same as **h** and **c**.
+
+    Attributes:
+        weight_ih (Tensor): input‐to‐hidden weights of shape `(8*H, I)`.
+        weight_hh (Tensor): hidden‐to‐hidden weights of shape `(8*H, H)`.
+        bias_ih   (Tensor): input biases of shape `(8*H,)` if `bias=True`.
+        bias_hh   (Tensor): hidden biases of shape `(8*H,)` if `bias=True`.
+
+    Examples::
+        >>> cell = NASCell(10, 20)
+        >>> x = torch.randn(5, 10)
+        >>> h, c = torch.zeros(20), torch.zeros(20)
+        >>> for t in range(x.size(0)):
+        ...     h, c = cell(x[t], (h, c))
+    """
+    weight_ih: Tensor
+    weight_hh: Tensor
+    bias_ih: Tensor
+    bias_hh: Tensor
+
     def __init__(
         self,
         input_size: int,
@@ -70,17 +146,6 @@ class NASCell(BaseDoubleRecurrentCell):
 
         self._default_register_tensors(input_size, hidden_size, ih_mult=8, hh_mult=8, bias=bias)
         self.init_weights()
-
-    def init_weights(self):
-        for name, param in self.named_parameters():
-            if "weight_ih" in name:
-                self.kernel_init(param)
-            elif "weight_hh" in name:
-                self.recurrent_kernel_init(param)
-            elif "bias_ih" in name and self.bias_ih is not None:
-                self.bias_init(param)
-            elif "bias_hh" in name and self.bias_ih is not None:
-                self.recurrent_bias_init(param)
 
     def forward(self,
         inp: Tensor,

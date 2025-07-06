@@ -1,0 +1,87 @@
+﻿torchrecurrent.GatedAntisymmetricRNNCell
+========================================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: GatedAntisymmetricRNNCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~GatedAntisymmetricRNNCell.__init__
+      ~GatedAntisymmetricRNNCell.add_module
+      ~GatedAntisymmetricRNNCell.apply
+      ~GatedAntisymmetricRNNCell.bfloat16
+      ~GatedAntisymmetricRNNCell.buffers
+      ~GatedAntisymmetricRNNCell.children
+      ~GatedAntisymmetricRNNCell.compile
+      ~GatedAntisymmetricRNNCell.cpu
+      ~GatedAntisymmetricRNNCell.cuda
+      ~GatedAntisymmetricRNNCell.double
+      ~GatedAntisymmetricRNNCell.eval
+      ~GatedAntisymmetricRNNCell.extra_repr
+      ~GatedAntisymmetricRNNCell.float
+      ~GatedAntisymmetricRNNCell.forward
+      ~GatedAntisymmetricRNNCell.get_buffer
+      ~GatedAntisymmetricRNNCell.get_extra_state
+      ~GatedAntisymmetricRNNCell.get_parameter
+      ~GatedAntisymmetricRNNCell.get_submodule
+      ~GatedAntisymmetricRNNCell.half
+      ~GatedAntisymmetricRNNCell.init_weights
+      ~GatedAntisymmetricRNNCell.ipu
+      ~GatedAntisymmetricRNNCell.load_state_dict
+      ~GatedAntisymmetricRNNCell.modules
+      ~GatedAntisymmetricRNNCell.mtia
+      ~GatedAntisymmetricRNNCell.named_buffers
+      ~GatedAntisymmetricRNNCell.named_children
+      ~GatedAntisymmetricRNNCell.named_modules
+      ~GatedAntisymmetricRNNCell.named_parameters
+      ~GatedAntisymmetricRNNCell.parameters
+      ~GatedAntisymmetricRNNCell.register_backward_hook
+      ~GatedAntisymmetricRNNCell.register_buffer
+      ~GatedAntisymmetricRNNCell.register_forward_hook
+      ~GatedAntisymmetricRNNCell.register_forward_pre_hook
+      ~GatedAntisymmetricRNNCell.register_full_backward_hook
+      ~GatedAntisymmetricRNNCell.register_full_backward_pre_hook
+      ~GatedAntisymmetricRNNCell.register_load_state_dict_post_hook
+      ~GatedAntisymmetricRNNCell.register_load_state_dict_pre_hook
+      ~GatedAntisymmetricRNNCell.register_module
+      ~GatedAntisymmetricRNNCell.register_parameter
+      ~GatedAntisymmetricRNNCell.register_state_dict_post_hook
+      ~GatedAntisymmetricRNNCell.register_state_dict_pre_hook
+      ~GatedAntisymmetricRNNCell.requires_grad_
+      ~GatedAntisymmetricRNNCell.set_extra_state
+      ~GatedAntisymmetricRNNCell.set_submodule
+      ~GatedAntisymmetricRNNCell.share_memory
+      ~GatedAntisymmetricRNNCell.state_dict
+      ~GatedAntisymmetricRNNCell.to
+      ~GatedAntisymmetricRNNCell.to_empty
+      ~GatedAntisymmetricRNNCell.train
+      ~GatedAntisymmetricRNNCell.type
+      ~GatedAntisymmetricRNNCell.uses_double_state
+      ~GatedAntisymmetricRNNCell.xpu
+      ~GatedAntisymmetricRNNCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~GatedAntisymmetricRNNCell.T_destination
+      ~GatedAntisymmetricRNNCell.call_super_init
+      ~GatedAntisymmetricRNNCell.dump_patches
+      ~GatedAntisymmetricRNNCell.weight_ih
+      ~GatedAntisymmetricRNNCell.weight_hh
+      ~GatedAntisymmetricRNNCell.bias_ih
+      ~GatedAntisymmetricRNNCell.bias_hh
+      ~GatedAntisymmetricRNNCell.training
+   
+   

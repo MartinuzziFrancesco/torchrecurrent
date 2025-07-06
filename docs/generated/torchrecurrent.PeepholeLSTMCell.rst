@@ -1,0 +1,88 @@
+﻿torchrecurrent.PeepholeLSTMCell
+===============================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: PeepholeLSTMCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PeepholeLSTMCell.__init__
+      ~PeepholeLSTMCell.add_module
+      ~PeepholeLSTMCell.apply
+      ~PeepholeLSTMCell.bfloat16
+      ~PeepholeLSTMCell.buffers
+      ~PeepholeLSTMCell.children
+      ~PeepholeLSTMCell.compile
+      ~PeepholeLSTMCell.cpu
+      ~PeepholeLSTMCell.cuda
+      ~PeepholeLSTMCell.double
+      ~PeepholeLSTMCell.eval
+      ~PeepholeLSTMCell.extra_repr
+      ~PeepholeLSTMCell.float
+      ~PeepholeLSTMCell.forward
+      ~PeepholeLSTMCell.get_buffer
+      ~PeepholeLSTMCell.get_extra_state
+      ~PeepholeLSTMCell.get_parameter
+      ~PeepholeLSTMCell.get_submodule
+      ~PeepholeLSTMCell.half
+      ~PeepholeLSTMCell.init_weights
+      ~PeepholeLSTMCell.ipu
+      ~PeepholeLSTMCell.load_state_dict
+      ~PeepholeLSTMCell.modules
+      ~PeepholeLSTMCell.mtia
+      ~PeepholeLSTMCell.named_buffers
+      ~PeepholeLSTMCell.named_children
+      ~PeepholeLSTMCell.named_modules
+      ~PeepholeLSTMCell.named_parameters
+      ~PeepholeLSTMCell.parameters
+      ~PeepholeLSTMCell.register_backward_hook
+      ~PeepholeLSTMCell.register_buffer
+      ~PeepholeLSTMCell.register_forward_hook
+      ~PeepholeLSTMCell.register_forward_pre_hook
+      ~PeepholeLSTMCell.register_full_backward_hook
+      ~PeepholeLSTMCell.register_full_backward_pre_hook
+      ~PeepholeLSTMCell.register_load_state_dict_post_hook
+      ~PeepholeLSTMCell.register_load_state_dict_pre_hook
+      ~PeepholeLSTMCell.register_module
+      ~PeepholeLSTMCell.register_parameter
+      ~PeepholeLSTMCell.register_state_dict_post_hook
+      ~PeepholeLSTMCell.register_state_dict_pre_hook
+      ~PeepholeLSTMCell.requires_grad_
+      ~PeepholeLSTMCell.set_extra_state
+      ~PeepholeLSTMCell.set_submodule
+      ~PeepholeLSTMCell.share_memory
+      ~PeepholeLSTMCell.state_dict
+      ~PeepholeLSTMCell.to
+      ~PeepholeLSTMCell.to_empty
+      ~PeepholeLSTMCell.train
+      ~PeepholeLSTMCell.type
+      ~PeepholeLSTMCell.uses_double_state
+      ~PeepholeLSTMCell.xpu
+      ~PeepholeLSTMCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PeepholeLSTMCell.T_destination
+      ~PeepholeLSTMCell.call_super_init
+      ~PeepholeLSTMCell.dump_patches
+      ~PeepholeLSTMCell.weight_ih
+      ~PeepholeLSTMCell.weight_hh
+      ~PeepholeLSTMCell.weight_ph
+      ~PeepholeLSTMCell.bias_ih
+      ~PeepholeLSTMCell.bias_hh
+      ~PeepholeLSTMCell.training
+   
+   

@@ -1,0 +1,90 @@
+﻿torchrecurrent.FastGRNNCell
+===========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: FastGRNNCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FastGRNNCell.__init__
+      ~FastGRNNCell.add_module
+      ~FastGRNNCell.apply
+      ~FastGRNNCell.bfloat16
+      ~FastGRNNCell.buffers
+      ~FastGRNNCell.children
+      ~FastGRNNCell.compile
+      ~FastGRNNCell.cpu
+      ~FastGRNNCell.cuda
+      ~FastGRNNCell.double
+      ~FastGRNNCell.eval
+      ~FastGRNNCell.extra_repr
+      ~FastGRNNCell.float
+      ~FastGRNNCell.forward
+      ~FastGRNNCell.get_buffer
+      ~FastGRNNCell.get_extra_state
+      ~FastGRNNCell.get_parameter
+      ~FastGRNNCell.get_submodule
+      ~FastGRNNCell.half
+      ~FastGRNNCell.init_weights
+      ~FastGRNNCell.ipu
+      ~FastGRNNCell.load_state_dict
+      ~FastGRNNCell.modules
+      ~FastGRNNCell.mtia
+      ~FastGRNNCell.named_buffers
+      ~FastGRNNCell.named_children
+      ~FastGRNNCell.named_modules
+      ~FastGRNNCell.named_parameters
+      ~FastGRNNCell.parameters
+      ~FastGRNNCell.register_backward_hook
+      ~FastGRNNCell.register_buffer
+      ~FastGRNNCell.register_forward_hook
+      ~FastGRNNCell.register_forward_pre_hook
+      ~FastGRNNCell.register_full_backward_hook
+      ~FastGRNNCell.register_full_backward_pre_hook
+      ~FastGRNNCell.register_load_state_dict_post_hook
+      ~FastGRNNCell.register_load_state_dict_pre_hook
+      ~FastGRNNCell.register_module
+      ~FastGRNNCell.register_parameter
+      ~FastGRNNCell.register_state_dict_post_hook
+      ~FastGRNNCell.register_state_dict_pre_hook
+      ~FastGRNNCell.requires_grad_
+      ~FastGRNNCell.set_extra_state
+      ~FastGRNNCell.set_submodule
+      ~FastGRNNCell.share_memory
+      ~FastGRNNCell.state_dict
+      ~FastGRNNCell.to
+      ~FastGRNNCell.to_empty
+      ~FastGRNNCell.train
+      ~FastGRNNCell.type
+      ~FastGRNNCell.uses_double_state
+      ~FastGRNNCell.xpu
+      ~FastGRNNCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FastGRNNCell.T_destination
+      ~FastGRNNCell.call_super_init
+      ~FastGRNNCell.dump_patches
+      ~FastGRNNCell.weight_ih
+      ~FastGRNNCell.weight_hh
+      ~FastGRNNCell.bias_ih
+      ~FastGRNNCell.bias_hh
+      ~FastGRNNCell.zeta
+      ~FastGRNNCell.nu
+      ~FastGRNNCell.t_ones
+      ~FastGRNNCell.training
+   
+   
