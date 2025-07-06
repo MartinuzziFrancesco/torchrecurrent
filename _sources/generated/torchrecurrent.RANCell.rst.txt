@@ -1,0 +1,87 @@
+﻿torchrecurrent.RANCell
+======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: RANCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~RANCell.__init__
+      ~RANCell.add_module
+      ~RANCell.apply
+      ~RANCell.bfloat16
+      ~RANCell.buffers
+      ~RANCell.children
+      ~RANCell.compile
+      ~RANCell.cpu
+      ~RANCell.cuda
+      ~RANCell.double
+      ~RANCell.eval
+      ~RANCell.extra_repr
+      ~RANCell.float
+      ~RANCell.forward
+      ~RANCell.get_buffer
+      ~RANCell.get_extra_state
+      ~RANCell.get_parameter
+      ~RANCell.get_submodule
+      ~RANCell.half
+      ~RANCell.init_weights
+      ~RANCell.ipu
+      ~RANCell.load_state_dict
+      ~RANCell.modules
+      ~RANCell.mtia
+      ~RANCell.named_buffers
+      ~RANCell.named_children
+      ~RANCell.named_modules
+      ~RANCell.named_parameters
+      ~RANCell.parameters
+      ~RANCell.register_backward_hook
+      ~RANCell.register_buffer
+      ~RANCell.register_forward_hook
+      ~RANCell.register_forward_pre_hook
+      ~RANCell.register_full_backward_hook
+      ~RANCell.register_full_backward_pre_hook
+      ~RANCell.register_load_state_dict_post_hook
+      ~RANCell.register_load_state_dict_pre_hook
+      ~RANCell.register_module
+      ~RANCell.register_parameter
+      ~RANCell.register_state_dict_post_hook
+      ~RANCell.register_state_dict_pre_hook
+      ~RANCell.requires_grad_
+      ~RANCell.set_extra_state
+      ~RANCell.set_submodule
+      ~RANCell.share_memory
+      ~RANCell.state_dict
+      ~RANCell.to
+      ~RANCell.to_empty
+      ~RANCell.train
+      ~RANCell.type
+      ~RANCell.uses_double_state
+      ~RANCell.xpu
+      ~RANCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~RANCell.T_destination
+      ~RANCell.call_super_init
+      ~RANCell.dump_patches
+      ~RANCell.weight_ih
+      ~RANCell.weight_hh
+      ~RANCell.bias_ih
+      ~RANCell.bias_hh
+      ~RANCell.training
+   
+   

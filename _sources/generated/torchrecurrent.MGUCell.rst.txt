@@ -1,0 +1,87 @@
+﻿torchrecurrent.MGUCell
+======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MGUCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MGUCell.__init__
+      ~MGUCell.add_module
+      ~MGUCell.apply
+      ~MGUCell.bfloat16
+      ~MGUCell.buffers
+      ~MGUCell.children
+      ~MGUCell.compile
+      ~MGUCell.cpu
+      ~MGUCell.cuda
+      ~MGUCell.double
+      ~MGUCell.eval
+      ~MGUCell.extra_repr
+      ~MGUCell.float
+      ~MGUCell.forward
+      ~MGUCell.get_buffer
+      ~MGUCell.get_extra_state
+      ~MGUCell.get_parameter
+      ~MGUCell.get_submodule
+      ~MGUCell.half
+      ~MGUCell.init_weights
+      ~MGUCell.ipu
+      ~MGUCell.load_state_dict
+      ~MGUCell.modules
+      ~MGUCell.mtia
+      ~MGUCell.named_buffers
+      ~MGUCell.named_children
+      ~MGUCell.named_modules
+      ~MGUCell.named_parameters
+      ~MGUCell.parameters
+      ~MGUCell.register_backward_hook
+      ~MGUCell.register_buffer
+      ~MGUCell.register_forward_hook
+      ~MGUCell.register_forward_pre_hook
+      ~MGUCell.register_full_backward_hook
+      ~MGUCell.register_full_backward_pre_hook
+      ~MGUCell.register_load_state_dict_post_hook
+      ~MGUCell.register_load_state_dict_pre_hook
+      ~MGUCell.register_module
+      ~MGUCell.register_parameter
+      ~MGUCell.register_state_dict_post_hook
+      ~MGUCell.register_state_dict_pre_hook
+      ~MGUCell.requires_grad_
+      ~MGUCell.set_extra_state
+      ~MGUCell.set_submodule
+      ~MGUCell.share_memory
+      ~MGUCell.state_dict
+      ~MGUCell.to
+      ~MGUCell.to_empty
+      ~MGUCell.train
+      ~MGUCell.type
+      ~MGUCell.uses_double_state
+      ~MGUCell.xpu
+      ~MGUCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MGUCell.T_destination
+      ~MGUCell.call_super_init
+      ~MGUCell.dump_patches
+      ~MGUCell.weight_ih
+      ~MGUCell.weight_hh
+      ~MGUCell.bias_ih
+      ~MGUCell.bias_hh
+      ~MGUCell.training
+   
+   

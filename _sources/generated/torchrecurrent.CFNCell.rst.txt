@@ -1,0 +1,88 @@
+﻿torchrecurrent.CFNCell
+======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: CFNCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~CFNCell.__init__
+      ~CFNCell.add_module
+      ~CFNCell.apply
+      ~CFNCell.bfloat16
+      ~CFNCell.buffers
+      ~CFNCell.children
+      ~CFNCell.compile
+      ~CFNCell.cpu
+      ~CFNCell.cuda
+      ~CFNCell.double
+      ~CFNCell.eval
+      ~CFNCell.extra_repr
+      ~CFNCell.float
+      ~CFNCell.forward
+      ~CFNCell.get_buffer
+      ~CFNCell.get_extra_state
+      ~CFNCell.get_parameter
+      ~CFNCell.get_submodule
+      ~CFNCell.half
+      ~CFNCell.init_weights
+      ~CFNCell.ipu
+      ~CFNCell.load_state_dict
+      ~CFNCell.modules
+      ~CFNCell.mtia
+      ~CFNCell.named_buffers
+      ~CFNCell.named_children
+      ~CFNCell.named_modules
+      ~CFNCell.named_parameters
+      ~CFNCell.parameters
+      ~CFNCell.register_backward_hook
+      ~CFNCell.register_buffer
+      ~CFNCell.register_forward_hook
+      ~CFNCell.register_forward_pre_hook
+      ~CFNCell.register_full_backward_hook
+      ~CFNCell.register_full_backward_pre_hook
+      ~CFNCell.register_load_state_dict_post_hook
+      ~CFNCell.register_load_state_dict_pre_hook
+      ~CFNCell.register_module
+      ~CFNCell.register_parameter
+      ~CFNCell.register_state_dict_post_hook
+      ~CFNCell.register_state_dict_pre_hook
+      ~CFNCell.requires_grad_
+      ~CFNCell.set_extra_state
+      ~CFNCell.set_submodule
+      ~CFNCell.share_memory
+      ~CFNCell.state_dict
+      ~CFNCell.to
+      ~CFNCell.to_empty
+      ~CFNCell.train
+      ~CFNCell.type
+      ~CFNCell.uses_double_state
+      ~CFNCell.xpu
+      ~CFNCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~CFNCell.T_destination
+      ~CFNCell.call_super_init
+      ~CFNCell.dump_patches
+      ~CFNCell.weight_ih
+      ~CFNCell.weight_hh
+      ~CFNCell.bias_ih
+      ~CFNCell.bias_hh
+      ~CFNCell.t_ones
+      ~CFNCell.training
+   
+   

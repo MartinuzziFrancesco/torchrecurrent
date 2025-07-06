@@ -1,0 +1,86 @@
+﻿torchrecurrent.IndRNNCell
+=========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: IndRNNCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~IndRNNCell.__init__
+      ~IndRNNCell.add_module
+      ~IndRNNCell.apply
+      ~IndRNNCell.bfloat16
+      ~IndRNNCell.buffers
+      ~IndRNNCell.children
+      ~IndRNNCell.compile
+      ~IndRNNCell.cpu
+      ~IndRNNCell.cuda
+      ~IndRNNCell.double
+      ~IndRNNCell.eval
+      ~IndRNNCell.extra_repr
+      ~IndRNNCell.float
+      ~IndRNNCell.forward
+      ~IndRNNCell.get_buffer
+      ~IndRNNCell.get_extra_state
+      ~IndRNNCell.get_parameter
+      ~IndRNNCell.get_submodule
+      ~IndRNNCell.half
+      ~IndRNNCell.init_weights
+      ~IndRNNCell.ipu
+      ~IndRNNCell.load_state_dict
+      ~IndRNNCell.modules
+      ~IndRNNCell.mtia
+      ~IndRNNCell.named_buffers
+      ~IndRNNCell.named_children
+      ~IndRNNCell.named_modules
+      ~IndRNNCell.named_parameters
+      ~IndRNNCell.parameters
+      ~IndRNNCell.register_backward_hook
+      ~IndRNNCell.register_buffer
+      ~IndRNNCell.register_forward_hook
+      ~IndRNNCell.register_forward_pre_hook
+      ~IndRNNCell.register_full_backward_hook
+      ~IndRNNCell.register_full_backward_pre_hook
+      ~IndRNNCell.register_load_state_dict_post_hook
+      ~IndRNNCell.register_load_state_dict_pre_hook
+      ~IndRNNCell.register_module
+      ~IndRNNCell.register_parameter
+      ~IndRNNCell.register_state_dict_post_hook
+      ~IndRNNCell.register_state_dict_pre_hook
+      ~IndRNNCell.requires_grad_
+      ~IndRNNCell.set_extra_state
+      ~IndRNNCell.set_submodule
+      ~IndRNNCell.share_memory
+      ~IndRNNCell.state_dict
+      ~IndRNNCell.to
+      ~IndRNNCell.to_empty
+      ~IndRNNCell.train
+      ~IndRNNCell.type
+      ~IndRNNCell.uses_double_state
+      ~IndRNNCell.xpu
+      ~IndRNNCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~IndRNNCell.T_destination
+      ~IndRNNCell.call_super_init
+      ~IndRNNCell.dump_patches
+      ~IndRNNCell.weight_ih
+      ~IndRNNCell.vector_u
+      ~IndRNNCell.bias_ih
+      ~IndRNNCell.training
+   
+   

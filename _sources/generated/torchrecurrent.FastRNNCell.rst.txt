@@ -1,0 +1,89 @@
+﻿torchrecurrent.FastRNNCell
+==========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: FastRNNCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FastRNNCell.__init__
+      ~FastRNNCell.add_module
+      ~FastRNNCell.apply
+      ~FastRNNCell.bfloat16
+      ~FastRNNCell.buffers
+      ~FastRNNCell.children
+      ~FastRNNCell.compile
+      ~FastRNNCell.cpu
+      ~FastRNNCell.cuda
+      ~FastRNNCell.double
+      ~FastRNNCell.eval
+      ~FastRNNCell.extra_repr
+      ~FastRNNCell.float
+      ~FastRNNCell.forward
+      ~FastRNNCell.get_buffer
+      ~FastRNNCell.get_extra_state
+      ~FastRNNCell.get_parameter
+      ~FastRNNCell.get_submodule
+      ~FastRNNCell.half
+      ~FastRNNCell.init_weights
+      ~FastRNNCell.ipu
+      ~FastRNNCell.load_state_dict
+      ~FastRNNCell.modules
+      ~FastRNNCell.mtia
+      ~FastRNNCell.named_buffers
+      ~FastRNNCell.named_children
+      ~FastRNNCell.named_modules
+      ~FastRNNCell.named_parameters
+      ~FastRNNCell.parameters
+      ~FastRNNCell.register_backward_hook
+      ~FastRNNCell.register_buffer
+      ~FastRNNCell.register_forward_hook
+      ~FastRNNCell.register_forward_pre_hook
+      ~FastRNNCell.register_full_backward_hook
+      ~FastRNNCell.register_full_backward_pre_hook
+      ~FastRNNCell.register_load_state_dict_post_hook
+      ~FastRNNCell.register_load_state_dict_pre_hook
+      ~FastRNNCell.register_module
+      ~FastRNNCell.register_parameter
+      ~FastRNNCell.register_state_dict_post_hook
+      ~FastRNNCell.register_state_dict_pre_hook
+      ~FastRNNCell.requires_grad_
+      ~FastRNNCell.set_extra_state
+      ~FastRNNCell.set_submodule
+      ~FastRNNCell.share_memory
+      ~FastRNNCell.state_dict
+      ~FastRNNCell.to
+      ~FastRNNCell.to_empty
+      ~FastRNNCell.train
+      ~FastRNNCell.type
+      ~FastRNNCell.uses_double_state
+      ~FastRNNCell.xpu
+      ~FastRNNCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FastRNNCell.T_destination
+      ~FastRNNCell.call_super_init
+      ~FastRNNCell.dump_patches
+      ~FastRNNCell.weight_ih
+      ~FastRNNCell.weight_hh
+      ~FastRNNCell.bias_ih
+      ~FastRNNCell.bias_hh
+      ~FastRNNCell.alpha
+      ~FastRNNCell.beta
+      ~FastRNNCell.training
+   
+   
