@@ -24,3 +24,9 @@ classifiers = [
 [tool.setuptools]
 packages = ["torchrecurrent"]
 
+[project.optional-dependencies]
+test = [
+  "pytest>=7.0",
+  "coverage",
+]
+
