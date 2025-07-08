@@ -24,9 +24,21 @@ classifiers = [
 [tool.setuptools]
 packages = ["torchrecurrent"]
 
+[tool.black]
+line-length = 92
+target-version = ['py39']
+include = '\.pyi?$'
+exclude = '''
+/(
+  \.git
+ | \.venv
+ | build
+ | dist
+)/
+'''
+
 [project.optional-dependencies]
 test = [
   "pytest>=7.0",
   "coverage",
 ]
-
