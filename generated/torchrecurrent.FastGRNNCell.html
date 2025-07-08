@@ -149,7 +149,8 @@ Default: <code class="docutils literal notranslate"><span class="pre">nn.init.xa
 <li><p><strong>zeta_init</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial value for scalar gate ζ. Default: <code class="docutils literal notranslate"><span class="pre">3.0</span></code>.</p></li>
 <li><p><strong>nu_init</strong> (<em>float</em><em>, </em><em>optional</em>) – Initial value for scalar gate ν. Default: <code class="docutils literal notranslate"><span class="pre">-3.0</span></code>.</p></li>
 <li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Device of the parameters. Default: CPU.</p></li>
-<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – Data type of the parameters. Default: PyTorch default float.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – Data type of the parameters.</p></li>
+<li><p><strong>Default</strong> – PyTorch default float.</p></li>
 </ul>
 </dd>
 </dl>
@@ -200,7 +201,8 @@ Defaults to zero if not provided.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="torchrecurrent.FastGRNNCell.bias_ih">
 <span class="sig-name descname"><span class="pre">bias_ih</span></span><a class="headerlink" href="#torchrecurrent.FastGRNNCell.bias_ih" title="Link to this definition"></a></dt>
-<dd><p>input biases, shape <cite>(2*hidden_size,)</cite> if <cite>bias=True</cite> (split into z &amp; h).</p>
+<dd><p>input biases, shape <cite>(2*hidden_size,)</cite>
+if <cite>bias=True</cite> (split into z &amp; h).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -211,7 +213,8 @@ Defaults to zero if not provided.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="torchrecurrent.FastGRNNCell.bias_hh">
 <span class="sig-name descname"><span class="pre">bias_hh</span></span><a class="headerlink" href="#torchrecurrent.FastGRNNCell.bias_hh" title="Link to this definition"></a></dt>
-<dd><p>hidden biases, shape <cite>(2*hidden_size,)</cite> if <cite>bias=True</cite> (split into z &amp; h).</p>
+<dd><p>hidden biases, shape <cite>(2*hidden_size,)</cite>
+if <cite>bias=True</cite> (split into z &amp; h).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>

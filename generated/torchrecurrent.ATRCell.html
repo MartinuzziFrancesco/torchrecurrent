@@ -123,7 +123,8 @@ input and hidden projections to produce the next state:</p>
 <li><p><strong>bias</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, disables both <span class="math notranslate nohighlight">\(\mathbf{b}_{ih}\)</span> and
 <span class="math notranslate nohighlight">\(\mathbf{b}_{hh}\)</span>. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 <li><p><strong>activation_fn</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Nonlinearity to use for any candidate
-transforms (not used directly here but stored for consistency). Default: <code class="docutils literal notranslate"><span class="pre">torch.tanh</span></code>.</p></li>
+transforms (not used directly here but stored for consistency).
+Default: <code class="docutils literal notranslate"><span class="pre">torch.tanh</span></code>.</p></li>
 <li><p><strong>kernel_init</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Initializer for <span class="math notranslate nohighlight">\(\mathbf{W}_{ih}\)</span>.
 Default: <code class="docutils literal notranslate"><span class="pre">nn.init.xavier_uniform_</span></code>.</p></li>
 <li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Initializer for <span class="math notranslate nohighlight">\(\mathbf{W}_{hh}\)</span>.
@@ -141,7 +142,8 @@ when <code class="docutils literal notranslate"><span class="pre">bias=True</spa
 <dt>Inputs: input, hidden</dt><dd><ul class="simple">
 <li><p><strong>input</strong> (Tensor): shape <cite>(H_in,)</cite> or <cite>(N, H_in)</cite>, where <cite>H_in = input_size</cite>.</p></li>
 <li><dl class="simple">
-<dt><strong>hidden</strong> (Tensor, optional): previous hidden state of shape</dt><dd><p><cite>(H_out,)</cite> or <cite>(N, H_out)</cite>, where <cite>H_out = hidden_size</cite>. Defaults to zero if not provided.</p>
+<dt><strong>hidden</strong> (Tensor, optional): previous hidden state of shape</dt><dd><p><cite>(H_out,)</cite> or <cite>(N, H_out)</cite>, where <cite>H_out = hidden_size</cite>.
+Defaults to zero if not provided.</p>
 </dd>
 </dl>
 </li>
