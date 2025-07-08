@@ -15,9 +15,7 @@ class CFN(BaseSingleRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(CFN, self).__init__(
-            input_size, hidden_size, num_layers, dropout, batch_first
-        )
+        super(CFN, self).__init__(input_size, hidden_size, num_layers, dropout, batch_first)
         self.initialize_cells(CFNCell, **kwargs)
 
 
@@ -100,6 +98,7 @@ class CFNCell(BaseSingleRecurrentCell):
         ...     hx = cell(x[t], hx)
         ...     outputs.append(hx)
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -119,19 +118,20 @@ class CFNCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(CFNCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._default_register_tensors(input_size, hidden_size, ih_mult=3, hh_mult=2, bias=bias)
+        self._default_register_tensors(
+            input_size, hidden_size, ih_mult=3, hh_mult=2, bias=bias
+        )
         self.init_weights()
 
-    def forward(self,
-        inp:Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)
@@ -145,7 +145,9 @@ class CFNCell(BaseSingleRecurrentCell):
 
         horizontal_gate = torch.sigmoid(input_exp_1 + rec_exp_1)
         vertical_gate = torch.sigmoid(input_exp_2 + rec_exp_2)
-        new_state = horizontal_gate * torch.tanh(state) + vertical_gate * torch.tanh(input_exp_3)
+        new_state = horizontal_gate * torch.tanh(state) + vertical_gate * torch.tanh(
+            input_exp_3
+        )
 
         if not is_batched:
             new_state = new_state.squeeze(0)

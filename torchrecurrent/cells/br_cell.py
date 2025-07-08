@@ -15,9 +15,7 @@ class BR(BaseSingleRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(BR, self).__init__(
-            input_size, hidden_size, num_layers, dropout, batch_first
-        )
+        super(BR, self).__init__(input_size, hidden_size, num_layers, dropout, batch_first)
         self.initialize_cells(BRCell, **kwargs)
 
 
@@ -99,6 +97,7 @@ class BRCell(BaseSingleRecurrentCell):
         >>> for t in range(x.size(0)):
         ...     hx = cell(x[t], hx)
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -118,25 +117,26 @@ class BRCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(BRCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._register_tensors({
-            "weight_ih": ((3 * hidden_size, input_size), True),
-            "weight_hh": ((2 * hidden_size, ), True),
-            "bias_ih": ((3 * hidden_size, ), bias),
-            "bias_hh": ((2 * hidden_size, ), bias),
-            "t_ones": ((hidden_size, ), False),
-        })
+        self._register_tensors(
+            {
+                "weight_ih": ((3 * hidden_size, input_size), True),
+                "weight_hh": ((2 * hidden_size,), True),
+                "bias_ih": ((3 * hidden_size,), bias),
+                "bias_hh": ((2 * hidden_size,), bias),
+                "t_ones": ((hidden_size,), False),
+            }
+        )
         self.init_weights()
 
-    def forward(self,
-        inp:Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)
@@ -152,7 +152,9 @@ class BRCell(BaseSingleRecurrentCell):
         modulation_gate = self.t_ones + torch.tanh(h1)
         candidate_state = torch.sigmoid(h2)
         h3 = input_exp_3 + modulation_gate * state
-        new_state = candidate_state * state + (self.t_ones - candidate_state) * torch.tanh(h3)
+        new_state = candidate_state * state + (self.t_ones - candidate_state) * torch.tanh(
+            h3
+        )
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -170,9 +172,7 @@ class NBR(BaseSingleRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(NBR, self).__init__(
-            input_size, hidden_size, num_layers, dropout, batch_first
-        )
+        super(NBR, self).__init__(input_size, hidden_size, num_layers, dropout, batch_first)
         self.initialize_cells(NBRCell, **kwargs)
 
 
@@ -242,7 +242,8 @@ class NBRCell(BaseSingleRecurrentCell):
             `(2 * hidden_size, hidden_size)`, chunked into “a” and “c” parts.
         bias_ih (Tensor): input biases of shape `(3 * hidden_size,)` if `bias=True`.
         bias_hh (Tensor): hidden biases of shape `(2 * hidden_size,)` if `bias=True`.
-        t_ones (Tensor): constant ones vector of shape `(hidden_size,)` for the term `(1–c)`.
+        t_ones (Tensor): constant ones vector of shape `(hidden_size,)`
+        for the term `(1–c)`.
 
     Examples::
         >>> cell = NBRCell(10, 20)
@@ -252,6 +253,7 @@ class NBRCell(BaseSingleRecurrentCell):
         >>> for t in range(x.size(0)):
         ...     hx = cell(x[t], hx)
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -271,25 +273,26 @@ class NBRCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(NBRCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._register_tensors({
-            "weight_ih": ((3 * hidden_size, input_size), True),
-            "weight_hh": ((2 * hidden_size, hidden_size), True),
-            "bias_ih": ((3 * hidden_size, ), bias),
-            "bias_hh": ((2 * hidden_size, ), bias),
-            "t_ones": ((hidden_size, ), False),
-        })
+        self._register_tensors(
+            {
+                "weight_ih": ((3 * hidden_size, input_size), True),
+                "weight_hh": ((2 * hidden_size, hidden_size), True),
+                "bias_ih": ((3 * hidden_size,), bias),
+                "bias_hh": ((2 * hidden_size,), bias),
+                "t_ones": ((hidden_size,), False),
+            }
+        )
         self.init_weights()
 
-    def forward(self,
-        inp:Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)

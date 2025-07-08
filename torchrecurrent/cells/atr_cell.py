@@ -15,9 +15,7 @@ class ATR(BaseSingleRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(ATR, self).__init__(
-            input_size, hidden_size, num_layers, dropout, batch_first
-        )
+        super(ATR, self).__init__(input_size, hidden_size, num_layers, dropout, batch_first)
         self.initialize_cells(ATRCell, **kwargs)
 
 
@@ -42,7 +40,8 @@ class ATRCell(BaseSingleRecurrentCell):
         bias (bool, optional): If ``False``, disables both :math:`\mathbf{b}_{ih}` and
             :math:`\mathbf{b}_{hh}`. Default: ``True``.
         activation_fn (Callable, optional): Nonlinearity to use for any candidate
-            transforms (not used directly here but stored for consistency). Default: ``torch.tanh``.
+            transforms (not used directly here but stored for consistency).
+            Default: ``torch.tanh``.
         kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{ih}`.
             Default: ``nn.init.xavier_uniform_``.
         recurrent_kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{hh}`.
@@ -57,7 +56,8 @@ class ATRCell(BaseSingleRecurrentCell):
     Inputs: input, hidden
         - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
         - **hidden** (Tensor, optional): previous hidden state of shape
-            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`. Defaults to zero if not provided.
+            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
+            Defaults to zero if not provided.
 
     Outputs: h’
         - **h’** (Tensor): next hidden state, same shape as **hidden**.
@@ -85,12 +85,14 @@ class ATRCell(BaseSingleRecurrentCell):
         ...     hx = cell(x[t], hx)
         ...     outputs.append(hx)
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
 
-    def __init__(self,
+    def __init__(
+        self,
         input_size: int,
         hidden_size: int,
         bias: bool = True,
@@ -103,7 +105,7 @@ class ATRCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(ATRCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.activation_fn = activation_fn
         self.kernel_init = kernel_init
@@ -114,9 +116,8 @@ class ATRCell(BaseSingleRecurrentCell):
         self._default_register_tensors(input_size, hidden_size, bias=bias)
         self.init_weights()
 
-    def forward(self,
-        inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)

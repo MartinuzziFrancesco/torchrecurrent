@@ -75,7 +75,8 @@ class coRNNCell(BaseDoubleRecurrentCell):
     Inputs:
         - **inp** (Tensor): of shape `(batch, input_size)` or `(input_size,)`.
         - **state** (Tuple[Tensor, Tensor], optional):
-            previous `(h, c)` where each is shape `(batch, hidden_size)` or `(hidden_size,)`.
+            previous `(h, c)` where each is shape `(batch, hidden_size)` or
+            `(hidden_size,)`.
             If not provided, both default to zeros.
 
     Outputs:
@@ -101,6 +102,7 @@ class coRNNCell(BaseDoubleRecurrentCell):
         >>> c0 = torch.zeros(4, 20)
         >>> h1, c1 = cell(x, (h0, c0))
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_ch: Tensor
@@ -126,7 +128,7 @@ class coRNNCell(BaseDoubleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(coRNNCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -138,14 +140,16 @@ class coRNNCell(BaseDoubleRecurrentCell):
         self.gamma = gamma
         self.epsilon = epsilon
 
-        self._register_tensors({
-            "weight_ih": ((hidden_size, input_size), True),
-            "weight_hh": ((hidden_size, hidden_size), True),
-            "weight_ch": ((hidden_size, hidden_size) , True),
-            "bias_ih": ((hidden_size, ), bias),
-            "bias_hh": ((hidden_size, ), bias),
-            "bias_ch": ((hidden_size, ), bias),
-        })
+        self._register_tensors(
+            {
+                "weight_ih": ((hidden_size, input_size), True),
+                "weight_hh": ((hidden_size, hidden_size), True),
+                "weight_ch": ((hidden_size, hidden_size), True),
+                "bias_ih": ((hidden_size,), bias),
+                "bias_hh": ((hidden_size,), bias),
+                "bias_ch": ((hidden_size,), bias),
+            }
+        )
         self.init_weights()
 
     def init_weights(self):
@@ -164,19 +168,28 @@ class coRNNCell(BaseDoubleRecurrentCell):
                 self.cell_bias_init(param)
 
     def forward(
-        self, inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tuple[Tensor, Tensor]:
         state, c_state = self._check_states(state)
         self._validate_input(inp)
         self._validate_states((state, c_state))
         inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
 
-        pre_act = inp @ self.weight_ih.t() + self.bias_ih + \
-            state @ self.weight_hh.t() + self.bias_hh + \
-            c_state @ self.weight_ch.t() + self.bias_ch
+        pre_act = (
+            inp @ self.weight_ih.t()
+            + self.bias_ih
+            + state @ self.weight_hh.t()
+            + self.bias_hh
+            + c_state @ self.weight_ch.t()
+            + self.bias_ch
+        )
         act = torch.tanh(pre_act)
-        new_cstate = c_state + self.dt * act - self.dt * self.gamma * state - self.dt * self.epsilon * c_state
+        new_cstate = (
+            c_state
+            + self.dt * act
+            - self.dt * self.gamma * state
+            - self.dt * self.epsilon * c_state
+        )
         new_state = state + self.dt * new_cstate
 
         if not is_batched:

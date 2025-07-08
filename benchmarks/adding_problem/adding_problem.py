@@ -3,22 +3,11 @@ import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
 from torch import Tensor
-import sys
-import os
 import argparse
-
-sys.path.append(
-    os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "recurrent_layers"))
-)
-from minimal_gated_unit import MGU
-
-import torch
 
 
 class RecurrentModel(nn.Module):
-    def __init__(
-        self, cell, input_size: int, hidden_size: int, output_size: int, **kwargs
-    ):
+    def __init__(self, cell, input_size: int, hidden_size: int, output_size: int, **kwargs):
         super(RecurrentModel, self).__init__()
         self.hidden_size = hidden_size
         self.rnn = cell(input_size, hidden_size, **kwargs)
@@ -271,9 +260,7 @@ def main():
 
     # train and validate
     for epoch in range(1, args.epochs + 1):
-        train(
-            args, model, device, train_loader, optimizer, criterion, train_losses, epoch
-        )
+        train(args, model, device, train_loader, optimizer, criterion, train_losses, epoch)
         test(args, model, device, test_loader, criterion, test_losses, epoch)
 
         if args.dry_run:

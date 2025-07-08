@@ -70,8 +70,8 @@ class LiGRUCell(BaseSingleRecurrentCell):
 
     Inputs:
         - **input** (Tensor): `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
-        - **hidden** (Tensor, optional): `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
-            Defaults to zeros if not provided.
+        - **hidden** (Tensor, optional): `(H_out,)` or `(N, H_out)`,
+            where `H_out = hidden_size`. Defaults to zeros if not provided.
 
     Outputs:
         - **h’** (Tensor): next hidden state, same shape as **hidden**.
@@ -97,6 +97,7 @@ class LiGRUCell(BaseSingleRecurrentCell):
         ...     h = cell(x[t], h)
         ...     outputs.append(h)
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -117,7 +118,7 @@ class LiGRUCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(LiGRUCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
@@ -126,20 +127,25 @@ class LiGRUCell(BaseSingleRecurrentCell):
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._default_register_tensors(input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias)
+        self._default_register_tensors(
+            input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias
+        )
         self.init_weights()
 
-    def forward(self,
-        inp:Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
 
-        gates = inp @ self.weight_ih.t() + self.bias_ih + \
-            state @ self.weight_hh.t() + self.bias_hh
+        gates = (
+            inp @ self.weight_ih.t()
+            + self.bias_ih
+            + state @ self.weight_hh.t()
+            + self.bias_hh
+        )
         ug, cg = gates.chunk(2, 1)
 
         update_gate = self.gate_activation_fn(ug)

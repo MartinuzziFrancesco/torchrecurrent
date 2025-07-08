@@ -4,8 +4,12 @@ torchrecurrent.cells
 Collection of RNNCell implementations.
 """
 
-
-from .antisymmetricrnn_cell import AntisymmetricRNNCell, AntisymmetricRNN, GatedAntisymmetricRNNCell,GatedAntisymmetricRNN
+from .antisymmetricrnn_cell import (
+    AntisymmetricRNNCell,
+    AntisymmetricRNN,
+    GatedAntisymmetricRNNCell,
+    GatedAntisymmetricRNN,
+)
 from .atr_cell import ATRCell, ATR
 from .br_cell import BR, BRCell, NBR, NBRCell
 from .cfn_cell import CFN, CFNCell
@@ -17,22 +21,39 @@ from .ligru_cell import LiGRU, LiGRUCell
 from .nas_cell import NAS, NASCell
 from .peepholelstm_cell import PeepholeLSTM, PeepholeLSTMCell
 from .ran_cell import RAN, RANCell
+
 # from .rhn_cell import RHN, RHNCell
-#from .scrn_cell import SCRN, SCRNCell
+# from .scrn_cell import SCRN, SCRNCell
 
 __all__ = [
-    "AntisymmetricRNNCell", "AntisymmetricRNN",
-    "GatedAntisymmetricRNNCell", "GatedAntisymmetricRNN",
-    "ATRCell", "ATR",
-    "BR", "BRCell", "NBR", "NBRCell",
-    "CFN", "CFNCell",
-    "MGU", "MGUCell",
-    "coRNN", "coRNNCell",
-    "FastRNN", "FastRNNCell",
-    "FastGRNN", "FastGRNNCell",
-    "IndRNN", "IndRNNCell",
-    "LiGRU", "LiGRUCell",
-    "NAS", "NASCell",
-    "PeepholeLSTM", "PeepholeLSTMCell",
-    "RAN", "RANCell",
+    "AntisymmetricRNNCell",
+    "AntisymmetricRNN",
+    "GatedAntisymmetricRNNCell",
+    "GatedAntisymmetricRNN",
+    "ATRCell",
+    "ATR",
+    "BR",
+    "BRCell",
+    "NBR",
+    "NBRCell",
+    "CFN",
+    "CFNCell",
+    "MGU",
+    "MGUCell",
+    "coRNN",
+    "coRNNCell",
+    "FastRNN",
+    "FastRNNCell",
+    "FastGRNN",
+    "FastGRNNCell",
+    "IndRNN",
+    "IndRNNCell",
+    "LiGRU",
+    "LiGRUCell",
+    "NAS",
+    "NASCell",
+    "PeepholeLSTM",
+    "PeepholeLSTMCell",
+    "RAN",
+    "RANCell",
 ]

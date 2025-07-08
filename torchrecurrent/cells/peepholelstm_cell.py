@@ -111,6 +111,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         >>> for t in range(x.size(0)):
         ...     h, c = cell(x[t], (h, c))
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_ph: Tensor
@@ -133,7 +134,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(PeepholeLSTMCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
@@ -143,13 +144,15 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._register_tensors({
-            "weight_ih": ((4 * hidden_size, input_size), True),
-            "weight_hh": ((4 * hidden_size, hidden_size), True),
-            "weight_ph": ((3 * hidden_size, ) , True),
-            "bias_ih": ((4 * hidden_size, ), bias),
-            "bias_hh": ((4 * hidden_size, ), bias),
-        })
+        self._register_tensors(
+            {
+                "weight_ih": ((4 * hidden_size, input_size), True),
+                "weight_hh": ((4 * hidden_size, hidden_size), True),
+                "weight_ph": ((3 * hidden_size,), True),
+                "bias_ih": ((4 * hidden_size,), bias),
+                "bias_hh": ((4 * hidden_size,), bias),
+            }
+        )
         self.init_weights()
 
     def init_weights(self):
@@ -166,8 +169,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
                 self.recurrent_bias_init(param)
 
     def forward(
-        self, inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tuple[Tensor, Tensor]:
         state, c_state = self._check_states(state)
         self._validate_input(inp)
@@ -180,20 +182,32 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         bias_ih_i, bias_ih_f, bias_ih_c, bias_ih_o = self.bias_ih.chunk(4, 0)
         bias_hh_i, bias_hh_f, bias_hh_c, bias_hh_o = self.bias_hh.chunk(4, 0)
 
-        i = inp @ weight_ih_i.t() + bias_ih_i + \
-            state @ weight_hh_i.t() + c_state * weight_ph_i + bias_hh_i
+        i = (
+            inp @ weight_ih_i.t()
+            + bias_ih_i
+            + state @ weight_hh_i.t()
+            + c_state * weight_ph_i
+            + bias_hh_i
+        )
         input_gate = self.gate_activation_fn(i)
-        f = inp @ weight_ih_f.t() + bias_ih_f + \
-            state @ weight_hh_f.t() + bias_hh_f + \
-            c_state * weight_ph_f
+        f = (
+            inp @ weight_ih_f.t()
+            + bias_ih_f
+            + state @ weight_hh_f.t()
+            + bias_hh_f
+            + c_state * weight_ph_f
+        )
         forget_gate = self.gate_activation_fn(f)
-        c_hat = inp @ weight_ih_c.t() + bias_ih_c + \
-            state @ weight_hh_c.t() + bias_hh_c
+        c_hat = inp @ weight_ih_c.t() + bias_ih_c + state @ weight_hh_c.t() + bias_hh_c
         cell_candidate = self.activation_fn(c_hat)
         new_c = forget_gate * c_state + input_gate * cell_candidate
-        o = inp @ weight_ih_o.t() + bias_ih_o + \
-            state @ weight_hh_o.t() + bias_hh_o\
+        o = (
+            inp @ weight_ih_o.t()
+            + bias_ih_o
+            + state @ weight_hh_o.t()
+            + bias_hh_o
             + new_c * weight_ph_o
+        )
         output_gate = self.gate_activation_fn(o)
         new_h = output_gate * self.activation_fn(new_c)
 

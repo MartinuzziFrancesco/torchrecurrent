@@ -15,9 +15,7 @@ class RAN(BaseDoubleRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(RAN, self).__init__(
-            input_size, hidden_size, num_layers, dropout, batch_first
-        )
+        super(RAN, self).__init__(input_size, hidden_size, num_layers, dropout, batch_first)
         self.initialize_cells(RANCell, **kwargs)
 
 
@@ -97,6 +95,7 @@ class RANCell(BaseDoubleRecurrentCell):
         >>> c0 = torch.zeros(5, 32)
         >>> h1, c1 = cell(x, (h0, c0))
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -113,27 +112,27 @@ class RANCell(BaseDoubleRecurrentCell):
         recurrent_bias_init: Callable = nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
-
     ):
         super(RANCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._register_tensors({
-            "weight_ih": ((3 * hidden_size, input_size), True),
-            "weight_hh": ((2 * hidden_size, hidden_size), True),
-            "bias_ih": ((2 * hidden_size, ), bias),
-            "bias_hh": ((2 * hidden_size, ), bias),
-        })
+        self._register_tensors(
+            {
+                "weight_ih": ((3 * hidden_size, input_size), True),
+                "weight_hh": ((2 * hidden_size, hidden_size), True),
+                "bias_ih": ((2 * hidden_size,), bias),
+                "bias_hh": ((2 * hidden_size,), bias),
+            }
+        )
         self.init_weights()
 
-    def forward(self,
-        inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tuple[Tensor, Tensor]:
         state, c_state = self._check_states(state)
         self._validate_input(inp)
@@ -146,17 +145,15 @@ class RANCell(BaseDoubleRecurrentCell):
         bias_hh_i, bias_hh_f = self.bias_hh.chunk(2, 0)
 
         content_layer = inp @ weight_ih_c.t()
-        ig = inp @ weight_ih_i.t() + bias_ih_i + \
-            state @ weight_hh_i.t() + bias_hh_i
-        fg = inp @ weight_ih_f.t() + bias_ih_f + \
-            state @ weight_hh_f.t() + bias_hh_f
+        ig = inp @ weight_ih_i.t() + bias_ih_i + state @ weight_hh_i.t() + bias_hh_i
+        fg = inp @ weight_ih_f.t() + bias_ih_f + state @ weight_hh_f.t() + bias_hh_f
         input_gate = torch.sigmoid(ig)
         forget_gate = torch.sigmoid(fg)
         new_cstate = input_gate * content_layer + forget_gate * c_state
         new_state = torch.tanh(new_cstate)
 
         if not is_batched:
-            new_state  = new_state.squeeze(0)
+            new_state = new_state.squeeze(0)
             new_cstate = new_cstate.squeeze(0)
 
         return new_state, new_cstate

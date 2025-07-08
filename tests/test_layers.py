@@ -57,6 +57,7 @@ LAYER_CASES = [
     (RAN, True),
 ]
 
+
 @pytest.mark.parametrize("Layer, is_double", LAYER_CASES)
 def test_layer_shapes_and_state(Layer, is_double):
     input_size, hidden_size = 5, 7
@@ -64,11 +65,14 @@ def test_layer_shapes_and_state(Layer, is_double):
     num_layers = 2
 
     # Pass bias=False for simplicity
-    layer = Layer(input_size, hidden_size,
-                  num_layers=num_layers,
-                  dropout=0.0,
-                  batch_first=False,
-                  bias=False)
+    layer = Layer(
+        input_size,
+        hidden_size,
+        num_layers=num_layers,
+        dropout=0.0,
+        batch_first=False,
+        bias=False,
+    )
 
     # Unbatched input: (seq_len, batch_size, input_size)
     x = torch.randn(seq_len, batch_size, input_size)
@@ -88,11 +92,14 @@ def test_layer_shapes_and_state(Layer, is_double):
         assert state.shape == (num_layers, batch_size, hidden_size)
 
     # Now test batch_first=True
-    layer_bf = Layer(input_size, hidden_size,
-                     num_layers=num_layers,
-                     dropout=0.0,
-                     batch_first=True,
-                     bias=False)
+    layer_bf = Layer(
+        input_size,
+        hidden_size,
+        num_layers=num_layers,
+        dropout=0.0,
+        batch_first=True,
+        bias=False,
+    )
     x_bf = torch.randn(batch_size, seq_len, input_size)
     out_bf, state_bf = layer_bf(x_bf)
 
@@ -105,11 +112,13 @@ def test_layer_shapes_and_state(Layer, is_double):
     else:
         assert state_bf.shape == (num_layers, batch_size, hidden_size)
 
+
 @pytest.mark.parametrize("Layer", LAYER_CLASSES)
 def test_default_repr_shows_input_hidden(Layer):
     # Default repr should exactly match "Class(input_size, hidden_size)"
     r = repr(Layer(3, 5))
     assert r == f"{Layer.__name__}(3, 5)"
+
 
 @pytest.mark.parametrize("Layer", LAYER_CLASSES)
 def test_repr_includes_nondefault_kwargs(Layer):

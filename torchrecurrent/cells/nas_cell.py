@@ -1,5 +1,5 @@
 # This file is a reimplementation in PyTorch of the NASCell as described in:
-# "Neural Architecture Search with Reinforcement Learning" (https://arxiv.org/pdf/1611.01578).
+# "Neural Architecture Search with Reinforcement Learning".
 # The original implementation in TensorFlow can be found here:
 # https://www.tensorflow.org/addons/api_docs/python/tfa/rnn/NASCell
 # No changes were made that alter the behavior of the cell compared to the original
@@ -40,9 +40,7 @@ class NAS(BaseDoubleRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(NAS, self).__init__(
-            input_size, hidden_size, num_layers, dropout, batch_first
-        )
+        super(NAS, self).__init__(input_size, hidden_size, num_layers, dropout, batch_first)
         self.initialize_cells(NASCell, **kwargs)
 
 
@@ -118,6 +116,7 @@ class NASCell(BaseDoubleRecurrentCell):
         >>> for t in range(x.size(0)):
         ...     h, c = cell(x[t], (h, c))
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -135,29 +134,33 @@ class NASCell(BaseDoubleRecurrentCell):
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-
         super(NASCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._default_register_tensors(input_size, hidden_size, ih_mult=8, hh_mult=8, bias=bias)
+        self._default_register_tensors(
+            input_size, hidden_size, ih_mult=8, hh_mult=8, bias=bias
+        )
         self.init_weights()
 
-    def forward(self,
-        inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tuple[Tensor, Tensor]:
         state, c_state = self._check_states(state)
         self._validate_input(inp)
         self._validate_states((state, c_state))
         inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
 
-        gates = inp @ self.weight_ih.t() + self.bias_ih + \
-            state @ self.weight_hh.t() + self.bias_hh
+        gates = (
+            inp @ self.weight_ih.t()
+            + self.bias_ih
+            + state @ self.weight_hh.t()
+            + self.bias_hh
+        )
         g0, g1, g2, g3, g4, g5, g6, g7 = gates.chunk(8, 1)
 
         layer1_0 = torch.sigmoid(g0)

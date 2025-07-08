@@ -83,11 +83,13 @@ class IndRNNCell(BaseSingleRecurrentCell):
         ...     hx = cell(x[t], hx)
         ...     outputs.append(hx)
     """
+
     weight_ih: Tensor
     vector_u: Tensor
     bias_ih: Tensor
 
-    def __init__(self,
+    def __init__(
+        self,
         input_size: int,
         hidden_size: int,
         bias: bool = True,
@@ -99,33 +101,33 @@ class IndRNNCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(IndRNNCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.activation_fn = activation_fn
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
 
-        self._register_tensors({
-            "weight_ih": ((hidden_size, input_size), True),
-            "vector_u": ((hidden_size, ), True),
-            "bias_ih": ((hidden_size, ), bias),
-        })
+        self._register_tensors(
+            {
+                "weight_ih": ((hidden_size, input_size), True),
+                "vector_u": ((hidden_size,), True),
+                "bias_ih": ((hidden_size,), bias),
+            }
+        )
         self.init_weights()
 
     def init_weights(self):
         for name, param in self.named_parameters():
-            if 'weight_ih' in name:
+            if "weight_ih" in name:
                 self.kernel_init(param)
-            elif 'vector_u' in name:
+            elif "vector_u" in name:
                 self.recurrent_kernel_init(param)
-            elif 'bias_ih' in name:
+            elif "bias_ih" in name:
                 self.bias_init(param)
 
-
-    def forward(self,
-        inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)

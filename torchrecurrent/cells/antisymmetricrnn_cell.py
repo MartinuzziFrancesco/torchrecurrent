@@ -95,12 +95,14 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         >>> h0 = torch.zeros(5, 20)  # batch=5, hidden_size=20
         >>> h1 = cell(x, h0)
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
 
-    def __init__(self,
+    def __init__(
+        self,
         input_size: int,
         hidden_size: int,
         bias: bool = True,
@@ -109,14 +111,13 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
         recurrent_bias_init: Callable = nn.init.zeros_,
-        epsilon:float = 1.0,
-        gamma:float = 0.0,
+        epsilon: float = 1.0,
+        gamma: float = 0.0,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-
         super(AntisymmetricRNNCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype=dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.activation_fn = activation_fn
         self.kernel_init = kernel_init
@@ -129,9 +130,8 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         self._default_register_tensors(input_size, hidden_size, bias=bias)
         self.init_weights()
 
-    def forward(self,
-        inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)
@@ -139,8 +139,12 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
 
         recurrent_matrix = _compute_asym(self.weight_hh, self.gamma)
-        pre_act = inp @ self.weight_ih.t() + self.bias_ih + \
-            state @ recurrent_matrix.t() + self.bias_hh
+        pre_act = (
+            inp @ self.weight_ih.t()
+            + self.bias_ih
+            + state @ recurrent_matrix.t()
+            + self.bias_hh
+        )
         new_state = state + self.epsilon * self.activation_fn(pre_act)
 
         if not is_batched:
@@ -237,12 +241,14 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         >>> h0 = torch.zeros(4, 16)  # batch=4, hidden_size=16
         >>> h1 = cell(x, h0)         # new hidden state
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
 
-    def __init__(self,
+    def __init__(
+        self,
         input_size: int,
         hidden_size: int,
         bias: bool = True,
@@ -250,14 +256,13 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
-        epsilon:float = 1.0,
-        gamma:float = 0.0,
+        epsilon: float = 1.0,
+        gamma: float = 0.0,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-
         super(GatedAntisymmetricRNNCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.activation_fn = activation_fn
         self.kernel_init = kernel_init
@@ -266,12 +271,13 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         self.epsilon = epsilon
         self.gamma = gamma
 
-        self._default_register_tensors(input_size, hidden_size, ih_mult=2, hh_mult=1, bias=bias)
+        self._default_register_tensors(
+            input_size, hidden_size, ih_mult=2, hh_mult=1, bias=bias
+        )
         self.init_weights()
 
-    def forward(self,
-        inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)
@@ -294,5 +300,5 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
 def _compute_asym(weight_hh: Tensor, gamma: float) -> Tensor:
     if weight_hh.dim() != 2 or weight_hh.size(0) != weight_hh.size(1):
         raise ValueError(f"weight_hh must be square, got shape {weight_hh.shape}")
-    I = torch.eye(weight_hh.size(0), dtype=weight_hh.dtype, device=weight_hh.device)
-    return weight_hh - weight_hh.t() - gamma * I
+    id_mat = torch.eye(weight_hh.size(0), dtype=weight_hh.dtype, device=weight_hh.device)
+    return weight_hh - weight_hh.t() - gamma * id_mat

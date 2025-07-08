@@ -4,6 +4,7 @@ from torch import Tensor
 from typing import Optional, Callable, Tuple, Union
 from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
+
 class MGU(BaseSingleRecurrentLayer):
     def __init__(
         self,
@@ -14,9 +15,7 @@ class MGU(BaseSingleRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(MGU, self).__init__(
-            input_size, hidden_size, num_layers, dropout, batch_first
-        )
+        super(MGU, self).__init__(input_size, hidden_size, num_layers, dropout, batch_first)
         self.initialize_cells(MGUCell, **kwargs)
 
 
@@ -61,8 +60,8 @@ class MGUCell(BaseSingleRecurrentCell):
             :math:`\mathbf{W}_{hh}^*`. Default: ``nn.init.xavier_uniform_``.
         bias_init (Callable, optional): Initializer for input biases when `bias=True`.
             Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for hidden biases when `bias=True`.
-            Default: ``nn.init.zeros_``.
+        recurrent_bias_init (Callable, optional): Initializer for hidden biases
+            when `bias=True`. Default: ``nn.init.zeros_``.
         device (torch.device, optional): Device of the parameters. Default: CPU.
         dtype (torch.dtype, optional): Data type of the parameters. Default: PyTorch float.
 
@@ -98,6 +97,7 @@ class MGUCell(BaseSingleRecurrentCell):
         ...     hx = cell(x[t], hx)
         ...     outs.append(hx)
     """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -110,16 +110,15 @@ class MGUCell(BaseSingleRecurrentCell):
         bias: bool = True,
         activation_fn: Callable = torch.tanh,
         gate_activation_fn: Callable = torch.sigmoid,
-        kernel_init = nn.init.xavier_uniform_,
-        recurrent_kernel_init = nn.init.xavier_uniform_,
-        bias_init = nn.init.zeros_,
-        recurrent_bias_init = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-
         super(MGUCell, self).__init__(
-            input_size, hidden_size, bias, device = device, dtype = dtype
+            input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.activation_fn = activation_fn
         self.gate_activation_fn = gate_activation_fn
@@ -128,12 +127,13 @@ class MGUCell(BaseSingleRecurrentCell):
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._default_register_tensors(input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias)
+        self._default_register_tensors(
+            input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias
+        )
         self.init_weights()
 
-    def forward(self,
-        inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+    def forward(
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Tensor:
         state = self._check_state(state)
         self._validate_input(inp)
@@ -145,12 +145,15 @@ class MGUCell(BaseSingleRecurrentCell):
         bias_ih_f, bias_ih_h = self.bias_ih.chunk(2, 0)
         bias_hh_f, bias_hh_h = self.bias_hh.chunk(2, 0)
 
-        fg = inp @ weight_ih_f.t() + bias_ih_f + \
-            state @ weight_hh_f.t() + bias_hh_f
+        fg = inp @ weight_ih_f.t() + bias_ih_f + state @ weight_hh_f.t() + bias_hh_f
         forget_gate = self.gate_activation_fn(fg)
         hidden_modulated = forget_gate * state
-        ch = inp @ weight_ih_h.t() + bias_ih_h + \
-            hidden_modulated @ weight_hh_h.t() + bias_hh_h
+        ch = (
+            inp @ weight_ih_h.t()
+            + bias_ih_h
+            + hidden_modulated @ weight_hh_h.t()
+            + bias_hh_h
+        )
         candidate_hidden = self.activation_fn(ch)
         new_state = forget_gate * candidate_hidden + (1 - forget_gate) * state
 

@@ -17,9 +17,7 @@ class RHN(BaseRecurrentLayer):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(RHN, self).__init__(
-            input_size, hidden_size, num_layers, dropout, batch_first
-        )
+        super(RHN, self).__init__(input_size, hidden_size, num_layers, dropout, batch_first)
         self.initialize_cells(RHNCell, **kwargs)
 
 
@@ -75,9 +73,7 @@ class RHNCell(nn.Module):
                     hidden_gate - current_state
                 ) * transform_gate + current_state
             else:
-                current_state = (
-                    hidden_gate * transform_gate + current_state * carry_gate
-                )
+                current_state = hidden_gate * transform_gate + current_state * carry_gate
 
         if not is_batched:
             current_state = current_state.squeeze(0)
@@ -94,7 +90,6 @@ class RHNCellUnit(nn.Module):
         kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
     ):
-
         super(RHNCellUnit, self).__init__()
         self.hidden_size = hidden_size
         self.bias = bias

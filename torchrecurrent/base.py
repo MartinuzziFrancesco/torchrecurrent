@@ -14,7 +14,7 @@ class BaseRecurrentCell(nn.Module, ABC):
         bias: bool = True,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
-        **kwargs
+        **kwargs,
     ):
         super().__init__()
         self.input_size = input_size
@@ -41,9 +41,7 @@ class BaseRecurrentCell(nn.Module, ABC):
 
     @abstractmethod
     def forward(
-        self,
-        inp: Tensor,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Union[Tensor, Tuple[Tensor, ...]]:
         """
         Run one step of the recurrent cell.
@@ -63,7 +61,9 @@ class BaseRecurrentCell(nn.Module, ABC):
                 - For single-state cells: a 1-tuple `(h_new,)`.
                 - For double-state cells: a 2-tuple `(h_new, c_new)`.
         """
-        raise NotImplementedError(f"{self.__class__.__name__}.forward() must be implemented by subclass")
+        raise NotImplementedError(
+            f"{self.__class__.__name__}.forward() must be implemented by subclass"
+        )
 
     def _init_state(self, inp: Tensor) -> Union[Tensor, Tuple[Tensor, Tensor]]:
         """
@@ -90,10 +90,7 @@ class BaseRecurrentCell(nn.Module, ABC):
                 f"{cls}: Expected input to be 1D or 2D, got {inp.dim()}D instead"
             )
 
-    def _register_tensors(
-            self,
-            specs: Dict[str, Tuple[Tuple[int, ...], bool]]
-        ):
+    def _register_tensors(self, specs: Dict[str, Tuple[Tuple[int, ...], bool]]):
         """
         Given a dict mapping attribute names to (shape, trainable_flag),
         create either a Parameter (if trainable_flag=True) or
@@ -138,21 +135,22 @@ class BaseRecurrentCell(nn.Module, ABC):
         specs = {
             prefix_ih: ((ih_mult * hidden_size, input_size), True),
             prefix_hh: ((hh_mult * hidden_size, hidden_size), True),
-            prefix_bih: ((ih_mult * hidden_size, ), bias),
-            prefix_bhh: ((hh_mult * hidden_size, ), bias),
+            prefix_bih: ((ih_mult * hidden_size,), bias),
+            prefix_bhh: ((hh_mult * hidden_size,), bias),
         }
         self._register_tensors(specs)
 
     def init_weights(self):
         for name, param in self.named_parameters():
-            if 'weight_ih' in name:
+            if "weight_ih" in name:
                 self.kernel_init(param)
-            elif 'weight_hh' in name:
+            elif "weight_hh" in name:
                 self.recurrent_kernel_init(param)
-            elif 'bias_ih' in name:
+            elif "bias_ih" in name:
                 self.bias_init(param)
-            elif 'bias_hh' in name:
+            elif "bias_hh" in name:
                 self.bias_init(param)
+
 
 class BaseSingleRecurrentCell(BaseRecurrentCell):
     def uses_double_state(self) -> bool:
@@ -168,18 +166,14 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
 
         if state.dim() not in (1, 2):
             cls = self.__class__.__name__
-            raise ValueError(
-                f"{cls}: state must be 1D or 2D, got {state.dim()}D instead"
-            )
+            raise ValueError(f"{cls}: state must be 1D or 2D, got {state.dim()}D instead")
 
     def _init_state(self, inp: Tensor) -> Tensor:
         batch = inp.shape[0] if inp.dim() == 2 else 1
         return torch.zeros(batch, self.hidden_size, device=inp.device, dtype=inp.dtype)
 
     def _preprocess_input_and_state(
-        self,
-        inp: Tensor,
-        state: Optional[Tensor]
+        self, inp: Tensor, state: Optional[Tensor]
     ) -> Tuple[Tensor, Tensor, bool]:
         """
         1) Ensure `inp` is 2D by adding a batch dim if needed.
@@ -201,8 +195,7 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
         return inp, state, is_batched
 
     def _check_state(
-        self,
-        state: Optional[Union[Tensor, Tuple[Tensor, ...]]]
+        self, state: Optional[Union[Tensor, Tuple[Tensor, ...]]]
     ) -> Optional[Tensor]:
         """
         If user passed a tuple to a single‐state cell, warn and pick the first element.
@@ -213,18 +206,17 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
                 f"{self.__class__.__name__}.forward() got a tuple for `state`; "
                 "using only the first tensor as the hidden state.",
                 UserWarning,
-                stacklevel=3
+                stacklevel=3,
             )
             return state[0]
         return state
+
 
 class BaseDoubleRecurrentCell(BaseRecurrentCell):
     def uses_double_state(self) -> bool:
         return True
 
-    def _validate_states(self,
-        states: Optional[Tuple[Optional[Tensor], Optional[Tensor]]]
-    ):
+    def _validate_states(self, states: Optional[Tuple[Optional[Tensor], Optional[Tensor]]]):
         if states is None:
             return
         if not (isinstance(states, tuple) and len(states) == 2):
@@ -243,7 +235,7 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
     def _preprocess_states(
         self,
         inp: Tensor,
-        states: Optional[Tuple[Optional[Tensor], Optional[Tensor]]] = None
+        states: Optional[Tuple[Optional[Tensor], Optional[Tensor]]] = None,
     ) -> Tuple[Tensor, Tensor, Tensor, bool]:
         """
         - Ensures inp is treated as batched
@@ -272,8 +264,7 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
         return inp, state, c_state, is_batched
 
     def _check_states(
-        self,
-        states: Optional[Union[Tensor, Tuple[Tensor, ...]]]
+        self, states: Optional[Union[Tensor, Tuple[Tensor, ...]]]
     ) -> Tuple[Optional[Tensor], Optional[Tensor]]:
         """
         Sanity‐check the `states` argument for double‐state cells.
@@ -292,7 +283,7 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
                 f"{self.__class__.__name__}.forward() got a single Tensor for `states`; "
                 "treating it as the hidden state and initializing cell‐state to None.",
                 UserWarning,
-                stacklevel=3
+                stacklevel=3,
             )
             return states, None
 
@@ -307,12 +298,14 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
 
 
 class BaseRecurrentLayer(nn.Module):
-    def __init__(self,
-                 input_size: int,
-                 hidden_size: int,
-                 num_layers: int = 1,
-                 dropout: float = 0.0,
-                 batch_first: bool = False):
+    def __init__(
+        self,
+        input_size: int,
+        hidden_size: int,
+        num_layers: int = 1,
+        dropout: float = 0.0,
+        batch_first: bool = False,
+    ):
         super(BaseRecurrentLayer, self).__init__()
         self.input_size = input_size
         self.hidden_size = hidden_size
@@ -340,19 +333,18 @@ class BaseRecurrentLayer(nn.Module):
         return f"{classname}({', '.join(args)})"
 
     def initialize_cells(self, cell_class, **kwargs):
-        """ Helper method to initialize cells for the derived recurrent layer class. """
+        """Helper method to initialize cells for the derived recurrent layer class."""
         layers = [cell_class(self.input_size, self.hidden_size, **kwargs)] + [
-            cell_class(self.hidden_size, self.hidden_size, **kwargs) for _ in range(1, self.num_layers)
+            cell_class(self.hidden_size, self.hidden_size, **kwargs)
+            for _ in range(1, self.num_layers)
         ]
         self.cells = nn.ModuleList(layers)
 
+
 class BaseSingleRecurrentLayer(BaseRecurrentLayer):
     """For RNN‐style cells (one hidden state per layer)."""
-    def forward(
-        self,
-        inp: Tensor,
-        state: Optional[Tensor] = None
-    ) -> Tuple[Tensor, Tensor]:
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tuple[Tensor, Tensor]:
         if self.batch_first:
             inp = inp.transpose(0, 1)
 
@@ -360,8 +352,11 @@ class BaseSingleRecurrentLayer(BaseRecurrentLayer):
         # init single‐state
         if state is None:
             state = torch.zeros(
-                self.num_layers, batch_size, self.hidden_size,
-                dtype=inp.dtype, device=inp.device
+                self.num_layers,
+                batch_size,
+                self.hidden_size,
+                dtype=inp.dtype,
+                device=inp.device,
             )
 
         outputs = []
@@ -370,7 +365,7 @@ class BaseSingleRecurrentLayer(BaseRecurrentLayer):
             new_states = []
             for layer_idx, cell in enumerate(self.cells):
                 h_prev = state[layer_idx]
-                h_new  = cell(x, h_prev)
+                h_new = cell(x, h_prev)
                 new_states.append(h_new)
                 x = h_new
                 if self.dropout_layer and layer_idx < self.num_layers - 1:
@@ -384,12 +379,12 @@ class BaseSingleRecurrentLayer(BaseRecurrentLayer):
             out = out.transpose(0, 1)
         return out, state
 
+
 class BaseDoubleRecurrentLayer(BaseRecurrentLayer):
     """For LSTM‐style cells (hidden *and* cell state per layer)."""
+
     def forward(
-        self,
-        inp: Tensor,
-        state: Optional[Tuple[Tensor, Tensor]] = None
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
         if self.batch_first:
             inp = inp.transpose(0, 1)
@@ -397,8 +392,13 @@ class BaseDoubleRecurrentLayer(BaseRecurrentLayer):
         seq_len, batch_size, _ = inp.size()
         # init double‐state
         if state is None:
-            h = torch.zeros(self.num_layers, batch_size, self.hidden_size,
-                            dtype=inp.dtype, device=inp.device)
+            h = torch.zeros(
+                self.num_layers,
+                batch_size,
+                self.hidden_size,
+                dtype=inp.dtype,
+                device=inp.device,
+            )
             c = torch.zeros_like(h)
             state = (h, c)
 
@@ -410,7 +410,8 @@ class BaseDoubleRecurrentLayer(BaseRecurrentLayer):
 
             for layer_idx, cell in enumerate(self.cells):
                 h_i, c_i = cell(x, (h_prev[layer_idx], c_prev[layer_idx]))
-                new_h.append(h_i); new_c.append(c_i)
+                new_h.append(h_i)
+                new_c.append(c_i)
                 x = h_i
                 if self.dropout_layer and layer_idx < self.num_layers - 1:
                     x = self.dropout_layer(x)

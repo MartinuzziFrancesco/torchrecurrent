@@ -1,21 +1,20 @@
 import torch
 import torch.nn as nn
-from torch import Tensor
-from typing import Optional, Callable, Tuple
-from ..base import BaseRecurrentLayer
+from typing import Callable
 
 
 class SCRNCell(nn.Module):
-    def __init__(self,
+    def __init__(
+        self,
         input_size: int,
         hidden_size: int,
         bias: bool = True,
         activation_fn: Callable = torch.tanh,
-        kernel_init = nn.init.xavier_uniform_,
-        recurrent_kernel_init = nn.init.xavier_uniform_,
-        bias_init = nn.init.zeros_,
-        recurrent_bias_init = nn.init.zeros_,):
-        
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
+    ):
         super(SCRNCell, self).__init__()
         self.hidden_size = hidden_size
         self.activation_fn = activation_fn
