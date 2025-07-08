@@ -1,4 +1,15 @@
-# torchrecurrent
+<div align="center">
+    <h2>torchrecurrent</h2>
+</div>
+
+<div align="center">
+
+[![PyPI](https://img.shields.io/pypi/v/torchrecurrent.svg)](https://pypi.org/project/torchrecurrent/)
+[![codecov](https://codecov.io/gh/MartinuzziFrancesco/torchrecurrent/graph/badge.svg?token=AW36UWD1OM)](https://codecov.io/gh/MartinuzziFrancesco/torchrecurrent)
+[![CI & Coverage](https://github.com/MartinuzziFrancesco/torchrecurrent/actions/workflows/ci.yml/badge.svg)](https://github.com/MartinuzziFrancesco/torchrecurrent/actions/workflows/ci.yml)
+[![Docs](https://img.shields.io/badge/Docs-gh--pages-blue?logo=github)](https://MartinuzziFrancesco.github.io/torchrecurrent/)
+
+</div>
 
 Pytorch compatible implementation of various recurrent layers
 found in the literature.
