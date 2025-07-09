@@ -18,6 +18,12 @@ found in the literature.
 and is not affiliated with the PyTorch project or Meta AI.
 The name reflects compatibility with PyTorch, not any official endorsement.
 
+## Installation
+
+```shell
+pip install torchrecurrent
+```
+
 ## Features
 
 | Short name | Publication venue | Official implementation |
