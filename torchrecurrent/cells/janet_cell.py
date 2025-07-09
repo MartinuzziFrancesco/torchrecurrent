@@ -22,6 +22,84 @@ class JANET(BaseDoubleRecurrentLayer):
 
 
 class JANETCell(BaseDoubleRecurrentCell):
+    r"""A JANET (Just Another NETwork) recurrent cell.
+
+    Implements the JANET update from
+    “Just Another NETwork” <https://arxiv.org/abs/1804.04849>_.
+
+    .. math::
+
+        \begin{aligned}
+          \mathbf{s}(t) &= \mathbf{W}_{ih}^{f}\,\mathbf{x}(t)
+             + \mathbf{b}_{ih}^{f}
+             + \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1)
+             + \mathbf{b}_{hh}^{f}, \\
+          \tilde{\mathbf{c}}(t) &= \tanh\Bigl(
+             \mathbf{W}_{ih}^{c}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{c}
+             + \mathbf{W}_{hh}^{c}\,\mathbf{h}(t-1)
+             + \mathbf{b}_{hh}^{c}\Bigr), \\
+          \mathbf{c}(t) &= \sigma\bigl(\mathbf{s}(t)\bigr)\circ \mathbf{c}(t-1)
+             \;+\;\bigl(1 - \sigma\bigl(\mathbf{s}(t) - \beta\bigr)\bigr)
+             \circ \tilde{\mathbf{c}}(t), \\
+          \mathbf{h}(t) &= \mathbf{c}(t)
+        \end{aligned}
+
+    where :math:`\sigma` is the sigmoid function and :math:`\circ` is the
+    Hadamard product.
+
+    Args:
+        input_size (int):  Number of expected features in the input tensor.
+        hidden_size (int): Number of features in the hidden and cell states.
+        bias (bool):       If ``False``, the cell will not use bias terms.
+                           Default: ``True``.
+        kernel_init (Callable):
+                           Initializer for input‐to‐hidden weights
+                           (default: ``nn.init.xavier_uniform_``).
+        recurrent_kernel_init (Callable):
+                           Initializer for hidden‐to‐hidden weights
+                           (default: ``nn.init.xavier_uniform_``).
+        bias_init (Callable):
+                           Initializer for input biases
+                           (default: ``nn.init.zeros_``).
+        recurrent_bias_init (Callable):
+                           Initializer for hidden biases
+                           (default: ``nn.init.zeros_``).
+        beta (float):      Threshold shift for the update gate.
+                           Default: 1.0.
+        device (torch.device, optional): Device on which to place parameters.
+        dtype (torch.dtype, optional):   Data type for parameters.
+
+    Inputs:
+        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`
+        - **state** (Tensor or Tuple[Tensor, Tensor], optional):
+          previous `(h, c)` each of shape `(batch, hidden_size)` or
+          `(hidden_size,)`. If not provided, defaults to zeros.
+
+    Outputs:
+        - **new_state** (Tensor): Updated hidden state, same shape as `h`.
+        - **new_cstate** (Tensor): Updated cell state, same shape as `c`.
+
+    Attributes:
+        weight_ih (Tensor): Learnable input‐to‐hidden weights for gates and candidate,
+                             shape `(2*hidden_size, input_size)`.
+        weight_hh (Tensor): Learnable hidden‐to‐hidden weights for gates and candidate,
+                             shape `(2*hidden_size, hidden_size)`.
+        bias_ih   (Tensor): Learnable input biases, shape `(2*hidden_size,)`.
+        bias_hh   (Tensor): Learnable hidden biases, shape `(2*hidden_size,)`.
+        beta      (Parameter): Learnable threshold shift for update gating.
+
+    .. note::
+        JANET simplifies the LSTM by using a single gate computation
+        and tying the hidden and output states to the cell state.
+
+    Examples::
+        >>> cell = JANETCell(10, 20, beta=0.5)
+        >>> x = torch.randn(5, 10)      # batch=5, input_size=10
+        >>> h0 = torch.zeros(5, 20)
+        >>> c0 = torch.zeros(5, 20)
+        >>> h1, c1 = cell(x, (h0, c0))
+    """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
