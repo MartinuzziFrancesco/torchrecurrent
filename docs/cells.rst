@@ -16,6 +16,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.FastGRNNCell
    torchrecurrent.ATRCell
    torchrecurrent.IndRNNCell
+   torchrecurrent.JANETCell
    torchrecurrent.LiGRUCell
    torchrecurrent.MGUCell
    torchrecurrent.NASCell
