@@ -20,6 +20,86 @@ class LEM(BaseDoubleRecurrentLayer):
 
 
 class LEMCell(BaseDoubleRecurrentCell):
+    r"""A Long Expressive Memory (LEM) recurrent cell.
+
+    Implements the LEM update rule from
+    “Long expressive memory unit” <https://arxiv.org/pdf/2110.04744>_.
+
+    .. math::
+
+        \begin{aligned}
+            \boldsymbol{\Delta t}(t) &= \Delta t \,\hat{\sigma}\bigl(
+            \mathbf{W}_{ih}^{1}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{1}
+            + \mathbf{W}_{hh}^{1}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{1}
+            \bigr), \\
+            \overline{\boldsymbol{\Delta t}}(t) &= \Delta t \,\hat{\sigma}\bigl(
+            \mathbf{W}_{ih}^{2}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{2}
+            + \mathbf{W}_{hh}^{2}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{2}
+            \bigr), \\
+            \mathbf{c}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{c}(t-1)
+            + \boldsymbol{\Delta t}(t)\circ\sigma\bigl(
+                \mathbf{W}_{ih}^{c}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{c}
+                + \mathbf{W}_{hh}^{c}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{c}
+            \bigr), \\
+            \mathbf{h}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{h}(t-1)
+            + \boldsymbol{\Delta t}(t)\circ\sigma\bigl(
+                \mathbf{W}_{ih}^{h}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{h}
+                + \mathbf{W}_{ch}\,\mathbf{c}(t) + \mathbf{b}_{ch}
+            \bigr)
+        \end{aligned}
+
+    where :math:`\hat{\sigma}` is the sigmoid function and :math:`\circ`
+    denotes element-wise multiplication.
+
+    Args:
+        input_size (int):  Number of expected features in the input tensor.
+        hidden_size (int): Number of features in the hidden and cell states.
+        bias (bool):       If ``False``, no bias terms are used. Default: ``True``.
+        kernel_init (Callable):
+                            Initializer for the input-to-hidden weight matrix.
+        recurrent_kernel_init (Callable):
+                            Initializer for the hidden-to-hidden weight matrix.
+        cell_kernel_init (Callable):
+                            Initializer for the cell-to-hidden weight matrix.
+        bias_init (Callable):
+                            Initializer for input biases.
+        recurrent_bias_init (Callable):
+                            Initializer for hidden biases.
+        cell_bias_init (Callable):
+                            Initializer for cell biases.
+        dt (float):        Integration time step Δt. Default: 1.0.
+        device (torch.device, optional): Device on which to place parameters.
+        dtype (torch.dtype, optional):   Data type for parameters.
+
+    Inputs:
+        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`.
+        - **state** (Tensor or Tuple[Tensor, Tensor], optional):
+            Previous `(h, c)` states each of shape `(batch, hidden_size)` or
+            `(hidden_size,)`. Defaults to zeros if not provided.
+
+    Outputs:
+        - **new_state** (Tensor): Updated hidden state, same shape as `h`.
+        - **new_cstate** (Tensor): Updated cell state, same shape as `c`.
+
+    Attributes:
+        weight_ih (Tensor): Input-to-hidden weight matrix, shape
+                                `(4*hidden_size, input_size)`.
+        weight_hh (Tensor): Hidden-to-hidden weight matrix, shape
+                                `(3*hidden_size, hidden_size)`.
+        weight_ch (Tensor): Cell-to-hidden weight matrix, shape
+                                `(hidden_size, hidden_size)`.
+        bias_ih   (Tensor): Input bias, shape `(4*hidden_size,)`.
+        bias_hh   (Tensor): Hidden bias, shape `(3*hidden_size,)`.
+        bias_ch   (Tensor): Cell bias,   shape `(hidden_size,)`.
+
+    Examples::
+        >>> cell = LEMCell(16, 32, dt=0.5)
+        >>> x = torch.randn(8, 16)      # batch=8, input_size=16
+        >>> h0 = torch.zeros(8, 32)
+        >>> c0 = torch.zeros(8, 32)
+        >>> h1, c1 = cell(x, (h0, c0))
+    """
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_ch: Tensor

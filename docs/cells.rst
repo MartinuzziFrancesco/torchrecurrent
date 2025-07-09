@@ -17,6 +17,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.ATRCell
    torchrecurrent.IndRNNCell
    torchrecurrent.JANETCell
+   torchrecurrent.LEMCell
    torchrecurrent.LiGRUCell
    torchrecurrent.MGUCell
    torchrecurrent.NASCell
