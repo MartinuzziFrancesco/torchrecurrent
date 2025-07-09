@@ -1,0 +1,89 @@
+﻿torchrecurrent.LEMCell
+======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: LEMCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LEMCell.__init__
+      ~LEMCell.add_module
+      ~LEMCell.apply
+      ~LEMCell.bfloat16
+      ~LEMCell.buffers
+      ~LEMCell.children
+      ~LEMCell.compile
+      ~LEMCell.cpu
+      ~LEMCell.cuda
+      ~LEMCell.double
+      ~LEMCell.eval
+      ~LEMCell.extra_repr
+      ~LEMCell.float
+      ~LEMCell.forward
+      ~LEMCell.get_buffer
+      ~LEMCell.get_extra_state
+      ~LEMCell.get_parameter
+      ~LEMCell.get_submodule
+      ~LEMCell.half
+      ~LEMCell.init_weights
+      ~LEMCell.ipu
+      ~LEMCell.load_state_dict
+      ~LEMCell.modules
+      ~LEMCell.mtia
+      ~LEMCell.named_buffers
+      ~LEMCell.named_children
+      ~LEMCell.named_modules
+      ~LEMCell.named_parameters
+      ~LEMCell.parameters
+      ~LEMCell.register_backward_hook
+      ~LEMCell.register_buffer
+      ~LEMCell.register_forward_hook
+      ~LEMCell.register_forward_pre_hook
+      ~LEMCell.register_full_backward_hook
+      ~LEMCell.register_full_backward_pre_hook
+      ~LEMCell.register_load_state_dict_post_hook
+      ~LEMCell.register_load_state_dict_pre_hook
+      ~LEMCell.register_module
+      ~LEMCell.register_parameter
+      ~LEMCell.register_state_dict_post_hook
+      ~LEMCell.register_state_dict_pre_hook
+      ~LEMCell.requires_grad_
+      ~LEMCell.set_extra_state
+      ~LEMCell.set_submodule
+      ~LEMCell.share_memory
+      ~LEMCell.state_dict
+      ~LEMCell.to
+      ~LEMCell.to_empty
+      ~LEMCell.train
+      ~LEMCell.type
+      ~LEMCell.uses_double_state
+      ~LEMCell.xpu
+      ~LEMCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~LEMCell.T_destination
+      ~LEMCell.call_super_init
+      ~LEMCell.dump_patches
+      ~LEMCell.weight_ih
+      ~LEMCell.weight_hh
+      ~LEMCell.weight_ch
+      ~LEMCell.bias_ih
+      ~LEMCell.bias_hh
+      ~LEMCell.bias_ch
+      ~LEMCell.training
+   
+   
