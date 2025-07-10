@@ -20,6 +20,7 @@ from .indrnn_cell import IndRNN, IndRNNCell
 from .janet_cell import JANET, JANETCell
 from .lem_cell import LEM, LEMCell
 from .ligru_cell import LiGRU, LiGRUCell
+from .lightru_cell import LightRU, LightRUCell
 from .nas_cell import NAS, NASCell
 from .peepholelstm_cell import PeepholeLSTM, PeepholeLSTMCell
 from .ran_cell import RAN, RANCell
@@ -56,6 +57,8 @@ __all__ = [
     "LEMCell",
     "LiGRU",
     "LiGRUCell",
+    "LightRU",
+    "LightRUCell",
     "NAS",
     "NASCell",
     "PeepholeLSTM",
