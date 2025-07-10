@@ -22,6 +22,68 @@ class LightRU(BaseSingleRecurrentLayer):
 
 
 class LightRUCell(BaseSingleRecurrentCell):
+    r"""A Light Recurrent Unit (LightRU) cell.
+
+    A streamlined gated cell that computes a single forget gate
+    and a candidate update for efficient recurrence.
+
+    .. math::
+
+        \begin{aligned}
+        \tilde{\mathbf{h}}(t) &= \tanh\bigl(
+            \mathbf{W}_{ih}^{h}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{h}
+        \bigr), \\
+        \mathbf{f}(t) &= \sigma\bigl(
+            \mathbf{W}_{ih}^{f}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{f}
+            + \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{f}
+        \bigr), \\
+        \mathbf{h}(t) &= \bigl(1 - \mathbf{f}(t)\bigr)\circ \mathbf{h}(t-1)
+            \;+\; \mathbf{f}(t)\circ \tilde{\mathbf{h}}(t),
+        \end{aligned}
+
+    where :math:`\sigma` is the sigmoid function and :math:`\circ`
+    denotes element-wise multiplication.
+
+    Args:
+        input_size (int):  Size of the input feature vector.
+        hidden_size (int): Size of the hidden state.
+        bias (bool):       Whether to include bias terms. Default: True.
+        kernel_init (Callable):
+                            Initializer for input-to-hidden weights
+                            (default: ``nn.init.xavier_uniform_``).
+        recurrent_kernel_init (Callable):
+                            Initializer for hidden-to-hidden weights
+                            (default: ``nn.init.xavier_uniform_``).
+        bias_init (Callable):
+                            Initializer for input biases
+                            (default: ``nn.init.zeros_``).
+        recurrent_bias_init (Callable):
+                            Initializer for hidden biases
+                            (default: ``nn.init.zeros_``).
+        device (torch.device, optional): Device for parameters.
+        dtype (torch.dtype, optional):   Data type for parameters.
+
+    Inputs:
+        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`.
+        - **state** (Tensor, optional): previous hidden state of shape
+            `(batch, hidden_size)` or `(hidden_size,)`. Defaults to zero.
+
+    Outputs:
+        - **new_state** (Tensor): Updated hidden state, same shape as `state`.
+
+    Attributes:
+        weight_ih (Tensor): Input-to-hidden weights, shape `(2*hidden_size, input_size)`.
+        weight_hh (Tensor): Hidden-to-hidden weights, shape `(hidden_size, hidden_size)`.
+        bias_ih   (Tensor): Input bias, shape `(2*hidden_size,)`.
+        bias_hh   (Tensor): Hidden bias, shape `(hidden_size,)`.
+
+    Examples::
+        >>> cell = LightRUCell(8, 16)
+        >>> x = torch.randn(4, 8)   # batch=4, input_size=8
+        >>> h0 = torch.zeros(4, 16)
+        >>> h1 = cell(x, h0)
+    """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
