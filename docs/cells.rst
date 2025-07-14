@@ -29,4 +29,5 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.OriginalLSTMCell
    torchrecurrent.PeepholeLSTMCell
    torchrecurrent.RANCell
+   torchrecurrent.SCRN
    torchrecurrent.coRNNCell

@@ -27,9 +27,10 @@ from .nas_cell import NAS, NASCell
 from .originallstm_cell import OriginalLSTM, OriginalLSTMCell
 from .peepholelstm_cell import PeepholeLSTM, PeepholeLSTMCell
 from .ran_cell import RAN, RANCell
+from .scrn_cell import SCRN, SCRNCell
 
 # from .rhn_cell import RHN, RHNCell
-# from .scrn_cell import SCRN, SCRNCell
+
 
 __all__ = [
     "AntisymmetricRNNCell",
@@ -78,4 +79,6 @@ __all__ = [
     "PeepholeLSTMCell",
     "RAN",
     "RANCell",
+    "SCRN",
+    "SCRNCell",
 ]

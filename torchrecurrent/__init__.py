@@ -29,7 +29,7 @@ from .cells import (
     PeepholeLSTMCell,
     RANCell,
     coRNNCell,
-    # SCRNCell,
+    SCRNCell,
 )
 
 # layers
@@ -57,7 +57,7 @@ from .cells import (
     PeepholeLSTM,
     RAN,
     coRNN,
-    # SCRN,
+    SCRN,
 )
 
 __all__ = [
@@ -107,4 +107,6 @@ __all__ = [
     "PeepholeLSTMCell",
     "RAN",
     "RANCell",
+    "SCRN",
+    "SCRNCell",
 ]
