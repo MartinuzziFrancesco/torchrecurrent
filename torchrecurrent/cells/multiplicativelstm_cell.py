@@ -22,6 +22,86 @@ class MultiplicativeLSTM(BaseDoubleRecurrentLayer):
 
 
 class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
+    r"""A multiplicative LSTM cell.
+
+    Combines input, hidden, and multiplicative interactions to enrich
+    the gating dynamics, as described in
+    “Multiplicative LSTM for Sequence Modeling” <https://arxiv.org/abs/1609.07959>_.
+
+    .. math::
+
+        \begin{aligned}
+        \mathbf{m}(t) &= \bigl(\mathbf{W}_{ih}^{m}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{m}\bigr)\,\circ\,\bigl(\mathbf{W}_{hh}^{m}\,\mathbf{h}(t-1)
+            + \mathbf{b}_{hh}^{m}\bigr), \\
+        \hat{\mathbf{h}}(t) &= \mathbf{W}_{ih}^{h}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{h}
+            + \mathbf{W}_{mh}^{h}\,\mathbf{m}(t)
+            + \mathbf{b}_{mh}^{h}, \\
+        \mathbf{i}(t) &= \sigma\bigl(\mathbf{W}_{ih}^{i}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{i}
+            + \mathbf{W}_{mh}^{i}\,\mathbf{m}(t)
+            + \mathbf{b}_{mh}^{i}\bigr), \\
+        \mathbf{f}(t) &= \sigma\bigl(\mathbf{W}_{ih}^{f}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{f}
+            + \mathbf{W}_{mh}^{f}\,\mathbf{m}(t)
+            + \mathbf{b}_{mh}^{f}\bigr), \\
+        \mathbf{o}(t) &= \sigma\bigl(\mathbf{W}_{ih}^{o}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{o}
+            + \mathbf{W}_{mh}^{o}\,\mathbf{m}(t)
+            + \mathbf{b}_{mh}^{o}\bigr), \\
+        \mathbf{c}(t) &= \mathbf{f}(t)\circ\mathbf{c}(t-1)
+            + \mathbf{i}(t)\circ\tanh\bigl(\hat{\mathbf{h}}(t)\bigr), \\
+        \mathbf{h}(t) &= \tanh\bigl(\mathbf{c}(t)\bigr)\circ\mathbf{o}(t)
+        \end{aligned}
+
+    where :math:`\circ` is the Hadamard product and :math:`\sigma` the sigmoid.
+
+    Args:
+        input_size (int):  Number of expected features in the input `inp`.
+        hidden_size (int): Number of features in the hidden and cell states.
+        bias (bool):       If False, no bias terms are used. Default: True.
+        activation_fn (Callable): Activation for cell updates
+                                    (default: `torch.tanh`).
+        gate_activation_fn (Callable): Activation for gates
+                                        (default: `torch.sigmoid`).
+        kernel_init (Callable): Initializer for input‑to‑hidden weights.
+        recurrent_kernel_init (Callable): Initializer for hidden‑to‑hidden weights.
+        multiplicative_kernel_init (Callable):
+            Initializer for multiplicative weights.
+        bias_init (Callable): Initializer for input biases.
+        recurrent_bias_init (Callable): Initializer for hidden biases.
+        multiplicative_bias_init (Callable):
+            Initializer for multiplicative biases.
+        device (torch.device, optional): Device to place parameters on.
+        dtype (torch.dtype, optional):   Data type for parameters.
+
+    Inputs:
+        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`
+        - **state** (Tensor or Tuple[Tensor, Tensor], optional):
+            previous `(h, c)` each of shape `(batch, hidden_size)`
+            or `(hidden_size,)`. Defaults to zeros.
+
+    Outputs:
+        - **new_state** (Tensor): Updated hidden (and output) state.
+        - **new_cstate** (Tensor): Updated cell state.
+
+    Attributes:
+        weight_ih (Tensor): Input‑to‑hidden weights, shape `(5*H, I)`.
+        weight_hh (Tensor): Hidden‑to‑hidden weights, shape `(H, H)`.
+        weight_mh (Tensor): Multiplicative‑to‑hidden weights, shape `(4*H, H)`.
+        bias_ih   (Tensor): Input biases, shape `(5*H,)`.
+        bias_hh   (Tensor): Hidden biases, shape `(H,)`.
+        bias_mh   (Tensor): Multiplicative biases, shape `(4*H,)`.
+
+    Examples::
+        >>> cell = MultiplicativeLSTMCell(10, 20)
+        >>> x = torch.randn(3, 10)       # (batch=3, input_size=10)
+        >>> h0 = torch.zeros(3, 20)
+        >>> c0 = torch.zeros(3, 20)
+        >>> h1, c1 = cell(x, (h0, c0))
+    """
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_mh: Tensor
