@@ -22,6 +22,7 @@ from torchrecurrent import (
     MUT2Cell,
     MUT3Cell,
     NASCell,
+    OriginalLSTMCell,
     PeepholeLSTMCell,
     RANCell,
 )
@@ -49,6 +50,7 @@ CELL_CASES = [
     (MUT3Cell, 3, 5, False),
     (NASCell, 7, 7, True),
     (PeepholeLSTMCell, 5, 10, True),
+    (OriginalLSTMCell, 3, 5, True),
     (RANCell, 4, 9, True),
     # (SCRNCell,        8, 16,  False),
 ]
