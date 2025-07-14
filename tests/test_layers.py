@@ -24,6 +24,7 @@ from torchrecurrent import (
     OriginalLSTM,
     PeepholeLSTM,
     RAN,
+    SCRN,
 )
 
 LAYER_CLASSES = [
@@ -48,6 +49,7 @@ LAYER_CLASSES = [
     OriginalLSTM,
     PeepholeLSTM,
     RAN,
+    SCRN,
 ]
 
 # (LayerClass, is_double_state)
@@ -73,6 +75,7 @@ LAYER_CASES = [
     (OriginalLSTM, True),
     (PeepholeLSTM, True),
     (RAN, True),
+    (SCRN, True),
 ]
 
 
