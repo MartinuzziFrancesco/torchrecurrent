@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Callable, Union, Tuple
+from typing import Optional, Union, Tuple
 from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
@@ -114,8 +114,6 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.tanh,
-        gate_activation_fn: Callable = torch.sigmoid,
         kernel_init=nn.init.xavier_uniform_,
         recurrent_kernel_init=nn.init.xavier_uniform_,
         multiplicative_kernel_init=nn.init.normal_,
@@ -128,8 +126,6 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
         super(MultiplicativeLSTMCell, self).__init__(
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
-        self.activation_fn = activation_fn
-        self.gate_activation_fn = gate_activation_fn
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.multiplicative_kernel_init = multiplicative_kernel_init

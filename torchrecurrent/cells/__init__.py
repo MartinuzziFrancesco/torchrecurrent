@@ -24,6 +24,7 @@ from .lightru_cell import LightRU, LightRUCell
 from .multiplicativelstm_cell import MultiplicativeLSTM, MultiplicativeLSTMCell
 from .mut_cell import MUT1Cell, MUT1, MUT2Cell, MUT2, MUT3Cell, MUT3
 from .nas_cell import NAS, NASCell
+from .originallstm_cell import OriginalLSTM, OriginalLSTMCell
 from .peepholelstm_cell import PeepholeLSTM, PeepholeLSTMCell
 from .ran_cell import RAN, RANCell
 
@@ -71,6 +72,8 @@ __all__ = [
     "MUT3Cell",
     "NAS",
     "NASCell",
+    "OriginalLSTM",
+    "OriginalLSTMCell",
     "PeepholeLSTM",
     "PeepholeLSTMCell",
     "RAN",

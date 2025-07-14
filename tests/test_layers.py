@@ -21,6 +21,7 @@ from torchrecurrent import (
     MUT2,
     MUT3,
     NAS,
+    OriginalLSTM,
     PeepholeLSTM,
     RAN,
 )
@@ -44,6 +45,7 @@ LAYER_CLASSES = [
     MUT2,
     MUT3,
     NAS,
+    OriginalLSTM,
     PeepholeLSTM,
     RAN,
 ]
@@ -68,6 +70,7 @@ LAYER_CASES = [
     (MUT2, False),
     (MUT3, False),
     (NAS, True),
+    (OriginalLSTM, True),
     (PeepholeLSTM, True),
     (RAN, True),
 ]
