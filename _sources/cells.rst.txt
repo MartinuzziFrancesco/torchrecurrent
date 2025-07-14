@@ -26,6 +26,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.MUT2Cell
    torchrecurrent.MUT3Cell
    torchrecurrent.NASCell
+   torchrecurrent.OriginalLSTMCell
    torchrecurrent.PeepholeLSTMCell
    torchrecurrent.RANCell
    torchrecurrent.coRNNCell

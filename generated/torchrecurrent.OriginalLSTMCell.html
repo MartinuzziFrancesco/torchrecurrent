@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torchrecurrent.GatedAntisymmetricRNNCell &mdash; torchrecurrent 0.1.0 documentation</title>
+  <title>torchrecurrent.OriginalLSTMCell &mdash; torchrecurrent 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchrecurrent.NBRCell" href="torchrecurrent.NBRCell.html" />
-    <link rel="prev" title="torchrecurrent.AntisymmetricRNNCell" href="torchrecurrent.AntisymmetricRNNCell.html" /> 
+    <link rel="next" title="torchrecurrent.PeepholeLSTMCell" href="torchrecurrent.PeepholeLSTMCell.html" />
+    <link rel="prev" title="torchrecurrent.NASCell" href="torchrecurrent.NASCell.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -47,17 +47,7 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="reference internal" href="../cells.html">Recurrent Cells Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.AntisymmetricRNNCell.html">torchrecurrent.AntisymmetricRNNCell</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">torchrecurrent.GatedAntisymmetricRNNCell</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_ih"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.weight_ih</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_hh"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.weight_hh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_ih"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.bias_ih</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_hh"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.bias_hh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.__init__"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.__init__()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.GatedAntisymmetricRNNCell.html">torchrecurrent.GatedAntisymmetricRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NBRCell.html">torchrecurrent.NBRCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.BRCell.html">torchrecurrent.BRCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.CFNCell.html">torchrecurrent.CFNCell</a></li>
@@ -75,7 +65,19 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2Cell.html">torchrecurrent.MUT2Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT3Cell.html">torchrecurrent.MUT3Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NASCell.html">torchrecurrent.NASCell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.OriginalLSTMCell.html">torchrecurrent.OriginalLSTMCell</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">torchrecurrent.OriginalLSTMCell</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell"><code class="docutils literal notranslate"><span class="pre">OriginalLSTMCell</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.weight_ih"><code class="docutils literal notranslate"><span class="pre">OriginalLSTMCell.weight_ih</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.weight_hh"><code class="docutils literal notranslate"><span class="pre">OriginalLSTMCell.weight_hh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.weight_ph"><code class="docutils literal notranslate"><span class="pre">OriginalLSTMCell.weight_ph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.bias_ih"><code class="docutils literal notranslate"><span class="pre">OriginalLSTMCell.bias_ih</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.bias_hh"><code class="docutils literal notranslate"><span class="pre">OriginalLSTMCell.bias_hh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.bias_ph"><code class="docutils literal notranslate"><span class="pre">OriginalLSTMCell.bias_ph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.__init__"><code class="docutils literal notranslate"><span class="pre">OriginalLSTMCell.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.PeepholeLSTMCell.html">torchrecurrent.PeepholeLSTMCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.RANCell.html">torchrecurrent.RANCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.coRNNCell.html">torchrecurrent.coRNNCell</a></li>
@@ -98,9 +100,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../cells.html">Recurrent Cells Reference</a></li>
-      <li class="breadcrumb-item active">torchrecurrent.GatedAntisymmetricRNNCell</li>
+      <li class="breadcrumb-item active">torchrecurrent.OriginalLSTMCell</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/torchrecurrent.GatedAntisymmetricRNNCell.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/torchrecurrent.OriginalLSTMCell.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -108,77 +110,64 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="torchrecurrent-gatedantisymmetricrnncell">
-<h1>torchrecurrent.GatedAntisymmetricRNNCell<a class="headerlink" href="#torchrecurrent-gatedantisymmetricrnncell" title="Link to this heading"></a></h1>
+  <section id="torchrecurrent-originallstmcell">
+<h1>torchrecurrent.OriginalLSTMCell<a class="headerlink" href="#torchrecurrent-originallstmcell" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">GatedAntisymmetricRNNCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation_fn=&lt;built-in</span> <span class="pre">method</span> <span class="pre">tanh</span> <span class="pre">of</span> <span class="pre">type</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell" title="Link to this definition"></a></dt>
-<dd><p>A gated Antisymmetric RNN cell.</p>
-<p>Implements the gated update from
-“AntisymmetricRNN: A Dynamical System View on Recurrent Neural Networks”
-&lt;<a class="reference external" href="https://arxiv.org/abs/1902.09689">https://arxiv.org/abs/1902.09689</a>&gt;_.</p>
+<dt class="sig sig-object py" id="torchrecurrent.OriginalLSTMCell">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">OriginalLSTMCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation_fn=&lt;built-in</span> <span class="pre">method</span> <span class="pre">tanh</span> <span class="pre">of</span> <span class="pre">type</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_activation_fn=&lt;built-in</span> <span class="pre">method</span> <span class="pre">sigmoid</span> <span class="pre">of</span> <span class="pre">type</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.OriginalLSTMCell" title="Link to this definition"></a></dt>
+<dd><p>Original formulation of the LSTM cell with no forget gate.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-    \mathbf{z}(t) &amp;= \sigma\Bigl(
-    (\mathbf{W}_{hh} - \mathbf{W}_{hh}^\top - \gamma\,\mathbf{I})
-    \,\mathbf{h}(t-1) + \mathbf{b}_{hh}
-    + \mathbf{W}_{ih}^z\,\mathbf{x}(t)
-    + \mathbf{b}_{ih}^z \Bigr), \\
-    \mathbf{h}(t) &amp;= \mathbf{h}(t-1)
-    + \epsilon \,\mathbf{z}(t)\,\circ\,
-    \tanh\Bigl(
-        (\mathbf{W}_{hh} - \mathbf{W}_{hh}^\top - \gamma\,\mathbf{I})
-        \,\mathbf{h}(t-1) + \mathbf{b}_{hh}
-        + \mathbf{W}_{ih}^x\,\mathbf{x}(t)
-        + \mathbf{b}_{ih}^h \Bigr)
+\mathbf{g}(t) &amp;= \mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}
+    + \mathbf{W}_{hh}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}, \\
+\mathbf{i}(t) &amp;= \sigma\bigl(g_i(t)\bigr), \\
+\tilde{\mathbf{c}}(t) &amp;= \tanh\bigl(g_c(t)\bigr), \\
+\mathbf{o}(t) &amp;= \sigma\bigl(g_o(t)\bigr), \\
+\mathbf{c}(t) &amp;= \mathbf{c}(t-1)
+    + \mathbf{i}(t)\,\odot\,\tilde{\mathbf{c}}(t), \\
+\mathbf{h}(t) &amp;= \mathbf{o}(t)\,\odot\,\tanh\bigl(\mathbf{c}(t)\bigr),
 \end{aligned}\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\epsilon\)</span> controls the integration step size,
-<span class="math notranslate nohighlight">\(\gamma\)</span> is a stability damping, and <span class="math notranslate nohighlight">\(\circ\)</span> is element-wise product.</p>
+<p>where <span class="math notranslate nohighlight">\(\odot\)</span> denotes
+element‐wise multiplication.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_size</strong> (<em>int</em>) – Number of expected features in the input <cite>inp</cite>.</p></li>
-<li><p><strong>hidden_size</strong> (<em>int</em>) – Number of features in the hidden state.</p></li>
+<li><p><strong>input_size</strong> (<em>int</em>) – Dimensionality of the input features.</p></li>
+<li><p><strong>hidden_size</strong> (<em>int</em>) – Dimensionality of the hidden and cell states.</p></li>
 <li><p><strong>bias</strong> (<em>bool</em>) – If False, no bias terms are used. Default: True.</p></li>
-<li><p><strong>activation_fn</strong> (<em>Callable</em>) – Activation to apply (default: <cite>torch.tanh</cite>).</p></li>
-<li><p><strong>kernel_init</strong> (<em>Callable</em>) – Initializer for input‐to‐hidden weights
-(default: <cite>nn.init.xavier_uniform_</cite>).</p></li>
-<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>) – Initializer for hidden‐to‐hidden weights
-(default: <cite>nn.init.normal_</cite>).</p></li>
-<li><p><strong>bias_init</strong> (<em>Callable</em>) – Initializer for input biases
-(default: <cite>nn.init.zeros_</cite>).</p></li>
-<li><p><strong>epsilon</strong> (<em>float</em>) – Step‐size multiplier for state update.
-Default: 1.0.</p></li>
-<li><p><strong>gamma</strong> (<em>float</em>) – Damping term for antisymmetric part.
-Default: 0.0.</p></li>
-<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Device on which to place parameters.</p></li>
-<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – Data type of parameters.</p></li>
+<li><p><strong>activation_fn</strong> (<em>Callable</em>) – Activation for candidate cell (default: tanh).</p></li>
+<li><p><strong>gate_activation_fn</strong> (<em>Callable</em>) – Activation for gates (default: sigmoid).</p></li>
+<li><p><strong>kernel_init</strong> (<em>Callable</em>) – Initializer for input‐to‐hidden weights.</p></li>
+<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>) – Initializer for hidden‐to‐hidden weights.</p></li>
+<li><p><strong>bias_init</strong> (<em>Callable</em>) – Initializer for input biases.</p></li>
+<li><p><strong>recurrent_bias_init</strong> (<em>Callable</em>) – Initializer for hidden biases.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Device on which to allocate parameters.</p></li>
+<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – Data type for parameters.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="simple">
 <dt>Inputs:</dt><dd><ul class="simple">
+<li><p><strong>inp</strong> (Tensor):      Shape <cite>(batch, input_size)</cite> or <cite>(input_size,)</cite>.</p></li>
 <li><dl class="simple">
-<dt><strong>inp</strong> (Tensor): Input at current time step, of shape</dt><dd><p><cite>(batch, input_size)</cite> or <cite>(input_size,)</cite>.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>state</strong> (Tensor or Tuple[Tensor], optional): Previous hidden state,</dt><dd><p>of shape <cite>(batch, hidden_size)</cite> or <cite>(hidden_size,)</cite>. Defaults to zeros.</p>
+<dt><strong>state</strong> (Tuple[Tensor, Tensor], optional):</dt><dd><p>Previous <cite>(h, c)</cite> each of shape <cite>(batch, hidden_size)</cite> or
+<cite>(hidden_size,)</cite>. Defaults to zeros if not provided.</p>
 </dd>
 </dl>
 </li>
 </ul>
 </dd>
 <dt>Outputs:</dt><dd><ul class="simple">
-<li><p><strong>new_state</strong> (Tensor): Updated hidden state, same shape as <cite>state</cite>.</p></li>
+<li><p><strong>new_h</strong> (Tensor):    Updated hidden state, same shape as <cite>h</cite>.</p></li>
+<li><p><strong>new_c</strong> (Tensor):    Updated cell state, same shape as <cite>c</cite>.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.weight_ih">
-<span class="sig-name descname"><span class="pre">weight_ih</span></span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_ih" title="Link to this definition"></a></dt>
-<dd><p>Input‐to‐hidden weights, shape <cite>(2*hidden_size, input_size)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.OriginalLSTMCell.weight_ih">
+<span class="sig-name descname"><span class="pre">weight_ih</span></span><a class="headerlink" href="#torchrecurrent.OriginalLSTMCell.weight_ih" title="Link to this definition"></a></dt>
+<dd><p>Input‐to‐hidden weight matrix of shape
+<cite>(3*hidden_size, input_size)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -187,9 +176,10 @@ Default: 0.0.</p></li>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.weight_hh">
-<span class="sig-name descname"><span class="pre">weight_hh</span></span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_hh" title="Link to this definition"></a></dt>
-<dd><p>Hidden‐to‐hidden weights, shape <cite>(hidden_size, hidden_size)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.OriginalLSTMCell.weight_hh">
+<span class="sig-name descname"><span class="pre">weight_hh</span></span><a class="headerlink" href="#torchrecurrent.OriginalLSTMCell.weight_hh" title="Link to this definition"></a></dt>
+<dd><p>Hidden‐to‐hidden weight matrix of shape
+<cite>(hidden_size, hidden_size)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -198,9 +188,10 @@ Default: 0.0.</p></li>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.bias_ih">
-<span class="sig-name descname"><span class="pre">bias_ih</span></span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_ih" title="Link to this definition"></a></dt>
-<dd><p>Input bias, shape <cite>(2*hidden_size,)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.OriginalLSTMCell.weight_ph">
+<span class="sig-name descname"><span class="pre">weight_ph</span></span><a class="headerlink" href="#torchrecurrent.OriginalLSTMCell.weight_ph" title="Link to this definition"></a></dt>
+<dd><p>Additional hidden‐to‐hidden weight for
+candidate update, shape <cite>(hidden_size, hidden_size)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -209,9 +200,9 @@ Default: 0.0.</p></li>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.bias_hh">
-<span class="sig-name descname"><span class="pre">bias_hh</span></span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_hh" title="Link to this definition"></a></dt>
-<dd><p>Hidden bias, shape <cite>(hidden_size,)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.OriginalLSTMCell.bias_ih">
+<span class="sig-name descname"><span class="pre">bias_ih</span></span><a class="headerlink" href="#torchrecurrent.OriginalLSTMCell.bias_ih" title="Link to this definition"></a></dt>
+<dd><p>Input bias, shape <cite>(3*hidden_size,)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -219,24 +210,41 @@ Default: 0.0.</p></li>
 </dl>
 </dd></dl>
 
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This cell splits the input projection into a gate and a candidate,
-then applies an antisymmetric recurrent transformation plus gating
-to ensure stable, expressive dynamics.</p>
-</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchrecurrent.OriginalLSTMCell.bias_hh">
+<span class="sig-name descname"><span class="pre">bias_hh</span></span><a class="headerlink" href="#torchrecurrent.OriginalLSTMCell.bias_hh" title="Link to this definition"></a></dt>
+<dd><p>Hidden bias, shape <cite>(3*hidden_size,)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="torchrecurrent.OriginalLSTMCell.bias_ph">
+<span class="sig-name descname"><span class="pre">bias_ph</span></span><a class="headerlink" href="#torchrecurrent.OriginalLSTMCell.bias_ph" title="Link to this definition"></a></dt>
+<dd><p>Additional hidden bias, shape <cite>(hidden_size,)</cite>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Tensor</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl>
-<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">GatedAntisymmetricRNNCell</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>    <span class="c1"># batch=4, input_size=8</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>  <span class="c1"># batch=4, hidden_size=16</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h1</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h0</span><span class="p">)</span>         <span class="c1"># new hidden state</span>
+<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">OriginalLSTMCell</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>          <span class="c1"># (batch=5, input_size=10)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h1</span><span class="p">,</span> <span class="n">c1</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">h0</span><span class="p">,</span> <span class="n">c0</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation_fn=&lt;built-in</span> <span class="pre">method</span> <span class="pre">tanh</span> <span class="pre">of</span> <span class="pre">type</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.__init__" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="torchrecurrent.OriginalLSTMCell.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">activation_fn=&lt;built-in</span> <span class="pre">method</span> <span class="pre">tanh</span> <span class="pre">of</span> <span class="pre">type</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_activation_fn=&lt;built-in</span> <span class="pre">method</span> <span class="pre">sigmoid</span> <span class="pre">of</span> <span class="pre">type</span> <span class="pre">object&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.OriginalLSTMCell.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -245,11 +253,7 @@ to ensure stable, expressive dynamics.</p>
 <li><p><strong>hidden_size</strong> (<em>int</em>)</p></li>
 <li><p><strong>bias</strong> (<em>bool</em>)</p></li>
 <li><p><strong>activation_fn</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>kernel_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>bias_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>epsilon</strong> (<em>float</em>)</p></li>
-<li><p><strong>gamma</strong> (<em>float</em>)</p></li>
+<li><p><strong>gate_activation_fn</strong> (<em>Callable</em>)</p></li>
 <li><p><strong>device</strong> (<em>device</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em> | </em><em>None</em>)</p></li>
 </ul>
@@ -260,7 +264,7 @@ to ensure stable, expressive dynamics.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.__init__" title="torchrecurrent.GatedAntisymmetricRNNCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.__init__" title="torchrecurrent.OriginalLSTMCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
 <td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_module</span></code>(name, module)</p></td>
@@ -433,19 +437,22 @@ to ensure stable, expressive dynamics.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_patches</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_ih" title="torchrecurrent.GatedAntisymmetricRNNCell.weight_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.weight_ih" title="torchrecurrent.OriginalLSTMCell.weight_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_hh" title="torchrecurrent.GatedAntisymmetricRNNCell.weight_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.weight_hh" title="torchrecurrent.OriginalLSTMCell.weight_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_ih" title="torchrecurrent.GatedAntisymmetricRNNCell.bias_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.weight_ph" title="torchrecurrent.OriginalLSTMCell.weight_ph"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ph</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_hh" title="torchrecurrent.GatedAntisymmetricRNNCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.bias_ih" title="torchrecurrent.OriginalLSTMCell.bias_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.OriginalLSTMCell.bias_hh" title="torchrecurrent.OriginalLSTMCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -458,8 +465,8 @@ to ensure stable, expressive dynamics.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchrecurrent.AntisymmetricRNNCell.html" class="btn btn-neutral float-left" title="torchrecurrent.AntisymmetricRNNCell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchrecurrent.NBRCell.html" class="btn btn-neutral float-right" title="torchrecurrent.NBRCell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torchrecurrent.NASCell.html" class="btn btn-neutral float-left" title="torchrecurrent.NASCell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torchrecurrent.PeepholeLSTMCell.html" class="btn btn-neutral float-right" title="torchrecurrent.PeepholeLSTMCell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

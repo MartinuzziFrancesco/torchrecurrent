@@ -1,0 +1,88 @@
+﻿torchrecurrent.OriginalLSTMCell
+===============================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: OriginalLSTMCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~OriginalLSTMCell.__init__
+      ~OriginalLSTMCell.add_module
+      ~OriginalLSTMCell.apply
+      ~OriginalLSTMCell.bfloat16
+      ~OriginalLSTMCell.buffers
+      ~OriginalLSTMCell.children
+      ~OriginalLSTMCell.compile
+      ~OriginalLSTMCell.cpu
+      ~OriginalLSTMCell.cuda
+      ~OriginalLSTMCell.double
+      ~OriginalLSTMCell.eval
+      ~OriginalLSTMCell.extra_repr
+      ~OriginalLSTMCell.float
+      ~OriginalLSTMCell.forward
+      ~OriginalLSTMCell.get_buffer
+      ~OriginalLSTMCell.get_extra_state
+      ~OriginalLSTMCell.get_parameter
+      ~OriginalLSTMCell.get_submodule
+      ~OriginalLSTMCell.half
+      ~OriginalLSTMCell.init_weights
+      ~OriginalLSTMCell.ipu
+      ~OriginalLSTMCell.load_state_dict
+      ~OriginalLSTMCell.modules
+      ~OriginalLSTMCell.mtia
+      ~OriginalLSTMCell.named_buffers
+      ~OriginalLSTMCell.named_children
+      ~OriginalLSTMCell.named_modules
+      ~OriginalLSTMCell.named_parameters
+      ~OriginalLSTMCell.parameters
+      ~OriginalLSTMCell.register_backward_hook
+      ~OriginalLSTMCell.register_buffer
+      ~OriginalLSTMCell.register_forward_hook
+      ~OriginalLSTMCell.register_forward_pre_hook
+      ~OriginalLSTMCell.register_full_backward_hook
+      ~OriginalLSTMCell.register_full_backward_pre_hook
+      ~OriginalLSTMCell.register_load_state_dict_post_hook
+      ~OriginalLSTMCell.register_load_state_dict_pre_hook
+      ~OriginalLSTMCell.register_module
+      ~OriginalLSTMCell.register_parameter
+      ~OriginalLSTMCell.register_state_dict_post_hook
+      ~OriginalLSTMCell.register_state_dict_pre_hook
+      ~OriginalLSTMCell.requires_grad_
+      ~OriginalLSTMCell.set_extra_state
+      ~OriginalLSTMCell.set_submodule
+      ~OriginalLSTMCell.share_memory
+      ~OriginalLSTMCell.state_dict
+      ~OriginalLSTMCell.to
+      ~OriginalLSTMCell.to_empty
+      ~OriginalLSTMCell.train
+      ~OriginalLSTMCell.type
+      ~OriginalLSTMCell.uses_double_state
+      ~OriginalLSTMCell.xpu
+      ~OriginalLSTMCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~OriginalLSTMCell.T_destination
+      ~OriginalLSTMCell.call_super_init
+      ~OriginalLSTMCell.dump_patches
+      ~OriginalLSTMCell.weight_ih
+      ~OriginalLSTMCell.weight_hh
+      ~OriginalLSTMCell.weight_ph
+      ~OriginalLSTMCell.bias_ih
+      ~OriginalLSTMCell.bias_hh
+      ~OriginalLSTMCell.training
+   
+   
