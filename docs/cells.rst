@@ -22,6 +22,9 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.LiGRUCell
    torchrecurrent.MGUCell
    torchrecurrent.MultiplicativeLSTMCell
+   torchrecurrent.MUT1Cell
+   torchrecurrent.MUT2Cell
+   torchrecurrent.MUT3Cell
    torchrecurrent.NASCell
    torchrecurrent.PeepholeLSTMCell
    torchrecurrent.RANCell
