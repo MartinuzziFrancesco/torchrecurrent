@@ -1,0 +1,87 @@
+﻿torchrecurrent.MUT1Cell
+=======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MUT1Cell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MUT1Cell.__init__
+      ~MUT1Cell.add_module
+      ~MUT1Cell.apply
+      ~MUT1Cell.bfloat16
+      ~MUT1Cell.buffers
+      ~MUT1Cell.children
+      ~MUT1Cell.compile
+      ~MUT1Cell.cpu
+      ~MUT1Cell.cuda
+      ~MUT1Cell.double
+      ~MUT1Cell.eval
+      ~MUT1Cell.extra_repr
+      ~MUT1Cell.float
+      ~MUT1Cell.forward
+      ~MUT1Cell.get_buffer
+      ~MUT1Cell.get_extra_state
+      ~MUT1Cell.get_parameter
+      ~MUT1Cell.get_submodule
+      ~MUT1Cell.half
+      ~MUT1Cell.init_weights
+      ~MUT1Cell.ipu
+      ~MUT1Cell.load_state_dict
+      ~MUT1Cell.modules
+      ~MUT1Cell.mtia
+      ~MUT1Cell.named_buffers
+      ~MUT1Cell.named_children
+      ~MUT1Cell.named_modules
+      ~MUT1Cell.named_parameters
+      ~MUT1Cell.parameters
+      ~MUT1Cell.register_backward_hook
+      ~MUT1Cell.register_buffer
+      ~MUT1Cell.register_forward_hook
+      ~MUT1Cell.register_forward_pre_hook
+      ~MUT1Cell.register_full_backward_hook
+      ~MUT1Cell.register_full_backward_pre_hook
+      ~MUT1Cell.register_load_state_dict_post_hook
+      ~MUT1Cell.register_load_state_dict_pre_hook
+      ~MUT1Cell.register_module
+      ~MUT1Cell.register_parameter
+      ~MUT1Cell.register_state_dict_post_hook
+      ~MUT1Cell.register_state_dict_pre_hook
+      ~MUT1Cell.requires_grad_
+      ~MUT1Cell.set_extra_state
+      ~MUT1Cell.set_submodule
+      ~MUT1Cell.share_memory
+      ~MUT1Cell.state_dict
+      ~MUT1Cell.to
+      ~MUT1Cell.to_empty
+      ~MUT1Cell.train
+      ~MUT1Cell.type
+      ~MUT1Cell.uses_double_state
+      ~MUT1Cell.xpu
+      ~MUT1Cell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MUT1Cell.T_destination
+      ~MUT1Cell.call_super_init
+      ~MUT1Cell.dump_patches
+      ~MUT1Cell.weight_ih
+      ~MUT1Cell.weight_hh
+      ~MUT1Cell.bias_ih
+      ~MUT1Cell.bias_hh
+      ~MUT1Cell.training
+   
+   
