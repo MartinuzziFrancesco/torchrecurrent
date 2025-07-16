@@ -30,5 +30,6 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.OriginalLSTMCell
    torchrecurrent.PeepholeLSTMCell
    torchrecurrent.RANCell
-   torchrecurrent.SCRN
-   torchrecurrent.SGRN
+   torchrecurrent.SCRNCell
+   torchrecurrent.SGRNCell
+   torchrecurrent.STARCell

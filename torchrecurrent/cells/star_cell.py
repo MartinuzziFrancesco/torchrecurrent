@@ -22,6 +22,79 @@ class STAR(BaseSingleRecurrentLayer):
 
 
 class STARCell(BaseSingleRecurrentCell):
+    r"""A stackable recurrent cell (STAR) cell.
+
+    Based on the “Stackable recurrent cell” proposed in arXiv:1911.11033.
+
+    The cell computes its update as:
+
+    .. math::
+
+        \begin{aligned}
+            \mathbf{z}(t) &= \tanh\bigl(\mathbf{W}_{ih}^{z}\,\mathbf{x}(t) +
+                \mathbf{b}_{ih}^{z}\bigr), \\
+            \mathbf{k}(t) &= \sigma\bigl(\mathbf{W}_{ih}^{k}\,\mathbf{x}(t) +
+                \mathbf{b}_{ih}^{k} +
+                \mathbf{W}_{hh}^{k}\,\mathbf{h}(t-1) +
+                \mathbf{b}_{hh}^{k}\bigr), \\
+            \mathbf{h}(t) &= \tanh\bigl((1 - \mathbf{k}(t)) \circ \mathbf{h}(t-1) +
+                \mathbf{k}(t) \circ \mathbf{z}(t)\bigr),
+        \end{aligned}
+
+    where :math:`\sigma` is the sigmoid function and :math:`\circ` denotes
+    elementwise multiplication.
+
+    Args:
+        input_size (int):  Number of features in the input :math:`\mathbf{x}(t)`.
+        hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
+        bias (bool, optional): If ``False``, the cell does not use bias terms
+            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        kernel_init (Callable, optional): Initialization for input-to-hidden
+            weights :math:`\mathbf{W}_{ih}` (both z and k parts).
+            Default: ``nn.init.xavier_uniform_``.
+        recurrent_kernel_init (Callable, optional): Initialization for
+            hidden-to-hidden weights :math:`\mathbf{W}_{hh}^{k}`.
+            Default: ``nn.init.xavier_uniform_``.
+        bias_init (Callable, optional): Initialization for input biases
+            :math:`\mathbf{b}_{ih}^{z}` and :math:`\mathbf{b}_{ih}^{k}`.
+            Default: ``nn.init.zeros_``.
+        recurrent_bias_init (Callable, optional): Initialization for
+            hidden bias :math:`\mathbf{b}_{hh}^{k}`. Default: ``nn.init.zeros_``.
+        device (torch.device, optional): Device for parameters.
+        dtype (torch.dtype, optional): Data type for parameters.
+
+    Inputs:
+        - **inp** (Tensor): Input at current time step,
+            shape :math:`(N, input\_size)` or :math:`(input\_size)`.
+        - **state** (Tensor or Tuple[Tensor,…], optional): Previous hidden
+            state :math:`\mathbf{h}(t-1)`, shape :math:`(N, hidden\_size)`
+            or :math:`(hidden\_size)`. Defaults to zero if not provided.
+
+    Outputs:
+        - **new_state** (Tensor): Updated hidden state
+            :math:`\mathbf{h}(t)`, shape :math:`(N, hidden\_size)`
+            or :math:`(hidden\_size)`.
+
+    Attributes:
+        weight_ih (Tensor): Input-to-hidden weights, shape `(2*hidden_size, input_size)`,
+            where the first hidden_size rows are :math:`W_{ih}^{z}` and the next
+            hidden_size rows are :math:`W_{ih}^{k}`.
+        weight_hh (Tensor): Hidden-to-hidden weights for gate k,
+            shape `(hidden_size, hidden_size)`.
+        bias_ih (Tensor): Input biases, shape `(2*hidden_size,)`,
+            concatenated :math:`b_{ih}^{z}` and :math:`b_{ih}^{k}`.
+        bias_hh (Tensor): Hidden bias for gate k, shape `(hidden_size,)`.
+
+    Examples::
+        >>> cell = STARCell(input_size=16, hidden_size=32)
+        >>> seq = torch.randn(10, 8, 16)    # seq length 10, batch size 8
+        >>> h = torch.zeros(8, 32)          # initial state
+        >>> outputs = []
+        >>> for t in range(10):
+        ...     h = cell(seq[t], h)
+        ...     outputs.append(h)
+    """
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
