@@ -1,0 +1,87 @@
+﻿torchrecurrent.SGRNCell
+=======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: SGRNCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SGRNCell.__init__
+      ~SGRNCell.add_module
+      ~SGRNCell.apply
+      ~SGRNCell.bfloat16
+      ~SGRNCell.buffers
+      ~SGRNCell.children
+      ~SGRNCell.compile
+      ~SGRNCell.cpu
+      ~SGRNCell.cuda
+      ~SGRNCell.double
+      ~SGRNCell.eval
+      ~SGRNCell.extra_repr
+      ~SGRNCell.float
+      ~SGRNCell.forward
+      ~SGRNCell.get_buffer
+      ~SGRNCell.get_extra_state
+      ~SGRNCell.get_parameter
+      ~SGRNCell.get_submodule
+      ~SGRNCell.half
+      ~SGRNCell.init_weights
+      ~SGRNCell.ipu
+      ~SGRNCell.load_state_dict
+      ~SGRNCell.modules
+      ~SGRNCell.mtia
+      ~SGRNCell.named_buffers
+      ~SGRNCell.named_children
+      ~SGRNCell.named_modules
+      ~SGRNCell.named_parameters
+      ~SGRNCell.parameters
+      ~SGRNCell.register_backward_hook
+      ~SGRNCell.register_buffer
+      ~SGRNCell.register_forward_hook
+      ~SGRNCell.register_forward_pre_hook
+      ~SGRNCell.register_full_backward_hook
+      ~SGRNCell.register_full_backward_pre_hook
+      ~SGRNCell.register_load_state_dict_post_hook
+      ~SGRNCell.register_load_state_dict_pre_hook
+      ~SGRNCell.register_module
+      ~SGRNCell.register_parameter
+      ~SGRNCell.register_state_dict_post_hook
+      ~SGRNCell.register_state_dict_pre_hook
+      ~SGRNCell.requires_grad_
+      ~SGRNCell.set_extra_state
+      ~SGRNCell.set_submodule
+      ~SGRNCell.share_memory
+      ~SGRNCell.state_dict
+      ~SGRNCell.to
+      ~SGRNCell.to_empty
+      ~SGRNCell.train
+      ~SGRNCell.type
+      ~SGRNCell.uses_double_state
+      ~SGRNCell.xpu
+      ~SGRNCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SGRNCell.T_destination
+      ~SGRNCell.call_super_init
+      ~SGRNCell.dump_patches
+      ~SGRNCell.weight_ih
+      ~SGRNCell.weight_hh
+      ~SGRNCell.bias_ih
+      ~SGRNCell.bias_hh
+      ~SGRNCell.training
+   
+   
