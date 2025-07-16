@@ -30,6 +30,7 @@ from .cells import (
     RANCell,
     coRNNCell,
     SCRNCell,
+    SGRNCell,
 )
 
 # layers
@@ -58,6 +59,7 @@ from .cells import (
     RAN,
     coRNN,
     SCRN,
+    SGRN,
 )
 
 __all__ = [
@@ -109,4 +111,6 @@ __all__ = [
     "RANCell",
     "SCRN",
     "SCRNCell",
+    "SGRN",
+    "SGRNCell",
 ]

@@ -25,6 +25,7 @@ from torchrecurrent import (
     PeepholeLSTM,
     RAN,
     SCRN,
+    SGRN,
 )
 
 LAYER_CLASSES = [
@@ -50,6 +51,7 @@ LAYER_CLASSES = [
     PeepholeLSTM,
     RAN,
     SCRN,
+    SGRN,
 ]
 
 # (LayerClass, is_double_state)
@@ -76,6 +78,7 @@ LAYER_CASES = [
     (PeepholeLSTM, True),
     (RAN, True),
     (SCRN, True),
+    (SGRN, False),
 ]
 
 
