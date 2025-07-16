@@ -31,6 +31,7 @@ from .cells import (
     coRNNCell,
     SCRNCell,
     SGRNCell,
+    STARCell,
 )
 
 # layers
@@ -60,6 +61,7 @@ from .cells import (
     coRNN,
     SCRN,
     SGRN,
+    STAR,
 )
 
 __all__ = [
@@ -113,4 +115,6 @@ __all__ = [
     "SCRNCell",
     "SGRN",
     "SGRNCell",
+    "STAR",
+    "STARCell",
 ]

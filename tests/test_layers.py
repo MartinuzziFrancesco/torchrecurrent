@@ -26,6 +26,7 @@ from torchrecurrent import (
     RAN,
     SCRN,
     SGRN,
+    STAR,
 )
 
 LAYER_CLASSES = [
@@ -52,6 +53,7 @@ LAYER_CLASSES = [
     RAN,
     SCRN,
     SGRN,
+    STAR,
 ]
 
 # (LayerClass, is_double_state)
@@ -79,6 +81,7 @@ LAYER_CASES = [
     (RAN, True),
     (SCRN, True),
     (SGRN, False),
+    (STAR, False),
 ]
 
 
