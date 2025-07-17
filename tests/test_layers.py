@@ -28,6 +28,7 @@ from torchrecurrent import (
     SGRN,
     STAR,
     UnICORNN,
+    WMCLSTM,
 )
 
 LAYER_CLASSES = [
@@ -56,6 +57,7 @@ LAYER_CLASSES = [
     SGRN,
     STAR,
     UnICORNN,
+    WMCLSTM,
 ]
 
 # (LayerClass, is_double_state)
@@ -85,6 +87,7 @@ LAYER_CASES = [
     (SGRN, False),
     (STAR, False),
     (UnICORNN, True),
+    (WMCLSTM, True),
 ]
 
 
