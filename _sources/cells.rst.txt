@@ -33,3 +33,4 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.SCRNCell
    torchrecurrent.SGRNCell
    torchrecurrent.STARCell
+   torchrecurrent.UnICORNNCell

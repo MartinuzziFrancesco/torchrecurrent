@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torchrecurrent.LEMCell &mdash; torchrecurrent 0.1.0 documentation</title>
+  <title>torchrecurrent.UnICORNNCell &mdash; torchrecurrent 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -20,8 +20,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchrecurrent.LightRUCell" href="torchrecurrent.LightRUCell.html" />
-    <link rel="prev" title="torchrecurrent.JANETCell" href="torchrecurrent.JANETCell.html" /> 
+    <link rel="prev" title="torchrecurrent.STARCell" href="torchrecurrent.STARCell.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,19 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ATRCell.html">torchrecurrent.ATRCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IndRNNCell.html">torchrecurrent.IndRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.JANETCell.html">torchrecurrent.JANETCell</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">torchrecurrent.LEMCell</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#torchrecurrent.LEMCell"><code class="docutils literal notranslate"><span class="pre">LEMCell</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.LEMCell.weight_ih"><code class="docutils literal notranslate"><span class="pre">LEMCell.weight_ih</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.LEMCell.weight_hh"><code class="docutils literal notranslate"><span class="pre">LEMCell.weight_hh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.LEMCell.weight_ch"><code class="docutils literal notranslate"><span class="pre">LEMCell.weight_ch</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.LEMCell.bias_ih"><code class="docutils literal notranslate"><span class="pre">LEMCell.bias_ih</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.LEMCell.bias_hh"><code class="docutils literal notranslate"><span class="pre">LEMCell.bias_hh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.LEMCell.bias_ch"><code class="docutils literal notranslate"><span class="pre">LEMCell.bias_ch</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.LEMCell.__init__"><code class="docutils literal notranslate"><span class="pre">LEMCell.__init__()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LEMCell.html">torchrecurrent.LEMCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRUCell.html">torchrecurrent.LightRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRUCell.html">torchrecurrent.LiGRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGUCell.html">torchrecurrent.MGUCell</a></li>
@@ -84,7 +71,18 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SCRNCell.html">torchrecurrent.SCRNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGRNCell.html">torchrecurrent.SGRNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.STARCell.html">torchrecurrent.STARCell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UnICORNNCell.html">torchrecurrent.UnICORNNCell</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">torchrecurrent.UnICORNNCell</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torchrecurrent.UnICORNNCell"><code class="docutils literal notranslate"><span class="pre">UnICORNNCell</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UnICORNNCell.weight_ih"><code class="docutils literal notranslate"><span class="pre">UnICORNNCell.weight_ih</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UnICORNNCell.weight_hh"><code class="docutils literal notranslate"><span class="pre">UnICORNNCell.weight_hh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UnICORNNCell.weight_ch"><code class="docutils literal notranslate"><span class="pre">UnICORNNCell.weight_ch</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UnICORNNCell.bias_ih"><code class="docutils literal notranslate"><span class="pre">UnICORNNCell.bias_ih</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UnICORNNCell.bias_hh"><code class="docutils literal notranslate"><span class="pre">UnICORNNCell.bias_hh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UnICORNNCell.__init__"><code class="docutils literal notranslate"><span class="pre">UnICORNNCell.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 </ul>
@@ -104,9 +102,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../cells.html">Recurrent Cells Reference</a></li>
-      <li class="breadcrumb-item active">torchrecurrent.LEMCell</li>
+      <li class="breadcrumb-item active">torchrecurrent.UnICORNNCell</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/torchrecurrent.LEMCell.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/torchrecurrent.UnICORNNCell.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -114,77 +112,87 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="torchrecurrent-lemcell">
-<h1>torchrecurrent.LEMCell<a class="headerlink" href="#torchrecurrent-lemcell" title="Link to this heading"></a></h1>
+  <section id="torchrecurrent-unicornncell">
+<h1>torchrecurrent.UnICORNNCell<a class="headerlink" href="#torchrecurrent-unicornncell" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchrecurrent.LEMCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">LEMCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.LEMCell" title="Link to this definition"></a></dt>
-<dd><p>A Long Expressive Memory (LEM) recurrent cell.</p>
-<p>Implements the LEM update rule from
-“Long expressive memory unit” &lt;<a class="reference external" href="https://arxiv.org/pdf/2110.04744">https://arxiv.org/pdf/2110.04744</a>&gt;_.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UnICORNNCell">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">UnICORNNCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.UnICORNNCell" title="Link to this definition"></a></dt>
+<dd><p>An undamped independent controlled oscillatory recurrent neural unit (UnICORNN)
+cell.</p>
+<p>Implements the dynamics described in arXiv:2103.05487.</p>
+<p>The cell maintains two coupled state vectors, the hidden state <span class="math notranslate nohighlight">\(\mathbf{h}(t)\)</span>
+and the control state <span class="math notranslate nohighlight">\(\mathbf{z}(t)\)</span>, which evolve according to</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-    \boldsymbol{\Delta t}(t) &amp;= \Delta t \,\hat{\sigma}\bigl(
-    \mathbf{W}_{ih}^{1}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{1}
-    + \mathbf{W}_{hh}^{1}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{1}
-    \bigr), \\
-    \overline{\boldsymbol{\Delta t}}(t) &amp;= \Delta t \,\hat{\sigma}\bigl(
-    \mathbf{W}_{ih}^{2}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{2}
-    + \mathbf{W}_{hh}^{2}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{2}
-    \bigr), \\
-    \mathbf{c}(t) &amp;= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{c}(t-1)
-    + \boldsymbol{\Delta t}(t)\circ\sigma\bigl(
-        \mathbf{W}_{ih}^{c}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{c}
-        + \mathbf{W}_{hh}^{c}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{c}
-    \bigr), \\
-    \mathbf{h}(t) &amp;= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{h}(t-1)
-    + \boldsymbol{\Delta t}(t)\circ\sigma\bigl(
-        \mathbf{W}_{ih}^{h}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{h}
-        + \mathbf{W}_{ch}\,\mathbf{c}(t) + \mathbf{b}_{ch}
-    \bigr)
+    \mathbf{h}(t) &amp;= \mathbf{h}(t-1)
+        + \Delta t \;\hat{\sigma}(\mathbf{w}_{ch}) \circ \mathbf{z}(t), \\
+    \mathbf{z}(t) &amp;= \mathbf{z}(t-1)
+        - \Delta t \;\hat{\sigma}(\mathbf{w}_{ch}) \circ
+        \Bigl[\sigma\bigl(\mathbf{W}_{hh}\,\mathbf{h}(t-1)
+        + \mathbf{W}_{ih}\,\mathbf{x}(t)
+        + \mathbf{b}_{ih}\bigr)
+        + \alpha\,\mathbf{h}(t-1)\Bigr],
 \end{aligned}\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\hat{\sigma}\)</span> is the sigmoid function and <span class="math notranslate nohighlight">\(\circ\)</span>
-denotes element-wise multiplication.</p>
+<p>where <span class="math notranslate nohighlight">\(\Delta t\)</span> is the time step <cite>dt</cite>, and <span class="math notranslate nohighlight">\(\alpha\)</span> is the
+leakage constant.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_size</strong> (<em>int</em>) – Number of expected features in the input tensor.</p></li>
-<li><p><strong>hidden_size</strong> (<em>int</em>) – Number of features in the hidden and cell states.</p></li>
-<li><p><strong>bias</strong> (<em>bool</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, no bias terms are used. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>kernel_init</strong> (<em>Callable</em>) – Initializer for the input-to-hidden weight matrix.</p></li>
-<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>) – Initializer for the hidden-to-hidden weight matrix.</p></li>
-<li><p><strong>cell_kernel_init</strong> (<em>Callable</em>) – Initializer for the cell-to-hidden weight matrix.</p></li>
-<li><p><strong>bias_init</strong> (<em>Callable</em>) – Initializer for input biases.</p></li>
-<li><p><strong>recurrent_bias_init</strong> (<em>Callable</em>) – Initializer for hidden biases.</p></li>
-<li><p><strong>cell_bias_init</strong> (<em>Callable</em>) – Initializer for cell biases.</p></li>
-<li><p><strong>dt</strong> (<em>float</em>) – Integration time step Δt. Default: 1.0.</p></li>
-<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Device on which to place parameters.</p></li>
+<li><p><strong>input_size</strong> (<em>int</em>) – Number of features in the input <span class="math notranslate nohighlight">\(\mathbf{x}(t)\)</span>.</p></li>
+<li><p><strong>hidden_size</strong> (<em>int</em>) – Number of features in the hidden state <span class="math notranslate nohighlight">\(\mathbf{h}(t)\)</span>.</p></li>
+<li><p><strong>bias</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the cell does not use bias terms
+<span class="math notranslate nohighlight">\(\mathbf{b}_{ih}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{b}_{hh}\)</span>. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>kernel_init</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Initializer for input-to-hidden weights
+<span class="math notranslate nohighlight">\(\mathbf{W}_{ih}\)</span> (default: <code class="docutils literal notranslate"><span class="pre">nn.init.xavier_uniform_</span></code>).</p></li>
+<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Initializer for hidden-to-hidden
+weights <span class="math notranslate nohighlight">\(\mathbf{W}_{hh}\)</span> (default: <code class="docutils literal notranslate"><span class="pre">nn.init.xavier_uniform_</span></code>).</p></li>
+<li><p><strong>control_kernel_init</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Initializer for control weights
+<span class="math notranslate nohighlight">\(\mathbf{w}_{ch}\)</span> (default: <code class="docutils literal notranslate"><span class="pre">nn.init.normal_</span></code>).</p></li>
+<li><p><strong>bias_init</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Initializer for input bias
+<span class="math notranslate nohighlight">\(\mathbf{b}_{ih}\)</span> (default: <code class="docutils literal notranslate"><span class="pre">nn.init.zeros_</span></code>).</p></li>
+<li><p><strong>recurrent_bias_init</strong> (<em>Callable</em><em>, </em><em>optional</em>) – Initializer for hidden bias
+<span class="math notranslate nohighlight">\(\mathbf{b}_{hh}\)</span> (default: <code class="docutils literal notranslate"><span class="pre">nn.init.zeros_</span></code>).</p></li>
+<li><p><strong>dt</strong> (<em>float</em><em>, </em><em>optional</em>) – Time step <span class="math notranslate nohighlight">\(\Delta t\)</span> between updates (default: 1.0).</p></li>
+<li><p><strong>alpha</strong> (<em>float</em><em>, </em><em>optional</em>) – Leakage coefficient in control update (default: 0.0).</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Device for parameters.</p></li>
 <li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – Data type for parameters.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="simple">
 <dt>Inputs:</dt><dd><ul class="simple">
-<li><p><strong>inp</strong> (Tensor): shape <cite>(batch, input_size)</cite> or <cite>(input_size,)</cite>.</p></li>
 <li><dl class="simple">
-<dt><strong>state</strong> (Tensor or Tuple[Tensor, Tensor], optional):</dt><dd><p>Previous <cite>(h, c)</cite> states each of shape <cite>(batch, hidden_size)</cite> or
-<cite>(hidden_size,)</cite>. Defaults to zeros if not provided.</p>
+<dt><strong>inp</strong> (Tensor): Input at current time step,</dt><dd><p>shape <span class="math notranslate nohighlight">\((N, input\_size)\)</span> or <span class="math notranslate nohighlight">\((input\_size)\)</span>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>state</strong> (Tuple[Tensor, Tensor], optional): Previous states</dt><dd><p>(<span class="math notranslate nohighlight">\(\mathbf{h}(t-1)\)</span>, <span class="math notranslate nohighlight">\(\mathbf{z}(t-1)\)</span>), each of shape
+<span class="math notranslate nohighlight">\((N, hidden\_size)\)</span> or <span class="math notranslate nohighlight">\((hidden\_size)\)</span>. Defaults to zero.</p>
 </dd>
 </dl>
 </li>
 </ul>
 </dd>
 <dt>Outputs:</dt><dd><ul class="simple">
-<li><p><strong>new_state</strong> (Tensor): Updated hidden state, same shape as <cite>h</cite>.</p></li>
-<li><p><strong>new_cstate</strong> (Tensor): Updated cell state, same shape as <cite>c</cite>.</p></li>
+<li><dl class="simple">
+<dt><strong>new_state</strong> (Tensor): Updated hidden state <span class="math notranslate nohighlight">\(\mathbf{h}(t)\)</span>,</dt><dd><p>shape <span class="math notranslate nohighlight">\((N, hidden\_size)\)</span> or <span class="math notranslate nohighlight">\((hidden\_size)\)</span>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt><strong>new_cstate</strong> (Tensor): Updated control state <span class="math notranslate nohighlight">\(\mathbf{z}(t)\)</span>,</dt><dd><p>shape <span class="math notranslate nohighlight">\((N, hidden\_size)\)</span> or <span class="math notranslate nohighlight">\((hidden\_size)\)</span>.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.LEMCell.weight_ih">
-<span class="sig-name descname"><span class="pre">weight_ih</span></span><a class="headerlink" href="#torchrecurrent.LEMCell.weight_ih" title="Link to this definition"></a></dt>
-<dd><p>Input-to-hidden weight matrix, shape
-<cite>(4*hidden_size, input_size)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UnICORNNCell.weight_ih">
+<span class="sig-name descname"><span class="pre">weight_ih</span></span><a class="headerlink" href="#torchrecurrent.UnICORNNCell.weight_ih" title="Link to this definition"></a></dt>
+<dd><p>Input-to-hidden weights <span class="math notranslate nohighlight">\(\mathbf{W}_{ih}\)</span>,
+shape <cite>(hidden_size, input_size)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -193,10 +201,10 @@ denotes element-wise multiplication.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.LEMCell.weight_hh">
-<span class="sig-name descname"><span class="pre">weight_hh</span></span><a class="headerlink" href="#torchrecurrent.LEMCell.weight_hh" title="Link to this definition"></a></dt>
-<dd><p>Hidden-to-hidden weight matrix, shape
-<cite>(3*hidden_size, hidden_size)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UnICORNNCell.weight_hh">
+<span class="sig-name descname"><span class="pre">weight_hh</span></span><a class="headerlink" href="#torchrecurrent.UnICORNNCell.weight_hh" title="Link to this definition"></a></dt>
+<dd><p>Hidden-to-hidden weights <span class="math notranslate nohighlight">\(\mathbf{W}_{hh}\)</span>,
+shape <cite>(hidden_size, hidden_size)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -205,10 +213,10 @@ denotes element-wise multiplication.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.LEMCell.weight_ch">
-<span class="sig-name descname"><span class="pre">weight_ch</span></span><a class="headerlink" href="#torchrecurrent.LEMCell.weight_ch" title="Link to this definition"></a></dt>
-<dd><p>Cell-to-hidden weight matrix, shape
-<cite>(hidden_size, hidden_size)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UnICORNNCell.weight_ch">
+<span class="sig-name descname"><span class="pre">weight_ch</span></span><a class="headerlink" href="#torchrecurrent.UnICORNNCell.weight_ch" title="Link to this definition"></a></dt>
+<dd><p>Control weights <span class="math notranslate nohighlight">\(\mathbf{w}_{ch}\)</span>,
+shape <cite>(hidden_size,)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -217,9 +225,10 @@ denotes element-wise multiplication.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.LEMCell.bias_ih">
-<span class="sig-name descname"><span class="pre">bias_ih</span></span><a class="headerlink" href="#torchrecurrent.LEMCell.bias_ih" title="Link to this definition"></a></dt>
-<dd><p>Input bias, shape <cite>(4*hidden_size,)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UnICORNNCell.bias_ih">
+<span class="sig-name descname"><span class="pre">bias_ih</span></span><a class="headerlink" href="#torchrecurrent.UnICORNNCell.bias_ih" title="Link to this definition"></a></dt>
+<dd><p>Input bias <span class="math notranslate nohighlight">\(\mathbf{b}_{ih}\)</span>,
+shape <cite>(hidden_size,)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -228,20 +237,10 @@ denotes element-wise multiplication.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.LEMCell.bias_hh">
-<span class="sig-name descname"><span class="pre">bias_hh</span></span><a class="headerlink" href="#torchrecurrent.LEMCell.bias_hh" title="Link to this definition"></a></dt>
-<dd><p>Hidden bias, shape <cite>(3*hidden_size,)</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.LEMCell.bias_ch">
-<span class="sig-name descname"><span class="pre">bias_ch</span></span><a class="headerlink" href="#torchrecurrent.LEMCell.bias_ch" title="Link to this definition"></a></dt>
-<dd><p>Cell bias,   shape <cite>(hidden_size,)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UnICORNNCell.bias_hh">
+<span class="sig-name descname"><span class="pre">bias_hh</span></span><a class="headerlink" href="#torchrecurrent.UnICORNNCell.bias_hh" title="Link to this definition"></a></dt>
+<dd><p>Hidden bias <span class="math notranslate nohighlight">\(\mathbf{b}_{hh}\)</span>,
+shape <cite>(hidden_size,)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -250,18 +249,21 @@ denotes element-wise multiplication.</p>
 </dd></dl>
 
 <dl>
-<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">LEMCell</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>      <span class="c1"># batch=8, input_size=16</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h1</span><span class="p">,</span> <span class="n">c1</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">h0</span><span class="p">,</span> <span class="n">c0</span><span class="p">))</span>
+<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">UnICORNNCell</span><span class="p">(</span><span class="n">input_size</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">hidden_size</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">seq</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>     <span class="c1"># seq length 5, batch size 3</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>          <span class="c1"># initial hidden state</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">z</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>          <span class="c1"># initial control state</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">outputs</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="n">h</span><span class="p">,</span> <span class="n">z</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">seq</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="p">(</span><span class="n">h</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">outputs</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">h</span><span class="p">,</span> <span class="n">z</span><span class="p">))</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrecurrent.LEMCell.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.LEMCell.__init__" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="torchrecurrent.UnICORNNCell.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">control_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dt=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">alpha=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.UnICORNNCell.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -269,13 +271,8 @@ denotes element-wise multiplication.</p>
 <li><p><strong>input_size</strong> (<em>int</em>)</p></li>
 <li><p><strong>hidden_size</strong> (<em>int</em>)</p></li>
 <li><p><strong>bias</strong> (<em>bool</em>)</p></li>
-<li><p><strong>kernel_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>cell_kernel_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>bias_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>recurrent_bias_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>cell_bias_init</strong> (<em>Callable</em>)</p></li>
 <li><p><strong>dt</strong> (<em>float</em>)</p></li>
+<li><p><strong>alpha</strong> (<em>float</em>)</p></li>
 <li><p><strong>device</strong> (<em>device</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em> | </em><em>None</em>)</p></li>
 </ul>
@@ -286,7 +283,7 @@ denotes element-wise multiplication.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.LEMCell.__init__" title="torchrecurrent.LEMCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.UnICORNNCell.__init__" title="torchrecurrent.UnICORNNCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
 <td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_module</span></code>(name, module)</p></td>
@@ -459,25 +456,22 @@ denotes element-wise multiplication.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_patches</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.LEMCell.weight_ih" title="torchrecurrent.LEMCell.weight_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.UnICORNNCell.weight_ih" title="torchrecurrent.UnICORNNCell.weight_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.LEMCell.weight_hh" title="torchrecurrent.LEMCell.weight_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.UnICORNNCell.weight_hh" title="torchrecurrent.UnICORNNCell.weight_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.LEMCell.weight_ch" title="torchrecurrent.LEMCell.weight_ch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ch</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.UnICORNNCell.weight_ch" title="torchrecurrent.UnICORNNCell.weight_ch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ch</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.LEMCell.bias_ih" title="torchrecurrent.LEMCell.bias_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.UnICORNNCell.bias_ih" title="torchrecurrent.UnICORNNCell.bias_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.LEMCell.bias_hh" title="torchrecurrent.LEMCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.UnICORNNCell.bias_hh" title="torchrecurrent.UnICORNNCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.LEMCell.bias_ch" title="torchrecurrent.LEMCell.bias_ch"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ch</span></code></a></p></td>
-<td><p></p></td>
-</tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -490,8 +484,7 @@ denotes element-wise multiplication.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchrecurrent.JANETCell.html" class="btn btn-neutral float-left" title="torchrecurrent.JANETCell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchrecurrent.LightRUCell.html" class="btn btn-neutral float-right" title="torchrecurrent.LightRUCell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torchrecurrent.STARCell.html" class="btn btn-neutral float-left" title="torchrecurrent.STARCell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>
