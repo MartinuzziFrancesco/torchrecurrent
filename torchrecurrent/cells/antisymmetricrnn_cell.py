@@ -96,6 +96,19 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         >>> h1 = cell(x, h0)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "activation_fn",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "epsilon",
+        "gamma",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -241,6 +254,19 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         >>> h0 = torch.zeros(4, 16)  # batch=4, hidden_size=16
         >>> h1 = cell(x, h0)         # new hidden state
     """
+
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "activation_fn",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "epsilon",
+        "gamma",
+    ]
 
     weight_ih: Tensor
     weight_hh: Tensor

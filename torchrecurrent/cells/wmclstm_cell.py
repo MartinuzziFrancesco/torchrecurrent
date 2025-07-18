@@ -111,6 +111,18 @@ class WMCLSTMCell(BaseDoubleRecurrentCell):
         ...     outputs.append(h)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "memory_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "memory_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_mh: Tensor

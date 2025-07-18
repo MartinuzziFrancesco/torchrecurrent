@@ -84,6 +84,16 @@ class IndRNNCell(BaseSingleRecurrentCell):
         ...     outputs.append(hx)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "activation_fn",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+    ]
+
     weight_ih: Tensor
     vector_u: Tensor
     bias_ih: Tensor

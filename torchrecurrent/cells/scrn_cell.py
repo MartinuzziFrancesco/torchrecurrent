@@ -98,6 +98,18 @@ class SCRNCell(BaseDoubleRecurrentCell):
         >>> h1, s1 = cell(x, (h0, s0))
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "context_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "context_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_ch: Tensor

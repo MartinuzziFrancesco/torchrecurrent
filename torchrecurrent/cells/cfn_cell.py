@@ -99,6 +99,16 @@ class CFNCell(BaseSingleRecurrentCell):
         ...     outputs.append(hx)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor

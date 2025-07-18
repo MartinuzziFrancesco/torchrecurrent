@@ -112,6 +112,19 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         ...     h, c = cell(x[t], (h, c))
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "activation_fn",
+        "gate_activation_fn",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "peephole_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_ph: Tensor

@@ -82,6 +82,16 @@ class MUT1Cell(BaseSingleRecurrentCell):
         >>> h1 = cell(x, h0)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -218,6 +228,16 @@ class MUT2Cell(BaseSingleRecurrentCell):
         >>> h0 = torch.zeros(5, 32)
         >>> h1 = cell(x, h0)
     """
+
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -356,6 +376,16 @@ class MUT3Cell(BaseSingleRecurrentCell):
         >>> h0 = torch.zeros(5, 20)
         >>> h1 = cell(x, h0)
     """
+
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
 
     weight_ih: Tensor
     weight_hh: Tensor

@@ -103,6 +103,20 @@ class FastRNNCell(BaseSingleRecurrentCell):
         ...     outputs.append(hx)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "nonlinearity",
+        "activation_fn",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "alpha_init",
+        "beta_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -285,13 +299,25 @@ class FastGRNNCell(BaseSingleRecurrentCell):
         ...     outputs.append(hx)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "nonlinearity",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "zeta_init",
+        "nu_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
     zeta: Tensor
     nu: Tensor
-    t_ones: Tensor
 
     def __init__(
         self,
@@ -327,7 +353,6 @@ class FastGRNNCell(BaseSingleRecurrentCell):
                 "bias_hh": ((2 * hidden_size,), bias),
                 "zeta": ((1,), True),
                 "nu": ((1,), True),
-                "t_ones": ((hidden_size,), False),
             }
         )
         self.init_weights()
@@ -361,9 +386,7 @@ class FastGRNNCell(BaseSingleRecurrentCell):
         partial_gate = inp @ self.weight_ih.t() + state @ self.weight_hh.t()
         gate = self.nonlinearity(partial_gate + bias_ih_1 + bias_hh_1)
         candidate_state = torch.tanh(partial_gate + bias_ih_2 + bias_hh_2)
-        new_state = (
-            self.zeta * (self.t_ones - gate) + self.nu
-        ) * candidate_state + gate * state
+        new_state = (self.zeta * (1.0 - gate) + self.nu) * candidate_state + gate * state
 
         if not is_batched:
             new_state = new_state.squeeze(0)

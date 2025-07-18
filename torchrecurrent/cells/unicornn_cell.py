@@ -101,6 +101,19 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         ...     outputs.append((h, z))
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "control_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "dt",
+        "alpha",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_ch: Tensor
