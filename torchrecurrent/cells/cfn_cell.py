@@ -103,7 +103,6 @@ class CFNCell(BaseSingleRecurrentCell):
     weight_hh: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
-    t_ones: Tensor
 
     def __init__(
         self,

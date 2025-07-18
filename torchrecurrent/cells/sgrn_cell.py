@@ -134,7 +134,7 @@ class SGRNCell(BaseSingleRecurrentCell):
         inp_expanded = inp @ self.weight_ih.t() + self.bias_ih
         state_expanded = state @ self.weight_hh.t() + self.bias_hh
         forget_gate = torch.sigmoid(inp_expanded + state_expanded)
-        input_gate = 1 - forget_gate
+        input_gate = 1.0 - forget_gate
         new_state = torch.tanh(input_gate * inp_expanded + forget_gate * state)
 
         if not is_batched:

@@ -7,6 +7,8 @@ from typing import Optional, Tuple, Union, Dict
 
 
 class BaseRecurrentCell(nn.Module, ABC):
+    __constants__ = ["input_size", "hidden_size", "bias"]
+
     def __init__(
         self,
         input_size: int,
@@ -298,6 +300,14 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
 
 
 class BaseRecurrentLayer(nn.Module):
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "num_layers",
+        "batch_first",
+        "dropout",
+    ]
+
     def __init__(
         self,
         input_size: int,

@@ -39,9 +39,6 @@ class ATRCell(BaseSingleRecurrentCell):
         hidden_size (int): Size of the hidden state :math:`\mathbf{h}(t)`.
         bias (bool, optional): If ``False``, disables both :math:`\mathbf{b}_{ih}` and
             :math:`\mathbf{b}_{hh}`. Default: ``True``.
-        activation_fn (Callable, optional): Nonlinearity to use for any candidate
-            transforms (not used directly here but stored for consistency).
-            Default: ``torch.tanh``.
         kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{ih}`.
             Default: ``nn.init.xavier_uniform_``.
         recurrent_kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{hh}`.
@@ -96,7 +93,6 @@ class ATRCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.tanh,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
@@ -107,7 +103,6 @@ class ATRCell(BaseSingleRecurrentCell):
         super(ATRCell, self).__init__(
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
-        self.activation_fn = activation_fn
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init

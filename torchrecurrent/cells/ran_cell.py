@@ -103,9 +103,9 @@ class RANCell(BaseDoubleRecurrentCell):
 
     def __init__(
         self,
-        input_size,
-        hidden_size,
-        bias=True,
+        input_size: int,
+        hidden_size: int,
+        bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,

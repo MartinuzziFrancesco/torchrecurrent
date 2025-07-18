@@ -87,7 +87,6 @@ class BRCell(BaseSingleRecurrentCell):
             `(3 * hidden_size,)` when `bias=True`.
         bias_hh (Tensor): hidden biases, shape
             `(2 * hidden_size,)` when `bias=True`.
-        t_ones (Tensor): constant ones vector, shape `(hidden_size,)`, for the “1–c” term.
 
     Examples::
         >>> cell = BRCell(10, 20)
@@ -102,7 +101,6 @@ class BRCell(BaseSingleRecurrentCell):
     weight_hh: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
-    t_ones: Tensor
 
     def __init__(
         self,
@@ -130,7 +128,6 @@ class BRCell(BaseSingleRecurrentCell):
                 "weight_hh": ((2 * hidden_size,), True),
                 "bias_ih": ((3 * hidden_size,), bias),
                 "bias_hh": ((2 * hidden_size,), bias),
-                "t_ones": ((hidden_size,), False),
             }
         )
         self.init_weights()
@@ -149,12 +146,10 @@ class BRCell(BaseSingleRecurrentCell):
 
         h1 = input_exp_1 + rec_matrix_1 * state
         h2 = input_exp_2 + rec_matrix_2 * state
-        modulation_gate = self.t_ones + torch.tanh(h1)
+        modulation_gate = 1.0 + torch.tanh(h1)
         candidate_state = torch.sigmoid(h2)
         h3 = input_exp_3 + modulation_gate * state
-        new_state = candidate_state * state + (self.t_ones - candidate_state) * torch.tanh(
-            h3
-        )
+        new_state = candidate_state * state + (1.0 - candidate_state) * torch.tanh(h3)
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -242,8 +237,6 @@ class NBRCell(BaseSingleRecurrentCell):
             `(2 * hidden_size, hidden_size)`, chunked into “a” and “c” parts.
         bias_ih (Tensor): input biases of shape `(3 * hidden_size,)` if `bias=True`.
         bias_hh (Tensor): hidden biases of shape `(2 * hidden_size,)` if `bias=True`.
-        t_ones (Tensor): constant ones vector of shape `(hidden_size,)`
-        for the term `(1–c)`.
 
     Examples::
         >>> cell = NBRCell(10, 20)
@@ -258,7 +251,6 @@ class NBRCell(BaseSingleRecurrentCell):
     weight_hh: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
-    t_ones: Tensor
 
     def __init__(
         self,
@@ -286,7 +278,6 @@ class NBRCell(BaseSingleRecurrentCell):
                 "weight_hh": ((2 * hidden_size, hidden_size), True),
                 "bias_ih": ((3 * hidden_size,), bias),
                 "bias_hh": ((2 * hidden_size,), bias),
-                "t_ones": ((hidden_size,), False),
             }
         )
         self.init_weights()
@@ -302,14 +293,13 @@ class NBRCell(BaseSingleRecurrentCell):
         input_exp = inp @ self.weight_ih.t() + self.bias_ih
         input_exp_1, input_exp_2, input_exp_3 = input_exp.chunk(3, 1)
         rec_matrix_1, rec_matrix_2 = self.weight_hh.chunk(2, 0)
-        t_ones = state.new_ones(self.hidden_size)
         h1 = input_exp_1 + state @ rec_matrix_1.t()
         h2 = input_exp_2 + state @ rec_matrix_2.t()
-        modulation_gate = t_ones + torch.tanh(h1)
+        modulation_gate = 1.0 + torch.tanh(h1)
         candidate_state = torch.sigmoid(h2)
         h3 = input_exp_3 + modulation_gate * state
 
-        new_state = candidate_state * state + (t_ones - candidate_state) * torch.tanh(h3)
+        new_state = candidate_state * state + (1.0 - candidate_state) * torch.tanh(h3)
 
         if not is_batched:
             new_state = new_state.squeeze(0)

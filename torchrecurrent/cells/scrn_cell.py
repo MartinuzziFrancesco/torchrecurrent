@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Union, Tuple
+from typing import Optional, Callable, Union, Tuple
 from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
@@ -110,12 +110,12 @@ class SCRNCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        kernel_init=nn.init.xavier_uniform_,
-        recurrent_kernel_init=nn.init.xavier_uniform_,
-        context_kernel_init=nn.init.normal_,
-        bias_init=nn.init.zeros_,
-        recurrent_bias_init=nn.init.zeros_,
-        context_bias_init=nn.init.zeros_,
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        context_kernel_init: Callable = nn.init.normal_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_,
+        context_bias_init: Callable = nn.init.zeros_,
         alpha: float = 0.5,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
