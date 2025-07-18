@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Callable, Union, Tuple
+from typing import Optional, Union, Tuple
 from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
@@ -44,10 +44,6 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
         input_size (int):        Dimensionality of the input features.
         hidden_size (int):       Dimensionality of the hidden and cell states.
         bias (bool):             If False, no bias terms are used. Default: True.
-        activation_fn (Callable):
-                                    Activation for candidate cell (default: tanh).
-        gate_activation_fn (Callable):
-                                    Activation for gates (default: sigmoid).
         kernel_init (Callable):  Initializer for input‐to‐hidden weights.
         recurrent_kernel_init (Callable):
                                     Initializer for hidden‐to‐hidden weights.
@@ -90,7 +86,6 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
 
     weight_ih: Tensor
     weight_hh: Tensor
-    weight_ph: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
 
@@ -99,8 +94,6 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.tanh,
-        gate_activation_fn: Callable = torch.sigmoid,
         kernel_init=nn.init.xavier_uniform_,
         recurrent_kernel_init=nn.init.xavier_uniform_,
         bias_init=nn.init.zeros_,

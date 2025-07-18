@@ -29,6 +29,7 @@ from torchrecurrent import (
     SGRNCell,
     STARCell,
     UnICORNNCell,
+    WMCLSTMCell,
 )
 
 CELL_CASES = [
@@ -60,6 +61,7 @@ CELL_CASES = [
     (SGRNCell, 3, 5, False),
     (STARCell, 3, 5, False),
     (UnICORNNCell, 3, 5, True),
+    (WMCLSTMCell, 3, 5, True),
 ]
 
 
