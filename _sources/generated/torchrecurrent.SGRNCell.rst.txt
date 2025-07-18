@@ -82,6 +82,9 @@
       ~SGRNCell.weight_hh
       ~SGRNCell.bias_ih
       ~SGRNCell.bias_hh
+      ~SGRNCell.input_size
+      ~SGRNCell.hidden_size
+      ~SGRNCell.bias
       ~SGRNCell.training
    
    

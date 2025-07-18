@@ -84,6 +84,9 @@
       ~SCRNCell.bias_ih
       ~SCRNCell.bias_hh
       ~SCRNCell.bias_ch
+      ~SCRNCell.input_size
+      ~SCRNCell.hidden_size
+      ~SCRNCell.bias
       ~SCRNCell.training
    
    

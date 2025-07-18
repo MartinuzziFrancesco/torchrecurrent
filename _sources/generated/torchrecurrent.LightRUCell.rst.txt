@@ -82,6 +82,9 @@
       ~LightRUCell.weight_hh
       ~LightRUCell.bias_ih
       ~LightRUCell.bias_hh
+      ~LightRUCell.input_size
+      ~LightRUCell.hidden_size
+      ~LightRUCell.bias
       ~LightRUCell.training
    
    

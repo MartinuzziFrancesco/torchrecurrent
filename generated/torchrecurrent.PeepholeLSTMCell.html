@@ -278,6 +278,11 @@ both default to zero.</p>
 <li><p><strong>bias</strong> (<em>bool</em>)</p></li>
 <li><p><strong>activation_fn</strong> (<em>Callable</em>)</p></li>
 <li><p><strong>gate_activation_fn</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>kernel_init</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>peephole_kernel_init</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>bias_init</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>recurrent_bias_init</strong> (<em>Callable</em>)</p></li>
 <li><p><strong>device</strong> (<em>device</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em> | </em><em>None</em>)</p></li>
 </ul>
@@ -476,7 +481,16 @@ both default to zero.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.PeepholeLSTMCell.bias_hh" title="torchrecurrent.PeepholeLSTMCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hidden_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>

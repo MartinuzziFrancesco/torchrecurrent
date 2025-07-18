@@ -82,6 +82,9 @@
       ~JANETCell.weight_hh
       ~JANETCell.bias_ih
       ~JANETCell.bias_hh
+      ~JANETCell.input_size
+      ~JANETCell.hidden_size
+      ~JANETCell.bias
       ~JANETCell.training
    
    

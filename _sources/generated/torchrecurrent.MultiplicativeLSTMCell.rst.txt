@@ -84,6 +84,9 @@
       ~MultiplicativeLSTMCell.bias_ih
       ~MultiplicativeLSTMCell.bias_hh
       ~MultiplicativeLSTMCell.bias_mh
+      ~MultiplicativeLSTMCell.input_size
+      ~MultiplicativeLSTMCell.hidden_size
+      ~MultiplicativeLSTMCell.bias
       ~MultiplicativeLSTMCell.training
    
    

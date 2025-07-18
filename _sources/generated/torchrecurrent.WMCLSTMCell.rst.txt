@@ -84,6 +84,9 @@
       ~WMCLSTMCell.bias_ih
       ~WMCLSTMCell.bias_hh
       ~WMCLSTMCell.bias_mh
+      ~WMCLSTMCell.input_size
+      ~WMCLSTMCell.hidden_size
+      ~WMCLSTMCell.bias
       ~WMCLSTMCell.training
    
    

@@ -82,6 +82,9 @@
       ~OriginalLSTMCell.weight_hh
       ~OriginalLSTMCell.bias_ih
       ~OriginalLSTMCell.bias_hh
+      ~OriginalLSTMCell.input_size
+      ~OriginalLSTMCell.hidden_size
+      ~OriginalLSTMCell.bias
       ~OriginalLSTMCell.training
    
    

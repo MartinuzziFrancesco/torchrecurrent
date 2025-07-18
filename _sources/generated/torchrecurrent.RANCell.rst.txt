@@ -82,6 +82,9 @@
       ~RANCell.weight_hh
       ~RANCell.bias_ih
       ~RANCell.bias_hh
+      ~RANCell.input_size
+      ~RANCell.hidden_size
+      ~RANCell.bias
       ~RANCell.training
    
    

@@ -84,6 +84,9 @@
       ~FastRNNCell.bias_hh
       ~FastRNNCell.alpha
       ~FastRNNCell.beta
+      ~FastRNNCell.input_size
+      ~FastRNNCell.hidden_size
+      ~FastRNNCell.bias
       ~FastRNNCell.training
    
    

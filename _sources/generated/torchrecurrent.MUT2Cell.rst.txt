@@ -82,6 +82,9 @@
       ~MUT2Cell.weight_hh
       ~MUT2Cell.bias_ih
       ~MUT2Cell.bias_hh
+      ~MUT2Cell.input_size
+      ~MUT2Cell.hidden_size
+      ~MUT2Cell.bias
       ~MUT2Cell.training
    
    

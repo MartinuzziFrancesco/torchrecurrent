@@ -84,7 +84,9 @@
       ~FastGRNNCell.bias_hh
       ~FastGRNNCell.zeta
       ~FastGRNNCell.nu
-      ~FastGRNNCell.t_ones
+      ~FastGRNNCell.input_size
+      ~FastGRNNCell.hidden_size
+      ~FastGRNNCell.bias
       ~FastGRNNCell.training
    
    

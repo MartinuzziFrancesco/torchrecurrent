@@ -82,6 +82,9 @@
       ~STARCell.weight_hh
       ~STARCell.bias_ih
       ~STARCell.bias_hh
+      ~STARCell.input_size
+      ~STARCell.hidden_size
+      ~STARCell.bias
       ~STARCell.training
    
    

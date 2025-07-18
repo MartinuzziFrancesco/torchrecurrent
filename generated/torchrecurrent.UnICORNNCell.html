@@ -273,6 +273,11 @@ shape <cite>(hidden_size,)</cite>.</p>
 <li><p><strong>input_size</strong> (<em>int</em>)</p></li>
 <li><p><strong>hidden_size</strong> (<em>int</em>)</p></li>
 <li><p><strong>bias</strong> (<em>bool</em>)</p></li>
+<li><p><strong>kernel_init</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>control_kernel_init</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>bias_init</strong> (<em>Callable</em>)</p></li>
+<li><p><strong>recurrent_bias_init</strong> (<em>Callable</em>)</p></li>
 <li><p><strong>dt</strong> (<em>float</em>)</p></li>
 <li><p><strong>alpha</strong> (<em>float</em>)</p></li>
 <li><p><strong>device</strong> (<em>device</em><em> | </em><em>None</em>)</p></li>
@@ -473,7 +478,16 @@ shape <cite>(hidden_size,)</cite>.</p>
 <tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.UnICORNNCell.bias_hh" title="torchrecurrent.UnICORNNCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hidden_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
