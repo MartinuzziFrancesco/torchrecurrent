@@ -80,7 +80,6 @@
       ~OriginalLSTMCell.dump_patches
       ~OriginalLSTMCell.weight_ih
       ~OriginalLSTMCell.weight_hh
-      ~OriginalLSTMCell.weight_ph
       ~OriginalLSTMCell.bias_ih
       ~OriginalLSTMCell.bias_hh
       ~OriginalLSTMCell.training

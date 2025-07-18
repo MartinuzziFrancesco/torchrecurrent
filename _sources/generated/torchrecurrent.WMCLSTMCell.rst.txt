@@ -1,0 +1,89 @@
+﻿torchrecurrent.WMCLSTMCell
+==========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: WMCLSTMCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~WMCLSTMCell.__init__
+      ~WMCLSTMCell.add_module
+      ~WMCLSTMCell.apply
+      ~WMCLSTMCell.bfloat16
+      ~WMCLSTMCell.buffers
+      ~WMCLSTMCell.children
+      ~WMCLSTMCell.compile
+      ~WMCLSTMCell.cpu
+      ~WMCLSTMCell.cuda
+      ~WMCLSTMCell.double
+      ~WMCLSTMCell.eval
+      ~WMCLSTMCell.extra_repr
+      ~WMCLSTMCell.float
+      ~WMCLSTMCell.forward
+      ~WMCLSTMCell.get_buffer
+      ~WMCLSTMCell.get_extra_state
+      ~WMCLSTMCell.get_parameter
+      ~WMCLSTMCell.get_submodule
+      ~WMCLSTMCell.half
+      ~WMCLSTMCell.init_weights
+      ~WMCLSTMCell.ipu
+      ~WMCLSTMCell.load_state_dict
+      ~WMCLSTMCell.modules
+      ~WMCLSTMCell.mtia
+      ~WMCLSTMCell.named_buffers
+      ~WMCLSTMCell.named_children
+      ~WMCLSTMCell.named_modules
+      ~WMCLSTMCell.named_parameters
+      ~WMCLSTMCell.parameters
+      ~WMCLSTMCell.register_backward_hook
+      ~WMCLSTMCell.register_buffer
+      ~WMCLSTMCell.register_forward_hook
+      ~WMCLSTMCell.register_forward_pre_hook
+      ~WMCLSTMCell.register_full_backward_hook
+      ~WMCLSTMCell.register_full_backward_pre_hook
+      ~WMCLSTMCell.register_load_state_dict_post_hook
+      ~WMCLSTMCell.register_load_state_dict_pre_hook
+      ~WMCLSTMCell.register_module
+      ~WMCLSTMCell.register_parameter
+      ~WMCLSTMCell.register_state_dict_post_hook
+      ~WMCLSTMCell.register_state_dict_pre_hook
+      ~WMCLSTMCell.requires_grad_
+      ~WMCLSTMCell.set_extra_state
+      ~WMCLSTMCell.set_submodule
+      ~WMCLSTMCell.share_memory
+      ~WMCLSTMCell.state_dict
+      ~WMCLSTMCell.to
+      ~WMCLSTMCell.to_empty
+      ~WMCLSTMCell.train
+      ~WMCLSTMCell.type
+      ~WMCLSTMCell.uses_double_state
+      ~WMCLSTMCell.xpu
+      ~WMCLSTMCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~WMCLSTMCell.T_destination
+      ~WMCLSTMCell.call_super_init
+      ~WMCLSTMCell.dump_patches
+      ~WMCLSTMCell.weight_ih
+      ~WMCLSTMCell.weight_hh
+      ~WMCLSTMCell.weight_mh
+      ~WMCLSTMCell.bias_ih
+      ~WMCLSTMCell.bias_hh
+      ~WMCLSTMCell.bias_mh
+      ~WMCLSTMCell.training
+   
+   
