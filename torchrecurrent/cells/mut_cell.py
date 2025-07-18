@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from typing import Optional, Tuple, Union
+from typing import Optional, Callable, Tuple, Union
 from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 
@@ -82,6 +82,16 @@ class MUT1Cell(BaseSingleRecurrentCell):
         >>> h1 = cell(x, h0)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -92,10 +102,10 @@ class MUT1Cell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        kernel_init=nn.init.xavier_uniform_,
-        recurrent_kernel_init=nn.init.xavier_uniform_,
-        bias_init=nn.init.zeros_,
-        recurrent_bias_init=nn.init.zeros_,
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
@@ -219,6 +229,16 @@ class MUT2Cell(BaseSingleRecurrentCell):
         >>> h1 = cell(x, h0)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -229,10 +249,10 @@ class MUT2Cell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        kernel_init=nn.init.xavier_uniform_,
-        recurrent_kernel_init=nn.init.xavier_uniform_,
-        bias_init=nn.init.zeros_,
-        recurrent_bias_init=nn.init.zeros_,
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
@@ -357,6 +377,16 @@ class MUT3Cell(BaseSingleRecurrentCell):
         >>> h1 = cell(x, h0)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -367,10 +397,10 @@ class MUT3Cell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        kernel_init=nn.init.xavier_uniform_,
-        recurrent_kernel_init=nn.init.xavier_uniform_,
-        bias_init=nn.init.zeros_,
-        recurrent_bias_init=nn.init.zeros_,
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):

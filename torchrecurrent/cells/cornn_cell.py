@@ -103,6 +103,21 @@ class coRNNCell(BaseDoubleRecurrentCell):
         >>> h1, c1 = cell(x, (h0, c0))
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "cell_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "cell_bias_init",
+        "dt",
+        "gamma",
+        "epsilon",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_ch: Tensor

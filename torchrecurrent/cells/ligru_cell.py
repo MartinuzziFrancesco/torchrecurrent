@@ -98,6 +98,18 @@ class LiGRUCell(BaseSingleRecurrentCell):
         ...     outputs.append(h)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "activation_fn",
+        "gate_activation_fn",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -150,7 +162,7 @@ class LiGRUCell(BaseSingleRecurrentCell):
 
         update_gate = self.gate_activation_fn(ug)
         candidate_state = self.activation_fn(cg)
-        new_state = (1 - update_gate) * candidate_state + update_gate * state
+        new_state = (1.0 - update_gate) * candidate_state + update_gate * state
 
         if not is_batched:
             new_state = new_state.squeeze(0)

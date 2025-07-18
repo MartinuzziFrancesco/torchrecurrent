@@ -84,6 +84,16 @@ class LightRUCell(BaseSingleRecurrentCell):
         >>> h1 = cell(x, h0)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -127,7 +137,7 @@ class LightRUCell(BaseSingleRecurrentCell):
 
         candidate_state = torch.tanh(gxs1)
         forget_gate = torch.sigmoid(gxs2 + state @ self.weight_hh.t() + self.bias_hh)
-        new_state = (1 - forget_gate) * state + forget_gate * candidate_state
+        new_state = (1.0 - forget_gate) * state + forget_gate * candidate_state
 
         if not is_batched:
             new_state = new_state.squeeze(0)

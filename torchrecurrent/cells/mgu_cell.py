@@ -98,6 +98,18 @@ class MGUCell(BaseSingleRecurrentCell):
         ...     outs.append(hx)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "activation_fn",
+        "gate_activation_fn",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -110,10 +122,10 @@ class MGUCell(BaseSingleRecurrentCell):
         bias: bool = True,
         activation_fn: Callable = torch.tanh,
         gate_activation_fn: Callable = torch.sigmoid,
-        kernel_init=nn.init.xavier_uniform_,
-        recurrent_kernel_init=nn.init.xavier_uniform_,
-        bias_init=nn.init.zeros_,
-        recurrent_bias_init=nn.init.zeros_,
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
@@ -155,7 +167,7 @@ class MGUCell(BaseSingleRecurrentCell):
             + bias_hh_h
         )
         candidate_hidden = self.activation_fn(ch)
-        new_state = forget_gate * candidate_hidden + (1 - forget_gate) * state
+        new_state = forget_gate * candidate_hidden + (1.0 - forget_gate) * state
 
         if not is_batched:
             new_state = new_state.squeeze(0)

@@ -95,6 +95,16 @@ class STARCell(BaseSingleRecurrentCell):
         ...     outputs.append(h)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -139,7 +149,7 @@ class STARCell(BaseSingleRecurrentCell):
 
         nonlinear_inpe = torch.tanh(gxs1)
         input_gate = torch.sigmoid(gxs2 + state_expanded)
-        new_state = torch.tanh((1 - input_gate) * state + input_gate * nonlinear_inpe)
+        new_state = torch.tanh((1.0 - input_gate) * state + input_gate * nonlinear_inpe)
 
         if not is_batched:
             new_state = new_state.squeeze(0)

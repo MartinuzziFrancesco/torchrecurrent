@@ -1,7 +1,7 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Union, Tuple
+from typing import Optional, Callable, Union, Tuple
 from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
@@ -101,6 +101,19 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         ...     outputs.append((h, z))
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "control_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+        "dt",
+        "alpha",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     weight_ch: Tensor
@@ -112,11 +125,11 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        kernel_init=nn.init.xavier_uniform_,
-        recurrent_kernel_init=nn.init.xavier_uniform_,
-        control_kernel_init=nn.init.normal_,
-        bias_init=nn.init.zeros_,
-        recurrent_bias_init=nn.init.zeros_,
+        kernel_init: Callable = nn.init.xavier_uniform_,
+        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
+        control_kernel_init: Callable = nn.init.normal_,
+        bias_init: Callable = nn.init.zeros_,
+        recurrent_bias_init: Callable = nn.init.zeros_,
         dt: float = 1.0,
         alpha: float = 0.0,
         device: Optional[torch.device] = None,
