@@ -156,10 +156,6 @@ the gating dynamics, as described in
 <li><p><strong>input_size</strong> (<em>int</em>) – Number of expected features in the input <cite>inp</cite>.</p></li>
 <li><p><strong>hidden_size</strong> (<em>int</em>) – Number of features in the hidden and cell states.</p></li>
 <li><p><strong>bias</strong> (<em>bool</em>) – If False, no bias terms are used. Default: True.</p></li>
-<li><p><strong>activation_fn</strong> (<em>Callable</em>) – Activation for cell updates
-(default: <cite>torch.tanh</cite>).</p></li>
-<li><p><strong>gate_activation_fn</strong> (<em>Callable</em>) – Activation for gates
-(default: <cite>torch.sigmoid</cite>).</p></li>
 <li><p><strong>kernel_init</strong> (<em>Callable</em>) – Initializer for input‑to‑hidden weights.</p></li>
 <li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>) – Initializer for hidden‑to‑hidden weights.</p></li>
 <li><p><strong>multiplicative_kernel_init</strong> (<em>Callable</em>) – Initializer for multiplicative weights.</p></li>
