@@ -50,9 +50,9 @@ class MGUCell(BaseSingleRecurrentCell):
         hidden_size (int):  Number of features in the hidden state :math:`\mathbf{h}(t)`.
         bias (bool, optional): If ``False``, disables both biases
             :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
-        activation_fn (Callable, optional): Nonlinearity :math:`\phi` for the candidate.
+        nonlinearity (Callable, optional): Nonlinearity :math:`\phi` for the candidate.
             Default: ``torch.tanh``.
-        gate_activation_fn (Callable, optional): Activation for the forget gate.
+        gate_nonlinearity (Callable, optional): Activation for the forget gate.
             Default: ``torch.sigmoid``.
         kernel_init (Callable, optional): Initializer for input‐to‐hidden weights
             :math:`\mathbf{W}_{ih}^*`. Default: ``nn.init.xavier_uniform_``.
@@ -102,8 +102,8 @@ class MGUCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
-        "activation_fn",
-        "gate_activation_fn",
+        "nonlinearity",
+        "gate_nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -120,8 +120,8 @@ class MGUCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.tanh,
-        gate_activation_fn: Callable = torch.sigmoid,
+        nonlinearity: Callable = torch.tanh,
+        gate_nonlinearity: Callable = torch.sigmoid,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -132,8 +132,8 @@ class MGUCell(BaseSingleRecurrentCell):
         super(MGUCell, self).__init__(
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
-        self.activation_fn = activation_fn
-        self.gate_activation_fn = gate_activation_fn
+        self.nonlinearity = nonlinearity
+        self.gate_nonlinearity = gate_nonlinearity
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
@@ -158,7 +158,7 @@ class MGUCell(BaseSingleRecurrentCell):
         bias_hh_f, bias_hh_h = self.bias_hh.chunk(2, 0)
 
         fg = inp @ weight_ih_f.t() + bias_ih_f + state @ weight_hh_f.t() + bias_hh_f
-        forget_gate = self.gate_activation_fn(fg)
+        forget_gate = self.gate_nonlinearity(fg)
         hidden_modulated = forget_gate * state
         ch = (
             inp @ weight_ih_h.t()
@@ -166,7 +166,7 @@ class MGUCell(BaseSingleRecurrentCell):
             + hidden_modulated @ weight_hh_h.t()
             + bias_hh_h
         )
-        candidate_hidden = self.activation_fn(ch)
+        candidate_hidden = self.nonlinearity(ch)
         new_state = forget_gate * candidate_hidden + (1.0 - forget_gate) * state
 
         if not is_batched:

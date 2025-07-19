@@ -41,7 +41,7 @@ class IndRNNCell(BaseSingleRecurrentCell):
         hidden_size (int): size of the hidden state :math:`\mathbf{h}(t)`.
         bias (bool, optional): if ``False``, disables bias :math:`\mathbf{b}_{ih}`.
             Default: ``True``.
-        activation_fn (Callable, optional): activation function :math:`\phi`.
+        nonlinearity (Callable, optional): activation function :math:`\phi`.
             Default: ``torch.tanh``.
         kernel_init (Callable, optional): initializer for :math:`\mathbf{W}_{ih}`.
             Default: ``nn.init.xavier_uniform_``.
@@ -88,7 +88,7 @@ class IndRNNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
-        "activation_fn",
+        "nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -103,7 +103,7 @@ class IndRNNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.tanh,
+        nonlinearity: Callable = torch.tanh,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
@@ -113,7 +113,7 @@ class IndRNNCell(BaseSingleRecurrentCell):
         super(IndRNNCell, self).__init__(
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
-        self.activation_fn = activation_fn
+        self.nonlinearity = nonlinearity
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
@@ -145,7 +145,7 @@ class IndRNNCell(BaseSingleRecurrentCell):
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
 
         new_state = inp @ self.weight_ih.t() + self.vector_u * state + self.bias_ih
-        new_state = self.activation_fn(new_state)
+        new_state = self.nonlinearity(new_state)
 
         if not is_batched:
             new_state = new_state.squeeze(0)

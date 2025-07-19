@@ -53,9 +53,9 @@ class LiGRUCell(BaseSingleRecurrentCell):
         hidden_size (int): Number of features in hidden state :math:`\mathbf{h}(t)`.
         bias (bool, optional): If ``False``, disables both biases
             :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
-        activation_fn (Callable, optional): Activation for the candidate
+        nonlinearity (Callable, optional): Activation for the candidate
             :math:`\tilde{\mathbf{h}}` (default `torch.relu`).
-        gate_activation_fn (Callable, optional): Activation for the update gate
+        gate_nonlinearity (Callable, optional): Activation for the update gate
             :math:`\mathbf{z}` (default `torch.sigmoid`).
         kernel_init (Callable, optional): Initializer for input‐to‐hidden weights
             :math:`\mathbf{W}_{ih}`. Default: ``nn.init.xavier_uniform_``.
@@ -102,8 +102,8 @@ class LiGRUCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
-        "activation_fn",
-        "gate_activation_fn",
+        "nonlinearity",
+        "gate_nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -120,8 +120,8 @@ class LiGRUCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.relu,
-        gate_activation_fn: Callable = torch.sigmoid,
+        nonlinearity: Callable = torch.relu,
+        gate_nonlinearity: Callable = torch.sigmoid,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -132,8 +132,8 @@ class LiGRUCell(BaseSingleRecurrentCell):
         super(LiGRUCell, self).__init__(
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
-        self.activation_fn = activation_fn
-        self.gate_activation_fn = gate_activation_fn
+        self.nonlinearity = nonlinearity
+        self.gate_nonlinearity = gate_nonlinearity
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
@@ -160,8 +160,8 @@ class LiGRUCell(BaseSingleRecurrentCell):
         )
         ug, cg = gates.chunk(2, 1)
 
-        update_gate = self.gate_activation_fn(ug)
-        candidate_state = self.activation_fn(cg)
+        update_gate = self.gate_nonlinearity(ug)
+        candidate_state = self.nonlinearity(cg)
         new_state = (1.0 - update_gate) * candidate_state + update_gate * state
 
         if not is_batched:
