@@ -61,10 +61,6 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
         input_size (int):  Number of expected features in the input `inp`.
         hidden_size (int): Number of features in the hidden and cell states.
         bias (bool):       If False, no bias terms are used. Default: True.
-        activation_fn (Callable): Activation for cell updates
-                                    (default: `torch.tanh`).
-        gate_activation_fn (Callable): Activation for gates
-                                        (default: `torch.sigmoid`).
         kernel_init (Callable): Initializer for input‑to‑hidden weights.
         recurrent_kernel_init (Callable): Initializer for hidden‑to‑hidden weights.
         multiplicative_kernel_init (Callable):

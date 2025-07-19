@@ -66,9 +66,9 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         hidden_size (int):  Number of hidden units :math:`\dim(\mathbf{h}(t))`.
         bias (bool, optional): If ``False``, disables all biases
             :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
-        activation_fn (Callable, optional): Activation for the cell candidate
+        nonlinearity (Callable, optional): Activation for the cell candidate
             :math:`\mathbf{z}`. Default: ``torch.tanh``.
-        gate_activation_fn (Callable, optional): Activation for input/forget/output gates.
+        gate_nonlinearity (Callable, optional): Activation for input/forget/output gates.
             Default: ``torch.sigmoid``.
         kernel_init (Callable, optional): Initializer for input-to-hidden weights
             :math:`\mathbf{W}_{ih}`. Default: ``nn.init.xavier_uniform_``.
@@ -116,8 +116,8 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
-        "activation_fn",
-        "gate_activation_fn",
+        "nonlinearity",
+        "gate_nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
         "peephole_kernel_init",
@@ -136,8 +136,8 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.tanh,
-        gate_activation_fn: Callable = torch.sigmoid,
+        nonlinearity: Callable = torch.tanh,
+        gate_nonlinearity: Callable = torch.sigmoid,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         peephole_kernel_init: Callable = nn.init.normal_,
@@ -149,8 +149,8 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         super(PeepholeLSTMCell, self).__init__(
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
-        self.activation_fn = activation_fn
-        self.gate_activation_fn = gate_activation_fn
+        self.nonlinearity = nonlinearity
+        self.gate_nonlinearity = nonlinearity
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.peephole_kernel_init = peephole_kernel_init
@@ -202,7 +202,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
             + c_state * weight_ph_i
             + bias_hh_i
         )
-        input_gate = self.gate_activation_fn(i)
+        input_gate = self.gate_nonlinearity(i)
         f = (
             inp @ weight_ih_f.t()
             + bias_ih_f
@@ -210,9 +210,9 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
             + bias_hh_f
             + c_state * weight_ph_f
         )
-        forget_gate = self.gate_activation_fn(f)
+        forget_gate = self.gate_nonlinearity(f)
         c_hat = inp @ weight_ih_c.t() + bias_ih_c + state @ weight_hh_c.t() + bias_hh_c
-        cell_candidate = self.activation_fn(c_hat)
+        cell_candidate = self.nonlinearity(c_hat)
         new_c = forget_gate * c_state + input_gate * cell_candidate
         o = (
             inp @ weight_ih_o.t()
@@ -221,8 +221,8 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
             + bias_hh_o
             + new_c * weight_ph_o
         )
-        output_gate = self.gate_activation_fn(o)
-        new_h = output_gate * self.activation_fn(new_c)
+        output_gate = self.gate_nonlinearity(o)
+        new_h = output_gate * self.nonlinearity(new_c)
 
         if not is_batched:
             new_h = new_h.squeeze(0)

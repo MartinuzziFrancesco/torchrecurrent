@@ -108,7 +108,6 @@ class FastRNNCell(BaseSingleRecurrentCell):
         "hidden_size",
         "bias",
         "nonlinearity",
-        "activation_fn",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",

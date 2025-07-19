@@ -45,7 +45,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         hidden_size (int): Number of features in the hidden state.
         bias (bool):       If False, the layer does not use bias weights.
                             Default: True.
-        activation_fn (Callable): Activation function (default: `torch.tanh`).
+        nonlinearity (Callable): Activation function (default: `torch.tanh`).
         kernel_init (Callable):   Initializer for input‐to‐hidden weights
                                     (default: `nn.init.xavier_uniform_`).
         recurrent_kernel_init (Callable):
@@ -100,7 +100,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
-        "activation_fn",
+        "nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -119,7 +119,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.tanh,
+        nonlinearity: Callable = torch.tanh,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
@@ -132,7 +132,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         super(AntisymmetricRNNCell, self).__init__(
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
-        self.activation_fn = activation_fn
+        self.nonlinearity = nonlinearity
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
@@ -158,7 +158,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
             + state @ recurrent_matrix.t()
             + self.bias_hh
         )
-        new_state = state + self.epsilon * self.activation_fn(pre_act)
+        new_state = state + self.epsilon * self.nonlinearity(pre_act)
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -213,7 +213,7 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         input_size (int):        Number of expected features in the input `inp`.
         hidden_size (int):       Number of features in the hidden state.
         bias (bool):             If False, no bias terms are used. Default: True.
-        activation_fn (Callable): Activation to apply (default: `torch.tanh`).
+        nonlinearity (Callable): Activation to apply (default: `torch.tanh`).
         kernel_init (Callable):   Initializer for input‐to‐hidden weights
                                     (default: `nn.init.xavier_uniform_`).
         recurrent_kernel_init (Callable):
@@ -259,7 +259,6 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
-        "activation_fn",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -278,7 +277,6 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        activation_fn: Callable = torch.tanh,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
@@ -290,7 +288,6 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         super(GatedAntisymmetricRNNCell, self).__init__(
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
-        self.activation_fn = activation_fn
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
