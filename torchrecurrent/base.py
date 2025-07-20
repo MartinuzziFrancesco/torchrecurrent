@@ -7,17 +7,19 @@ from typing import Optional, Tuple, Union, Dict
 
 
 class BaseRecurrentCell(nn.Module, ABC):
-    __constants__ = ["input_size", "hidden_size", "bias"]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     input_size: int
     hidden_size: int
     bias: bool
+    recurrent_bias: bool
 
     def __init__(
         self,
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
         **kwargs,
@@ -26,6 +28,7 @@ class BaseRecurrentCell(nn.Module, ABC):
         self.input_size = input_size
         self.hidden_size = hidden_size
         self.bias = bias
+        self.recurrent_bias = recurrent_bias
         self._factory_kwargs = {
             k: v for k, v in {"device": device, "dtype": dtype}.items() if v is not None
         }
@@ -126,6 +129,7 @@ class BaseRecurrentCell(nn.Module, ABC):
         ih_mult: int = 1,
         hh_mult: int = 1,
         bias: bool = True,
+        recurrent_bias: bool = True,
         prefix_ih: str = "weight_ih",
         prefix_hh: str = "weight_hh",
         prefix_bih: str = "bias_ih",
@@ -142,7 +146,7 @@ class BaseRecurrentCell(nn.Module, ABC):
             prefix_ih: ((ih_mult * hidden_size, input_size), True),
             prefix_hh: ((hh_mult * hidden_size, hidden_size), True),
             prefix_bih: ((ih_mult * hidden_size,), bias),
-            prefix_bhh: ((hh_mult * hidden_size,), bias),
+            prefix_bhh: ((hh_mult * hidden_size,), recurrent_bias),
         }
         self._register_tensors(specs)
 

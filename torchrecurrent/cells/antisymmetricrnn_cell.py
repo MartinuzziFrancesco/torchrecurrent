@@ -43,7 +43,9 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Number of expected features in the input `inp`.
         hidden_size (int): Number of features in the hidden state.
-        bias (bool):       If False, the layer does not use bias weights.
+        bias (bool):       If False, the layer does not use bias.
+                            Default: True.
+        recurrent_bias (bool): If False, the layer does not use recurrent bias.
                             Default: True.
         nonlinearity (Callable): Activation function (default: `torch.tanh`).
         kernel_init (Callable):   Initializer for input‐to‐hidden weights
@@ -100,7 +102,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
-        "nonlinearity",
+        "recurrent_bias" "nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -119,6 +121,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         nonlinearity: Callable = torch.tanh,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
@@ -130,7 +133,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(AntisymmetricRNNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.nonlinearity = nonlinearity
         self.kernel_init = kernel_init
@@ -140,7 +143,9 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         self.epsilon = epsilon
         self.gamma = gamma
 
-        self._default_register_tensors(input_size, hidden_size, bias=bias)
+        self._default_register_tensors(
+            input_size, hidden_size, bias=bias, recurrent_bias=recurrent_bias
+        )
         self.init_weights()
 
     def forward(
@@ -212,7 +217,8 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):        Number of expected features in the input `inp`.
         hidden_size (int):       Number of features in the hidden state.
-        bias (bool):             If False, no bias terms are used. Default: True.
+        bias (bool): If False, no bias is used used. Default: True.
+        recurrent_bias (bool): If False, no recurrent bias is used. Default: True.
         nonlinearity (Callable): Activation to apply (default: `torch.tanh`).
         kernel_init (Callable):   Initializer for input‐to‐hidden weights
                                     (default: `nn.init.xavier_uniform_`).
@@ -259,6 +265,7 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -277,6 +284,7 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
@@ -286,7 +294,7 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(GatedAntisymmetricRNNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -295,7 +303,12 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         self.gamma = gamma
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=2, hh_mult=1, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=2,
+            hh_mult=1,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 

@@ -45,8 +45,10 @@ class BRCell(BaseSingleRecurrentCell):
     Args:
         input_size (int): Size of each input vector :math:`\mathbf{x}(t)`.
         hidden_size (int): Size of the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables all biases
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable, optional): Initializer for all
             input-to-hidden weights :math:`\mathbf{W}_{ih}^*`.
             Default: ``nn.init.xavier_uniform_``.
@@ -101,6 +103,7 @@ class BRCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -117,6 +120,7 @@ class BRCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
@@ -125,7 +129,7 @@ class BRCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(BRCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -137,7 +141,7 @@ class BRCell(BaseSingleRecurrentCell):
                 "weight_ih": ((3 * hidden_size, input_size), True),
                 "weight_hh": ((2 * hidden_size,), True),
                 "bias_ih": ((3 * hidden_size,), bias),
-                "bias_hh": ((2 * hidden_size,), bias),
+                "bias_hh": ((2 * hidden_size,), recurrent_bias),
             }
         )
         self.init_weights()
@@ -207,8 +211,10 @@ class NBRCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Number of features in the input vector :math:`\mathbf{x}(t)`.
         hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables all biases
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable, optional): Initializer for all
             input‐to‐hidden weights :math:`\mathbf{W}_{ih}^*`.
             Default: ``nn.init.xavier_uniform_``.
@@ -257,6 +263,17 @@ class NBRCell(BaseSingleRecurrentCell):
         ...     hx = cell(x[t], hx)
     """
 
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "recurrent_bias",
+        "kernel_init",
+        "recurrent_kernel_init",
+        "bias_init",
+        "recurrent_bias_init",
+    ]
+
     weight_ih: Tensor
     weight_hh: Tensor
     bias_ih: Tensor
@@ -267,6 +284,7 @@ class NBRCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -275,7 +293,7 @@ class NBRCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(NBRCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -287,7 +305,7 @@ class NBRCell(BaseSingleRecurrentCell):
                 "weight_ih": ((3 * hidden_size, input_size), True),
                 "weight_hh": ((2 * hidden_size, hidden_size), True),
                 "bias_ih": ((3 * hidden_size,), bias),
-                "bias_hh": ((2 * hidden_size,), bias),
+                "bias_hh": ((2 * hidden_size,), recurrent_bias),
             }
         )
         self.init_weights()
