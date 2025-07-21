@@ -157,9 +157,10 @@ class BRCell(BaseSingleRecurrentCell):
         input_exp = inp @ self.weight_ih.t() + self.bias_ih
         input_exp_1, input_exp_2, input_exp_3 = input_exp.chunk(3, 1)
         rec_matrix_1, rec_matrix_2 = self.weight_hh.chunk(2)
+        bias_hh_1, bias_hh_2 = self.bias_hh.chunk(2, 0)
 
-        h1 = input_exp_1 + rec_matrix_1 * state
-        h2 = input_exp_2 + rec_matrix_2 * state
+        h1 = input_exp_1 + rec_matrix_1 * state + bias_hh_1
+        h2 = input_exp_2 + rec_matrix_2 * state + bias_hh_2
         modulation_gate = 1.0 + torch.tanh(h1)
         candidate_state = torch.sigmoid(h2)
         h3 = input_exp_3 + modulation_gate * state
@@ -321,8 +322,10 @@ class NBRCell(BaseSingleRecurrentCell):
         input_exp = inp @ self.weight_ih.t() + self.bias_ih
         input_exp_1, input_exp_2, input_exp_3 = input_exp.chunk(3, 1)
         rec_matrix_1, rec_matrix_2 = self.weight_hh.chunk(2, 0)
-        h1 = input_exp_1 + state @ rec_matrix_1.t()
-        h2 = input_exp_2 + state @ rec_matrix_2.t()
+        bias_hh_1, bias_hh_2 = self.bias_hh.chunk(2, 0)
+
+        h1 = input_exp_1 + state @ rec_matrix_1.t() + bias_hh_1
+        h2 = input_exp_2 + state @ rec_matrix_2.t() + bias_hh_2
         modulation_gate = 1.0 + torch.tanh(h1)
         candidate_state = torch.sigmoid(h2)
         h3 = input_exp_3 + modulation_gate * state

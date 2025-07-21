@@ -75,8 +75,10 @@ class NASCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int):   Dimensionality of input vector :math:`\mathbf{x}(t)`.
         hidden_size (int):  Number of hidden units :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If False, disables both input and hidden biases.
-            Default: True.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable, optional): Initializer for input‐to‐hidden weights
             :math:`\mathbf{W}_{ih}`. Default: `nn.init.xavier_uniform_`.
         recurrent_kernel_init (Callable, optional): Initializer for hidden‐to‐hidden
@@ -121,6 +123,7 @@ class NASCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -137,6 +140,7 @@ class NASCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -153,7 +157,12 @@ class NASCell(BaseDoubleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=8, hh_mult=8, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=8,
+            hh_mult=8,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 

@@ -48,8 +48,10 @@ class SGRNCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Number of features in the input :math:`\mathbf{x}(t)`.
         hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, the cell does not use bias terms
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable, optional): Initialization function for
             input-to-hidden weights :math:`\mathbf{W}_{ih}`.
             Default: ``nn.init.xavier_uniform_``.
@@ -97,6 +99,7 @@ class SGRNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -113,6 +116,7 @@ class SGRNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -129,7 +133,12 @@ class SGRNCell(BaseSingleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=1, hh_mult=1, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=1,
+            hh_mult=1,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 

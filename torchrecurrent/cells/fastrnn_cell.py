@@ -47,8 +47,9 @@ class FastRNNCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Number of features in the input :math:`\mathbf{x}(t)`.
         hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables both biases
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
             Default: ``True``.
         nonlinearity (Callable, optional): Activation function :math:`\phi` for the
             candidate. Default: ``torch.tanh``.
@@ -107,6 +108,7 @@ class FastRNNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
@@ -128,6 +130,7 @@ class FastRNNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         nonlinearity: Callable = torch.tanh,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
@@ -154,7 +157,7 @@ class FastRNNCell(BaseSingleRecurrentCell):
                 "weight_ih": ((hidden_size, input_size), True),
                 "weight_hh": ((hidden_size, hidden_size), True),
                 "bias_ih": ((hidden_size,), bias),
-                "bias_hh": ((hidden_size,), bias),
+                "bias_hh": ((hidden_size,), recurrent_bias),
                 "alpha": ((1,), True),
                 "beta": ((1,), True),
             }
@@ -245,8 +248,10 @@ class FastGRNNCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Number of features in the input :math:`\mathbf{x}(t)`.
         hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables both bias vectors
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         nonlinearity (Callable, optional): Activation for the gate :math:`\mathbf{z}`.
             Default: ``torch.tanh``.
         kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{ih}`.
@@ -302,6 +307,7 @@ class FastGRNNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
@@ -323,6 +329,7 @@ class FastGRNNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         nonlinearity: Callable = torch.tanh,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
@@ -349,7 +356,7 @@ class FastGRNNCell(BaseSingleRecurrentCell):
                 "weight_ih": ((hidden_size, input_size), True),
                 "weight_hh": ((hidden_size, hidden_size), True),
                 "bias_ih": ((2 * hidden_size,), bias),
-                "bias_hh": ((2 * hidden_size,), bias),
+                "bias_hh": ((2 * hidden_size,), recurrent_bias),
                 "zeta": ((1,), True),
                 "nu": ((1,), True),
             }

@@ -55,7 +55,12 @@ class SCRNCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int):      Number of input features.
         hidden_size (int):     Number of hidden (and context) features.
-        bias (bool):           If False, no biases are used. Default: True.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
+        context_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ch}`.
+            Default: ``True``.
         kernel_init (Callable):
                                 Initializer for input‑to‑hidden kernels.
         recurrent_kernel_init (Callable):
@@ -102,6 +107,8 @@ class SCRNCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
+        "context_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "context_kernel_init",
@@ -122,6 +129,8 @@ class SCRNCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
+        context_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         context_kernel_init: Callable = nn.init.normal_,
@@ -149,8 +158,8 @@ class SCRNCell(BaseDoubleRecurrentCell):
                 "weight_hh": ((2 * hidden_size, hidden_size), True),
                 "weight_ch": ((2 * hidden_size, hidden_size), True),
                 "bias_ih": ((2 * hidden_size,), bias),
-                "bias_hh": ((2 * hidden_size,), bias),
-                "bias_ch": ((2 * hidden_size,), bias),
+                "bias_hh": ((2 * hidden_size,), recurrent_bias),
+                "bias_ch": ((2 * hidden_size,), context_bias),
             }
         )
         self.init_weights()

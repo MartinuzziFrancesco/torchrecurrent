@@ -48,8 +48,10 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int): Number of features in the input :math:`\mathbf{x}(t)`.
         hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, the cell does not use bias terms
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable, optional): Initializer for input-to-hidden weights
             :math:`\mathbf{W}_{ih}` (default: ``nn.init.xavier_uniform_``).
         recurrent_kernel_init (Callable, optional): Initializer for hidden-to-hidden
@@ -105,6 +107,7 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "control_kernel_init",
@@ -125,6 +128,7 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         control_kernel_init: Callable = nn.init.normal_,
@@ -152,7 +156,7 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
                 "weight_hh": ((hidden_size, hidden_size), True),
                 "weight_ch": ((hidden_size,), True),
                 "bias_ih": ((hidden_size,), bias),
-                "bias_hh": ((hidden_size,), bias),
+                "bias_hh": ((hidden_size,), recurrent_bias),
             }
         )
         self.init_weights()

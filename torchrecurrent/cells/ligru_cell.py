@@ -51,8 +51,10 @@ class LiGRUCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Dimensionality of input vector :math:`\mathbf{x}(t)`.
         hidden_size (int): Number of features in hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables both biases
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         nonlinearity (Callable, optional): Activation for the candidate
             :math:`\tilde{\mathbf{h}}` (default `torch.relu`).
         gate_nonlinearity (Callable, optional): Activation for the update gate
@@ -102,6 +104,7 @@ class LiGRUCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "nonlinearity",
         "gate_nonlinearity",
         "kernel_init",
@@ -120,6 +123,7 @@ class LiGRUCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         nonlinearity: Callable = torch.relu,
         gate_nonlinearity: Callable = torch.sigmoid,
         kernel_init: Callable = nn.init.xavier_uniform_,
@@ -140,7 +144,12 @@ class LiGRUCell(BaseSingleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=2,
+            hh_mult=2,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 

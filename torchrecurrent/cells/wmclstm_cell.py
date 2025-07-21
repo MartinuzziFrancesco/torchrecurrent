@@ -58,7 +58,11 @@ class WMCLSTMCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int):   Number of features in the input :math:`\mathbf{x}(t)`.
         hidden_size (int):  Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, does not use bias terms.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
+        memory_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{mh}`.
             Default: ``True``.
         kernel_init (Callable, optional): Initializer for input-to-hidden weights
             :math:`\mathbf{W}_{ih}^{\{i,f,c,o\}}`. Default: ``nn.init.xavier_uniform_``.
@@ -115,6 +119,8 @@ class WMCLSTMCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
+        "memory_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "memory_kernel_init",
@@ -135,6 +141,8 @@ class WMCLSTMCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
+        memory_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         memory_kernel_init: Callable = nn.init.xavier_uniform_,
@@ -160,8 +168,8 @@ class WMCLSTMCell(BaseDoubleRecurrentCell):
                 "weight_hh": ((4 * hidden_size, hidden_size), True),
                 "weight_mh": ((3 * hidden_size, hidden_size), True),
                 "bias_ih": ((4 * hidden_size,), bias),
-                "bias_hh": ((4 * hidden_size,), bias),
-                "bias_mh": ((3 * hidden_size,), bias),
+                "bias_hh": ((4 * hidden_size,), recurrent_bias),
+                "bias_mh": ((3 * hidden_size,), memory_bias),
             }
         )
         self.init_weights()

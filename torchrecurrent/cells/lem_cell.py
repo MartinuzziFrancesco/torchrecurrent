@@ -54,7 +54,12 @@ class LEMCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int):  Number of expected features in the input tensor.
         hidden_size (int): Number of features in the hidden and cell states.
-        bias (bool):       If ``False``, no bias terms are used. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
+        cell_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ch}`.
+            Default: ``True``.
         kernel_init (Callable):
                             Initializer for the input-to-hidden weight matrix.
         recurrent_kernel_init (Callable):
@@ -104,6 +109,8 @@ class LEMCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
+        "cell_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "cell_kernel_init",
@@ -124,6 +131,8 @@ class LEMCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
+        cell_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         cell_kernel_init: Callable = nn.init.xavier_uniform_,
@@ -151,8 +160,8 @@ class LEMCell(BaseDoubleRecurrentCell):
                 "weight_hh": ((3 * hidden_size, hidden_size), True),
                 "weight_ch": ((hidden_size, hidden_size), True),
                 "bias_ih": ((4 * hidden_size,), bias),
-                "bias_hh": ((3 * hidden_size,), bias),
-                "bias_ch": ((hidden_size,), bias),
+                "bias_hh": ((3 * hidden_size,), recurrent_bias),
+                "bias_ch": ((hidden_size,), cell_bias),
             }
         )
         self.init_weights()

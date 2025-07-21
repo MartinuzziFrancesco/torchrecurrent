@@ -60,7 +60,12 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int):  Number of expected features in the input `inp`.
         hidden_size (int): Number of features in the hidden and cell states.
-        bias (bool):       If False, no bias terms are used. Default: True.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
+        multiplicative_bias (bool, optional): If ``False``, disables
+            :math:`\mathbf{b}_{mh}`. Default: ``True``.
         kernel_init (Callable): Initializer for input‑to‑hidden weights.
         recurrent_kernel_init (Callable): Initializer for hidden‑to‑hidden weights.
         multiplicative_kernel_init (Callable):
@@ -102,6 +107,8 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
+        "multiplicative_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "multiplicative_kernel_init",
@@ -122,6 +129,8 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
+        multiplicative_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         multiplicative_kernel_init: Callable = nn.init.normal_,
@@ -147,8 +156,8 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
                 "weight_hh": ((hidden_size, hidden_size), True),
                 "weight_mh": ((4 * hidden_size, hidden_size), True),
                 "bias_ih": ((5 * hidden_size,), bias),
-                "bias_hh": ((hidden_size,), bias),
-                "bias_mh": ((4 * hidden_size,), bias),
+                "bias_hh": ((hidden_size,), recurrent_bias),
+                "bias_mh": ((4 * hidden_size,), multiplicative_bias),
             }
         )
         self.init_weights()

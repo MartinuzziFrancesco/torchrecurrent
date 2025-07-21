@@ -50,8 +50,10 @@ class JANETCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int):  Number of expected features in the input tensor.
         hidden_size (int): Number of features in the hidden and cell states.
-        bias (bool):       If ``False``, the cell will not use bias terms.
-                           Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable):
                            Initializer for input‐to‐hidden weights
                            (default: ``nn.init.xavier_uniform_``).
@@ -104,6 +106,7 @@ class JANETCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -120,6 +123,7 @@ class JANETCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -137,7 +141,12 @@ class JANETCell(BaseDoubleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=2, hh_mult=2, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=2,
+            hh_mult=2,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.beta = nn.Parameter(torch.tensor(beta))
         self.init_weights()

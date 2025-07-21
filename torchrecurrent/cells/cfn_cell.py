@@ -49,8 +49,10 @@ class CFNCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):   Number of features in the input :math:`\mathbf{x}(t)`.
         hidden_size (int):  Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables all biases
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable, optional): Initializer for input-to-hidden
             weights :math:`\mathbf{W}_{ih}^*`. Default: ``nn.init.xavier_uniform_``.
         recurrent_kernel_init (Callable, optional): Initializer for
@@ -103,6 +105,7 @@ class CFNCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -119,6 +122,7 @@ class CFNCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -127,7 +131,7 @@ class CFNCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(CFNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -135,7 +139,12 @@ class CFNCell(BaseSingleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=3, hh_mult=2, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=3,
+            hh_mult=2,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 
