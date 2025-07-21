@@ -49,7 +49,10 @@ class MUT1Cell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Number of features in the input `inp`.
         hidden_size (int): Number of features in the hidden state.
-        bias (bool):       If False, no bias terms are used. Default: True.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable):
                             Initializer for input‑to‑hidden weights.
         recurrent_kernel_init (Callable):
@@ -86,6 +89,7 @@ class MUT1Cell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -102,6 +106,7 @@ class MUT1Cell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -118,7 +123,12 @@ class MUT1Cell(BaseSingleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=3, hh_mult=2, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=3,
+            hh_mult=2,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 
@@ -196,7 +206,10 @@ class MUT2Cell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Number of expected features in the input `inp`.
         hidden_size (int): Number of features in the hidden state.
-        bias (bool):       If False, no bias terms are used. Default: True.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable):
                             Initializer for input‑to‑hidden weights.
         recurrent_kernel_init (Callable):
@@ -233,6 +246,7 @@ class MUT2Cell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -249,6 +263,7 @@ class MUT2Cell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -265,7 +280,12 @@ class MUT2Cell(BaseSingleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=3, hh_mult=3, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=3,
+            hh_mult=3,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 
@@ -344,7 +364,10 @@ class MUT3Cell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Number of features in the input `inp`.
         hidden_size (int): Number of features in the hidden state.
-        bias (bool):       If False, no bias terms are used. Default: True.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable):
                             Initializer for input‑to‑hidden weights.
         recurrent_kernel_init (Callable):
@@ -381,6 +404,7 @@ class MUT3Cell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -397,6 +421,7 @@ class MUT3Cell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -413,7 +438,12 @@ class MUT3Cell(BaseSingleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=3, hh_mult=3, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=3,
+            hh_mult=3,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 

@@ -43,7 +43,10 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int):        Dimensionality of the input features.
         hidden_size (int):       Dimensionality of the hidden and cell states.
-        bias (bool):             If False, no bias terms are used. Default: True.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable):  Initializer for input‐to‐hidden weights.
         recurrent_kernel_init (Callable):
                                     Initializer for hidden‐to‐hidden weights.
@@ -88,6 +91,7 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -104,6 +108,7 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -120,7 +125,12 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
         self.recurrent_bias_init = recurrent_bias_init
 
         self._default_register_tensors(
-            input_size, hidden_size, ih_mult=3, hh_mult=3, bias=bias
+            input_size,
+            hidden_size,
+            ih_mult=3,
+            hh_mult=3,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
         )
         self.init_weights()
 

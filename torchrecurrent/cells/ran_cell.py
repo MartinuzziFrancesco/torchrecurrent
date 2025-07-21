@@ -49,8 +49,10 @@ class RANCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int): Number of expected features in the input `inp`.
         hidden_size (int): Number of features in the hidden/cell states.
-        bias (bool): If False, the cell does not use bias terms.
-                     Default: True.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable): Initializer for input‐to‐hidden weights
                                 (default: `nn.init.xavier_uniform_`).
         recurrent_kernel_init (Callable):
@@ -100,6 +102,7 @@ class RANCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -116,6 +119,7 @@ class RANCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
         bias_init: Callable = nn.init.zeros_,
@@ -136,7 +140,7 @@ class RANCell(BaseDoubleRecurrentCell):
                 "weight_ih": ((3 * hidden_size, input_size), True),
                 "weight_hh": ((2 * hidden_size, hidden_size), True),
                 "bias_ih": ((2 * hidden_size,), bias),
-                "bias_hh": ((2 * hidden_size,), bias),
+                "bias_hh": ((2 * hidden_size,), recurrent_bias),
             }
         )
         self.init_weights()

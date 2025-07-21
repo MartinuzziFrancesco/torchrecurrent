@@ -37,8 +37,10 @@ class ATRCell(BaseSingleRecurrentCell):
     Args:
         input_size (int):  Size of the input vector :math:`\mathbf{x}(t)`.
         hidden_size (int): Size of the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables both :math:`\mathbf{b}_{ih}` and
-            :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{ih}`.
             Default: ``nn.init.xavier_uniform_``.
         recurrent_kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{hh}`.
@@ -87,6 +89,7 @@ class ATRCell(BaseSingleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "kernel_init",
         "recurrent_kernel_init",
         "bias_init",
@@ -103,6 +106,7 @@ class ATRCell(BaseSingleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.normal_,
         bias_init: Callable = nn.init.zeros_,
@@ -111,14 +115,16 @@ class ATRCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(ATRCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.bias_init = bias_init
         self.recurrent_bias_init = recurrent_bias_init
 
-        self._default_register_tensors(input_size, hidden_size, bias=bias)
+        self._default_register_tensors(
+            input_size, hidden_size, bias=bias, recurrent_bias=recurrent_bias
+        )
         self.init_weights()
 
     def forward(

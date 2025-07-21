@@ -64,8 +64,10 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
     Args:
         input_size (int):   Number of input features :math:`\dim(\mathbf{x}(t))`.
         hidden_size (int):  Number of hidden units :math:`\dim(\mathbf{h}(t))`.
-        bias (bool, optional): If ``False``, disables all biases
-            :math:`\mathbf{b}_{ih}` and :math:`\mathbf{b}_{hh}`. Default: ``True``.
+        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``.
         nonlinearity (Callable, optional): Activation for the cell candidate
             :math:`\mathbf{z}`. Default: ``torch.tanh``.
         gate_nonlinearity (Callable, optional): Activation for input/forget/output gates.
@@ -116,6 +118,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         "input_size",
         "hidden_size",
         "bias",
+        "recurrent_bias",
         "nonlinearity",
         "gate_nonlinearity",
         "kernel_init",
@@ -136,6 +139,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
+        recurrent_bias: bool = True,
         nonlinearity: Callable = torch.tanh,
         gate_nonlinearity: Callable = torch.sigmoid,
         kernel_init: Callable = nn.init.xavier_uniform_,
@@ -150,7 +154,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
             input_size, hidden_size, bias, device=device, dtype=dtype
         )
         self.nonlinearity = nonlinearity
-        self.gate_nonlinearity = nonlinearity
+        self.gate_nonlinearity = gate_nonlinearity
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
         self.peephole_kernel_init = peephole_kernel_init
@@ -163,7 +167,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
                 "weight_hh": ((4 * hidden_size, hidden_size), True),
                 "weight_ph": ((3 * hidden_size,), True),
                 "bias_ih": ((4 * hidden_size,), bias),
-                "bias_hh": ((4 * hidden_size,), bias),
+                "bias_hh": ((4 * hidden_size,), recurrent_bias),
             }
         )
         self.init_weights()
