@@ -2,9 +2,9 @@ name: Publish Python package
 
 on:
   push:
-    # Trigger on version tags like v1.2.3
     tags:
       - "v*.*.*"
+  workflow_dispatch:
 
 permissions:
   contents: read
