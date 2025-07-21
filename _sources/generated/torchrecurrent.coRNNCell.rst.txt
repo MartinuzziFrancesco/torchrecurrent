@@ -87,6 +87,7 @@
       ~coRNNCell.input_size
       ~coRNNCell.hidden_size
       ~coRNNCell.bias
+      ~coRNNCell.recurrent_bias
       ~coRNNCell.training
    
    

@@ -87,6 +87,7 @@
       ~WMCLSTMCell.input_size
       ~WMCLSTMCell.hidden_size
       ~WMCLSTMCell.bias
+      ~WMCLSTMCell.recurrent_bias
       ~WMCLSTMCell.training
    
    

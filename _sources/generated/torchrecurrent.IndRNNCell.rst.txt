@@ -81,9 +81,11 @@
       ~IndRNNCell.weight_ih
       ~IndRNNCell.vector_u
       ~IndRNNCell.bias_ih
+      ~IndRNNCell.bias_hh
       ~IndRNNCell.input_size
       ~IndRNNCell.hidden_size
       ~IndRNNCell.bias
+      ~IndRNNCell.recurrent_bias
       ~IndRNNCell.training
    
    

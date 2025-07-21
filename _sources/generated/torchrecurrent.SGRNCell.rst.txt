@@ -85,6 +85,7 @@
       ~SGRNCell.input_size
       ~SGRNCell.hidden_size
       ~SGRNCell.bias
+      ~SGRNCell.recurrent_bias
       ~SGRNCell.training
    
    

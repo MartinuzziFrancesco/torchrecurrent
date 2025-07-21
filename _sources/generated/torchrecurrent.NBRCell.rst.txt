@@ -85,6 +85,7 @@
       ~NBRCell.input_size
       ~NBRCell.hidden_size
       ~NBRCell.bias
+      ~NBRCell.recurrent_bias
       ~NBRCell.training
    
    

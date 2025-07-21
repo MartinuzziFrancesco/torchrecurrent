@@ -86,6 +86,7 @@
       ~UnICORNNCell.input_size
       ~UnICORNNCell.hidden_size
       ~UnICORNNCell.bias
+      ~UnICORNNCell.recurrent_bias
       ~UnICORNNCell.training
    
    

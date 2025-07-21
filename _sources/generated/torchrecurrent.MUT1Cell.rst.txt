@@ -85,6 +85,7 @@
       ~MUT1Cell.input_size
       ~MUT1Cell.hidden_size
       ~MUT1Cell.bias
+      ~MUT1Cell.recurrent_bias
       ~MUT1Cell.training
    
    

@@ -85,6 +85,7 @@
       ~BRCell.input_size
       ~BRCell.hidden_size
       ~BRCell.bias
+      ~BRCell.recurrent_bias
       ~BRCell.training
    
    

@@ -85,6 +85,7 @@
       ~RANCell.input_size
       ~RANCell.hidden_size
       ~RANCell.bias
+      ~RANCell.recurrent_bias
       ~RANCell.training
    
    

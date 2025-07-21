@@ -87,6 +87,7 @@
       ~SCRNCell.input_size
       ~SCRNCell.hidden_size
       ~SCRNCell.bias
+      ~SCRNCell.recurrent_bias
       ~SCRNCell.training
    
    

@@ -85,6 +85,7 @@
       ~LightRUCell.input_size
       ~LightRUCell.hidden_size
       ~LightRUCell.bias
+      ~LightRUCell.recurrent_bias
       ~LightRUCell.training
    
    

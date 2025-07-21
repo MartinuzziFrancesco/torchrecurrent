@@ -86,6 +86,7 @@
       ~PeepholeLSTMCell.input_size
       ~PeepholeLSTMCell.hidden_size
       ~PeepholeLSTMCell.bias
+      ~PeepholeLSTMCell.recurrent_bias
       ~PeepholeLSTMCell.training
    
    

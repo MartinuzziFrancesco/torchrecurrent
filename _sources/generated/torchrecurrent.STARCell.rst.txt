@@ -85,6 +85,7 @@
       ~STARCell.input_size
       ~STARCell.hidden_size
       ~STARCell.bias
+      ~STARCell.recurrent_bias
       ~STARCell.training
    
    

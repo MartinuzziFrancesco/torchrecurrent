@@ -85,6 +85,7 @@
       ~JANETCell.input_size
       ~JANETCell.hidden_size
       ~JANETCell.bias
+      ~JANETCell.recurrent_bias
       ~JANETCell.training
    
    

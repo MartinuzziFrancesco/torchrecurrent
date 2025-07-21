@@ -85,6 +85,7 @@
       ~MGUCell.input_size
       ~MGUCell.hidden_size
       ~MGUCell.bias
+      ~MGUCell.recurrent_bias
       ~MGUCell.training
    
    

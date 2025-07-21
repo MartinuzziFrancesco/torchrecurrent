@@ -87,6 +87,7 @@
       ~FastGRNNCell.input_size
       ~FastGRNNCell.hidden_size
       ~FastGRNNCell.bias
+      ~FastGRNNCell.recurrent_bias
       ~FastGRNNCell.training
    
    

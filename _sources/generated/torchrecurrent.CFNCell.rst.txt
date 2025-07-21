@@ -85,6 +85,7 @@
       ~CFNCell.input_size
       ~CFNCell.hidden_size
       ~CFNCell.bias
+      ~CFNCell.recurrent_bias
       ~CFNCell.training
    
    

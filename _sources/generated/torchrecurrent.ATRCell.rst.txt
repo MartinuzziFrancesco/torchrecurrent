@@ -85,6 +85,7 @@
       ~ATRCell.input_size
       ~ATRCell.hidden_size
       ~ATRCell.bias
+      ~ATRCell.recurrent_bias
       ~ATRCell.training
    
    

@@ -87,6 +87,7 @@
       ~LEMCell.input_size
       ~LEMCell.hidden_size
       ~LEMCell.bias
+      ~LEMCell.recurrent_bias
       ~LEMCell.training
    
    

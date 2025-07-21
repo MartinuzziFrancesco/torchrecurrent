@@ -85,6 +85,7 @@
       ~OriginalLSTMCell.input_size
       ~OriginalLSTMCell.hidden_size
       ~OriginalLSTMCell.bias
+      ~OriginalLSTMCell.recurrent_bias
       ~OriginalLSTMCell.training
    
    
