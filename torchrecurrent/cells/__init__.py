@@ -30,6 +30,7 @@ from .ran_cell import RAN, RANCell
 from .scrn_cell import SCRN, SCRNCell
 from .sgrn_cell import SGRN, SGRNCell
 from .star_cell import STAR, STARCell
+from .ugrnn_cell import UGRNN, UGRNNCell
 from .unicornn_cell import UnICORNN, UnICORNNCell
 from .wmclstm_cell import WMCLSTM, WMCLSTMCell
 
@@ -89,6 +90,8 @@ __all__ = [
     "SGRNCell",
     "STAR",
     "STARCell",
+    "UGRNN",
+    "UGRNNCell",
     "UnICORNN",
     "UnICORNNCell",
     "WMCLSTM",
