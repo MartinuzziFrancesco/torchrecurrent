@@ -1,0 +1,91 @@
+﻿torchrecurrent.UGRNNCell
+========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: UGRNNCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~UGRNNCell.__init__
+      ~UGRNNCell.add_module
+      ~UGRNNCell.apply
+      ~UGRNNCell.bfloat16
+      ~UGRNNCell.buffers
+      ~UGRNNCell.children
+      ~UGRNNCell.compile
+      ~UGRNNCell.cpu
+      ~UGRNNCell.cuda
+      ~UGRNNCell.double
+      ~UGRNNCell.eval
+      ~UGRNNCell.extra_repr
+      ~UGRNNCell.float
+      ~UGRNNCell.forward
+      ~UGRNNCell.get_buffer
+      ~UGRNNCell.get_extra_state
+      ~UGRNNCell.get_parameter
+      ~UGRNNCell.get_submodule
+      ~UGRNNCell.half
+      ~UGRNNCell.init_weights
+      ~UGRNNCell.ipu
+      ~UGRNNCell.load_state_dict
+      ~UGRNNCell.modules
+      ~UGRNNCell.mtia
+      ~UGRNNCell.named_buffers
+      ~UGRNNCell.named_children
+      ~UGRNNCell.named_modules
+      ~UGRNNCell.named_parameters
+      ~UGRNNCell.parameters
+      ~UGRNNCell.register_backward_hook
+      ~UGRNNCell.register_buffer
+      ~UGRNNCell.register_forward_hook
+      ~UGRNNCell.register_forward_pre_hook
+      ~UGRNNCell.register_full_backward_hook
+      ~UGRNNCell.register_full_backward_pre_hook
+      ~UGRNNCell.register_load_state_dict_post_hook
+      ~UGRNNCell.register_load_state_dict_pre_hook
+      ~UGRNNCell.register_module
+      ~UGRNNCell.register_parameter
+      ~UGRNNCell.register_state_dict_post_hook
+      ~UGRNNCell.register_state_dict_pre_hook
+      ~UGRNNCell.requires_grad_
+      ~UGRNNCell.set_extra_state
+      ~UGRNNCell.set_submodule
+      ~UGRNNCell.share_memory
+      ~UGRNNCell.state_dict
+      ~UGRNNCell.to
+      ~UGRNNCell.to_empty
+      ~UGRNNCell.train
+      ~UGRNNCell.type
+      ~UGRNNCell.uses_double_state
+      ~UGRNNCell.xpu
+      ~UGRNNCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~UGRNNCell.T_destination
+      ~UGRNNCell.call_super_init
+      ~UGRNNCell.dump_patches
+      ~UGRNNCell.weight_ih
+      ~UGRNNCell.weight_hh
+      ~UGRNNCell.bias_ih
+      ~UGRNNCell.bias_hh
+      ~UGRNNCell.input_size
+      ~UGRNNCell.hidden_size
+      ~UGRNNCell.bias
+      ~UGRNNCell.recurrent_bias
+      ~UGRNNCell.training
+   
+   

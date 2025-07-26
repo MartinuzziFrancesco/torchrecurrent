@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torchrecurrent.JANETCell &mdash; torchrecurrent 0.1.0 documentation</title>
+  <title>torchrecurrent.UGRNNCell &mdash; torchrecurrent 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
@@ -20,8 +20,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchrecurrent.LEMCell" href="torchrecurrent.LEMCell.html" />
-    <link rel="prev" title="torchrecurrent.IndRNNCell" href="torchrecurrent.IndRNNCell.html" /> 
+    <link rel="next" title="torchrecurrent.UnICORNNCell" href="torchrecurrent.UnICORNNCell.html" />
+    <link rel="prev" title="torchrecurrent.STARCell" href="torchrecurrent.STARCell.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -56,18 +56,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastGRNNCell.html">torchrecurrent.FastGRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ATRCell.html">torchrecurrent.ATRCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IndRNNCell.html">torchrecurrent.IndRNNCell</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">torchrecurrent.JANETCell</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#torchrecurrent.JANETCell"><code class="docutils literal notranslate"><span class="pre">JANETCell</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.JANETCell.weight_ih"><code class="docutils literal notranslate"><span class="pre">JANETCell.weight_ih</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.JANETCell.weight_hh"><code class="docutils literal notranslate"><span class="pre">JANETCell.weight_hh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.JANETCell.bias_ih"><code class="docutils literal notranslate"><span class="pre">JANETCell.bias_ih</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.JANETCell.bias_hh"><code class="docutils literal notranslate"><span class="pre">JANETCell.bias_hh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.JANETCell.beta"><code class="docutils literal notranslate"><span class="pre">JANETCell.beta</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.JANETCell.__init__"><code class="docutils literal notranslate"><span class="pre">JANETCell.__init__()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.JANETCell.html">torchrecurrent.JANETCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LEMCell.html">torchrecurrent.LEMCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRUCell.html">torchrecurrent.LightRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRUCell.html">torchrecurrent.LiGRUCell</a></li>
@@ -83,7 +72,17 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SCRNCell.html">torchrecurrent.SCRNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGRNCell.html">torchrecurrent.SGRNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.STARCell.html">torchrecurrent.STARCell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UGRNNCell.html">torchrecurrent.UGRNNCell</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">torchrecurrent.UGRNNCell</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#torchrecurrent.UGRNNCell"><code class="docutils literal notranslate"><span class="pre">UGRNNCell</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UGRNNCell.weight_ih"><code class="docutils literal notranslate"><span class="pre">UGRNNCell.weight_ih</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UGRNNCell.weight_hh"><code class="docutils literal notranslate"><span class="pre">UGRNNCell.weight_hh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UGRNNCell.bias_ih"><code class="docutils literal notranslate"><span class="pre">UGRNNCell.bias_ih</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UGRNNCell.bias_hh"><code class="docutils literal notranslate"><span class="pre">UGRNNCell.bias_hh</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.UGRNNCell.__init__"><code class="docutils literal notranslate"><span class="pre">UGRNNCell.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UnICORNNCell.html">torchrecurrent.UnICORNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.WMCLSTMCell.html">torchrecurrent.WMCLSTMCell</a></li>
 </ul>
@@ -105,9 +104,9 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../cells.html">Recurrent Cells Reference</a></li>
-      <li class="breadcrumb-item active">torchrecurrent.JANETCell</li>
+      <li class="breadcrumb-item active">torchrecurrent.UGRNNCell</li>
       <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/torchrecurrent.JANETCell.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/generated/torchrecurrent.UGRNNCell.rst.txt" rel="nofollow"> View page source</a>
       </li>
   </ul>
   <hr/>
@@ -115,74 +114,68 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="torchrecurrent-janetcell">
-<h1>torchrecurrent.JANETCell<a class="headerlink" href="#torchrecurrent-janetcell" title="Link to this heading"></a></h1>
+  <section id="torchrecurrent-ugrnncell">
+<h1>torchrecurrent.UGRNNCell<a class="headerlink" href="#torchrecurrent-ugrnncell" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchrecurrent.JANETCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">JANETCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.JANETCell" title="Link to this definition"></a></dt>
-<dd><p>A JANET (Just Another NETwork) recurrent cell.</p>
-<p>Implements the JANET update from
-“Just Another NETwork” &lt;<a class="reference external" href="https://arxiv.org/abs/1804.04849">https://arxiv.org/abs/1804.04849</a>&gt;_.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UGRNNCell">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">UGRNNCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.UGRNNCell" title="Link to this definition"></a></dt>
+<dd><p>Update Gate recurrent cell.</p>
+<p>A streamlined gated cell that computes a single update gate
+and a candidate update.</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-  \mathbf{s}(t) &amp;= \mathbf{W}_{ih}^{f}\,\mathbf{x}(t)
-     + \mathbf{b}_{ih}^{f}
-     + \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1)
-     + \mathbf{b}_{hh}^{f}, \\
-  \tilde{\mathbf{c}}(t) &amp;= \tanh\Bigl(
-     \mathbf{W}_{ih}^{c}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{c}
-     + \mathbf{W}_{hh}^{c}\,\mathbf{h}(t-1)
-     + \mathbf{b}_{hh}^{c}\Bigr), \\
-  \mathbf{c}(t) &amp;= \sigma\bigl(\mathbf{s}(t)\bigr)\circ \mathbf{c}(t-1)
-     \;+\;\bigl(1 - \sigma\bigl(\mathbf{s}(t) - \beta\bigr)\bigr)
-     \circ \tilde{\mathbf{c}}(t), \\
-  \mathbf{h}(t) &amp;= \mathbf{c}(t)
+    \mathbf{c}(t) &amp;= s\left( \mathbf{W}_{hh}^c \, \mathbf{h}(t-1) +
+        \mathbf{b}_{hh}^c + \mathbf{W}_{xh}^c \, \mathbf{x}(t) +
+        \mathbf{b}_{ih}^c \right), \\
+    \mathbf{g}(t) &amp;= \sigma\left( \mathbf{W}_{hh}^g \, \mathbf{h}(t-1) +
+        \mathbf{b}_{hh}^g + \mathbf{W}_{xh}^g \, \mathbf{x}(t) +
+        \mathbf{b}_{ih}^g \right), \\
+    \mathbf{h}(t) &amp;= \mathbf{g}(t) \circ \mathbf{h}(t-1) +
+        \left( 1 - \mathbf{g}(t) \right) \circ \mathbf{c}(t).
 \end{aligned}\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is the sigmoid function and <span class="math notranslate nohighlight">\(\circ\)</span> is the
-Hadamard product.</p>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is the sigmoid function and <span class="math notranslate nohighlight">\(\circ\)</span>
+denotes element-wise multiplication.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_size</strong> (<em>int</em>) – Number of expected features in the input tensor.</p></li>
-<li><p><strong>hidden_size</strong> (<em>int</em>) – Number of features in the hidden and cell states.</p></li>
+<li><p><strong>input_size</strong> (<em>int</em>) – Size of the input feature vector.</p></li>
+<li><p><strong>hidden_size</strong> (<em>int</em>) – Size of the hidden state.</p></li>
 <li><p><strong>bias</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, disables <span class="math notranslate nohighlight">\(\mathbf{b}_{ih}\)</span>.
 Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
 <li><p><strong>recurrent_bias</strong> (<em>bool</em><em>, </em><em>optional</em>) – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, disables <span class="math notranslate nohighlight">\(\mathbf{b}_{hh}\)</span>.
 Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
-<li><p><strong>kernel_init</strong> (<em>Callable</em>) – Initializer for input‐to‐hidden weights
+<li><p><strong>kernel_init</strong> (<em>Callable</em>) – Initializer for input-to-hidden weights
 (default: <code class="docutils literal notranslate"><span class="pre">nn.init.xavier_uniform_</span></code>).</p></li>
-<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>) – Initializer for hidden‐to‐hidden weights
+<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>) – Initializer for hidden-to-hidden weights
 (default: <code class="docutils literal notranslate"><span class="pre">nn.init.xavier_uniform_</span></code>).</p></li>
 <li><p><strong>bias_init</strong> (<em>Callable</em>) – Initializer for input biases
 (default: <code class="docutils literal notranslate"><span class="pre">nn.init.zeros_</span></code>).</p></li>
 <li><p><strong>recurrent_bias_init</strong> (<em>Callable</em>) – Initializer for hidden biases
 (default: <code class="docutils literal notranslate"><span class="pre">nn.init.zeros_</span></code>).</p></li>
-<li><p><strong>beta</strong> (<em>float</em>) – Threshold shift for the update gate.
-Default: 1.0.</p></li>
-<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Device on which to place parameters.</p></li>
+<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Device for parameters.</p></li>
 <li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – Data type for parameters.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="simple">
 <dt>Inputs:</dt><dd><ul class="simple">
-<li><p><strong>inp</strong> (Tensor): shape <cite>(batch, input_size)</cite> or <cite>(input_size,)</cite></p></li>
-<li><p><strong>state</strong> (Tensor or Tuple[Tensor, Tensor], optional):
-previous <cite>(h, c)</cite> each of shape <cite>(batch, hidden_size)</cite> or
-<cite>(hidden_size,)</cite>. If not provided, defaults to zeros.</p></li>
+<li><p><strong>inp</strong> (Tensor): shape <cite>(batch, input_size)</cite> or <cite>(input_size,)</cite>.</p></li>
+<li><dl class="simple">
+<dt><strong>state</strong> (Tensor, optional): previous hidden state of shape</dt><dd><p><cite>(batch, hidden_size)</cite> or <cite>(hidden_size,)</cite>. Defaults to zero.</p>
+</dd>
+</dl>
+</li>
 </ul>
 </dd>
 <dt>Outputs:</dt><dd><ul class="simple">
-<li><p><strong>new_state</strong> (Tensor): Updated hidden state, same shape as <cite>h</cite>.</p></li>
-<li><p><strong>new_cstate</strong> (Tensor): Updated cell state, same shape as <cite>c</cite>.</p></li>
+<li><p><strong>new_state</strong> (Tensor): Updated hidden state, same shape as <cite>state</cite>.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.JANETCell.weight_ih">
-<span class="sig-name descname"><span class="pre">weight_ih</span></span><a class="headerlink" href="#torchrecurrent.JANETCell.weight_ih" title="Link to this definition"></a></dt>
-<dd><p>Learnable input‐to‐hidden weights for gates and candidate,
-shape <cite>(2*hidden_size, input_size)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UGRNNCell.weight_ih">
+<span class="sig-name descname"><span class="pre">weight_ih</span></span><a class="headerlink" href="#torchrecurrent.UGRNNCell.weight_ih" title="Link to this definition"></a></dt>
+<dd><p>Input-to-hidden weights, shape <cite>(2*hidden_size, input_size)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -191,10 +184,9 @@ shape <cite>(2*hidden_size, input_size)</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.JANETCell.weight_hh">
-<span class="sig-name descname"><span class="pre">weight_hh</span></span><a class="headerlink" href="#torchrecurrent.JANETCell.weight_hh" title="Link to this definition"></a></dt>
-<dd><p>Learnable hidden‐to‐hidden weights for gates and candidate,
-shape <cite>(2*hidden_size, hidden_size)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UGRNNCell.weight_hh">
+<span class="sig-name descname"><span class="pre">weight_hh</span></span><a class="headerlink" href="#torchrecurrent.UGRNNCell.weight_hh" title="Link to this definition"></a></dt>
+<dd><p>Hidden-to-hidden weights, shape <cite>(hidden_size, hidden_size)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -203,9 +195,9 @@ shape <cite>(2*hidden_size, hidden_size)</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.JANETCell.bias_ih">
-<span class="sig-name descname"><span class="pre">bias_ih</span></span><a class="headerlink" href="#torchrecurrent.JANETCell.bias_ih" title="Link to this definition"></a></dt>
-<dd><p>Learnable input biases, shape <cite>(2*hidden_size,)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UGRNNCell.bias_ih">
+<span class="sig-name descname"><span class="pre">bias_ih</span></span><a class="headerlink" href="#torchrecurrent.UGRNNCell.bias_ih" title="Link to this definition"></a></dt>
+<dd><p>Input bias, shape <cite>(2*hidden_size,)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -214,9 +206,9 @@ shape <cite>(2*hidden_size, hidden_size)</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.JANETCell.bias_hh">
-<span class="sig-name descname"><span class="pre">bias_hh</span></span><a class="headerlink" href="#torchrecurrent.JANETCell.bias_hh" title="Link to this definition"></a></dt>
-<dd><p>Learnable hidden biases, shape <cite>(2*hidden_size,)</cite>.</p>
+<dt class="sig sig-object py" id="torchrecurrent.UGRNNCell.bias_hh">
+<span class="sig-name descname"><span class="pre">bias_hh</span></span><a class="headerlink" href="#torchrecurrent.UGRNNCell.bias_hh" title="Link to this definition"></a></dt>
+<dd><p>Hidden bias, shape <cite>(hidden_size,)</cite>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Tensor</p>
@@ -224,35 +216,18 @@ shape <cite>(2*hidden_size, hidden_size)</cite>.</p>
 </dl>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.JANETCell.beta">
-<span class="sig-name descname"><span class="pre">beta</span></span><a class="headerlink" href="#torchrecurrent.JANETCell.beta" title="Link to this definition"></a></dt>
-<dd><p>Learnable threshold shift for update gating.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Parameter</p>
-</dd>
-</dl>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>JANET simplifies the LSTM by using a single gate computation
-and tying the hidden and output states to the cell state.</p>
-</div>
 <dl>
-<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">JANETCell</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>      <span class="c1"># batch=5, input_size=10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h1</span><span class="p">,</span> <span class="n">c1</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="p">(</span><span class="n">h0</span><span class="p">,</span> <span class="n">c0</span><span class="p">))</span>
+<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">UGRNNCell</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>   <span class="c1"># batch=4, input_size=8</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h1</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h0</span><span class="p">)</span>
 </pre></div>
 </div>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrecurrent.JANETCell.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.JANETCell.__init__" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="torchrecurrent.UGRNNCell.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.UGRNNCell.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -265,7 +240,6 @@ and tying the hidden and output states to the cell state.</p>
 <li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>)</p></li>
 <li><p><strong>bias_init</strong> (<em>Callable</em>)</p></li>
 <li><p><strong>recurrent_bias_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>beta</strong> (<em>float</em>)</p></li>
 <li><p><strong>device</strong> (<em>device</em><em> | </em><em>None</em>)</p></li>
 <li><p><strong>dtype</strong> (<em>dtype</em><em> | </em><em>None</em>)</p></li>
 </ul>
@@ -276,7 +250,7 @@ and tying the hidden and output states to the cell state.</p>
 <p class="rubric">Methods</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.JANETCell.__init__" title="torchrecurrent.JANETCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.UGRNNCell.__init__" title="torchrecurrent.UGRNNCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
 <td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_module</span></code>(name, module)</p></td>
@@ -449,16 +423,16 @@ and tying the hidden and output states to the cell state.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_patches</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.JANETCell.weight_ih" title="torchrecurrent.JANETCell.weight_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.UGRNNCell.weight_ih" title="torchrecurrent.UGRNNCell.weight_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.JANETCell.weight_hh" title="torchrecurrent.JANETCell.weight_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.UGRNNCell.weight_hh" title="torchrecurrent.UGRNNCell.weight_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.JANETCell.bias_ih" title="torchrecurrent.JANETCell.bias_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.UGRNNCell.bias_ih" title="torchrecurrent.UGRNNCell.bias_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></a></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.JANETCell.bias_hh" title="torchrecurrent.JANETCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.UGRNNCell.bias_hh" title="torchrecurrent.UGRNNCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
@@ -486,8 +460,8 @@ and tying the hidden and output states to the cell state.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchrecurrent.IndRNNCell.html" class="btn btn-neutral float-left" title="torchrecurrent.IndRNNCell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchrecurrent.LEMCell.html" class="btn btn-neutral float-right" title="torchrecurrent.LEMCell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="torchrecurrent.STARCell.html" class="btn btn-neutral float-left" title="torchrecurrent.STARCell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="torchrecurrent.UnICORNNCell.html" class="btn btn-neutral float-right" title="torchrecurrent.UnICORNNCell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
