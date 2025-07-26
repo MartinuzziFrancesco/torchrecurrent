@@ -32,6 +32,7 @@ from .cells import (
     SCRNCell,
     SGRNCell,
     STARCell,
+    UGRNNCell,
     UnICORNNCell,
     WMCLSTMCell,
 )
@@ -64,6 +65,7 @@ from .cells import (
     SCRN,
     SGRN,
     STAR,
+    UGRNN,
     UnICORNN,
     WMCLSTM,
 )
@@ -121,6 +123,8 @@ __all__ = [
     "SGRNCell",
     "STAR",
     "STARCell",
+    "UGRNN",
+    "UGRNNCell",
     "UnICORNN",
     "UnICORNNCell",
     "WMCLSTM",
