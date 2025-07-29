@@ -149,7 +149,7 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
             + self.bias_hh
         )
         input_gate, cell_gate, output_gate = gates.chunk(3, 1)
-        new_cstate = c_state + torch.sigmoid(input_gate) + torch.tanh(cell_gate)
+        new_cstate = c_state + torch.sigmoid(input_gate) * torch.tanh(cell_gate)
         new_state = torch.sigmoid(output_gate) * torch.tanh(new_cstate)
 
         if not is_batched:
