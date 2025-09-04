@@ -27,8 +27,7 @@ def generate_adding_problem_data(
     batch_size: int = 64,
     shuffle=True,
 ):
-    """
-    Generate data for the adding problem benchmark.
+    """Generate data for the adding problem benchmark.
 
     Parameters:
     - sequence_length (int): Length of each input sequence.

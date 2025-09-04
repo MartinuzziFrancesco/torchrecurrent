@@ -82,6 +82,10 @@
       ~AntisymmetricRNNCell.weight_hh
       ~AntisymmetricRNNCell.bias_ih
       ~AntisymmetricRNNCell.bias_hh
+      ~AntisymmetricRNNCell.input_size
+      ~AntisymmetricRNNCell.hidden_size
+      ~AntisymmetricRNNCell.bias
+      ~AntisymmetricRNNCell.recurrent_bias
       ~AntisymmetricRNNCell.training
    
    

@@ -1,0 +1,91 @@
+﻿torchrecurrent.LightRUCell
+==========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: LightRUCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~LightRUCell.__init__
+      ~LightRUCell.add_module
+      ~LightRUCell.apply
+      ~LightRUCell.bfloat16
+      ~LightRUCell.buffers
+      ~LightRUCell.children
+      ~LightRUCell.compile
+      ~LightRUCell.cpu
+      ~LightRUCell.cuda
+      ~LightRUCell.double
+      ~LightRUCell.eval
+      ~LightRUCell.extra_repr
+      ~LightRUCell.float
+      ~LightRUCell.forward
+      ~LightRUCell.get_buffer
+      ~LightRUCell.get_extra_state
+      ~LightRUCell.get_parameter
+      ~LightRUCell.get_submodule
+      ~LightRUCell.half
+      ~LightRUCell.init_weights
+      ~LightRUCell.ipu
+      ~LightRUCell.load_state_dict
+      ~LightRUCell.modules
+      ~LightRUCell.mtia
+      ~LightRUCell.named_buffers
+      ~LightRUCell.named_children
+      ~LightRUCell.named_modules
+      ~LightRUCell.named_parameters
+      ~LightRUCell.parameters
+      ~LightRUCell.register_backward_hook
+      ~LightRUCell.register_buffer
+      ~LightRUCell.register_forward_hook
+      ~LightRUCell.register_forward_pre_hook
+      ~LightRUCell.register_full_backward_hook
+      ~LightRUCell.register_full_backward_pre_hook
+      ~LightRUCell.register_load_state_dict_post_hook
+      ~LightRUCell.register_load_state_dict_pre_hook
+      ~LightRUCell.register_module
+      ~LightRUCell.register_parameter
+      ~LightRUCell.register_state_dict_post_hook
+      ~LightRUCell.register_state_dict_pre_hook
+      ~LightRUCell.requires_grad_
+      ~LightRUCell.set_extra_state
+      ~LightRUCell.set_submodule
+      ~LightRUCell.share_memory
+      ~LightRUCell.state_dict
+      ~LightRUCell.to
+      ~LightRUCell.to_empty
+      ~LightRUCell.train
+      ~LightRUCell.type
+      ~LightRUCell.uses_double_state
+      ~LightRUCell.xpu
+      ~LightRUCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~LightRUCell.T_destination
+      ~LightRUCell.call_super_init
+      ~LightRUCell.dump_patches
+      ~LightRUCell.weight_ih
+      ~LightRUCell.weight_hh
+      ~LightRUCell.bias_ih
+      ~LightRUCell.bias_hh
+      ~LightRUCell.input_size
+      ~LightRUCell.hidden_size
+      ~LightRUCell.bias
+      ~LightRUCell.recurrent_bias
+      ~LightRUCell.training
+   
+   

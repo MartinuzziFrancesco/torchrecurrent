@@ -69,9 +69,8 @@ CELL_CASES = [
 
 @pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
 def test_cell_output_and_state_shapes(Cell, in_size, hid_size, double):
-    """Each cell should accept both 1D and 2D inputs, init state if None,
-    and return correct shapes
-    """
+    """Each cell should accept both 1D and 2D inputs, init state if None, and return
+    correct shapes."""
     # instantiate
     cell = Cell(in_size, hid_size, bias=False)
 

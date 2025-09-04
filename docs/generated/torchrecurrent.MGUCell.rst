@@ -82,6 +82,10 @@
       ~MGUCell.weight_hh
       ~MGUCell.bias_ih
       ~MGUCell.bias_hh
+      ~MGUCell.input_size
+      ~MGUCell.hidden_size
+      ~MGUCell.bias
+      ~MGUCell.recurrent_bias
       ~MGUCell.training
    
    

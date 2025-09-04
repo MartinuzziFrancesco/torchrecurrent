@@ -82,7 +82,10 @@
       ~CFNCell.weight_hh
       ~CFNCell.bias_ih
       ~CFNCell.bias_hh
-      ~CFNCell.t_ones
+      ~CFNCell.input_size
+      ~CFNCell.hidden_size
+      ~CFNCell.bias
+      ~CFNCell.recurrent_bias
       ~CFNCell.training
    
    

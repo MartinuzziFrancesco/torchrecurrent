@@ -82,7 +82,10 @@
       ~NBRCell.weight_hh
       ~NBRCell.bias_ih
       ~NBRCell.bias_hh
-      ~NBRCell.t_ones
+      ~NBRCell.input_size
+      ~NBRCell.hidden_size
+      ~NBRCell.bias
+      ~NBRCell.recurrent_bias
       ~NBRCell.training
    
    

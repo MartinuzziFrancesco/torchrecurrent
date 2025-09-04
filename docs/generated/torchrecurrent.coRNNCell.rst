@@ -84,6 +84,10 @@
       ~coRNNCell.bias_ih
       ~coRNNCell.bias_hh
       ~coRNNCell.bias_ch
+      ~coRNNCell.input_size
+      ~coRNNCell.hidden_size
+      ~coRNNCell.bias
+      ~coRNNCell.recurrent_bias
       ~coRNNCell.training
    
    
