@@ -45,7 +45,7 @@ class AntisymmetricRNN(BaseSingleRecurrentLayer):
 
 
 class AntisymmetricRNNCell(BaseSingleRecurrentCell):
-    r"""An antisymmetric recurrent neural network (RNN) cell [`arXiv <https://arxiv.org/abs/1902.09689>`_].
+    r"""An antisymmetric recurrent neural network cell [`arXiv <https://arxiv.org/abs/1902.09689>`_].
 
         .. math::
 

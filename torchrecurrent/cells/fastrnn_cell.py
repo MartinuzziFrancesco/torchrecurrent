@@ -22,86 +22,63 @@ class FastRNN(BaseSingleRecurrentLayer):
 
 
 class FastRNNCell(BaseSingleRecurrentCell):
-    r"""A “Fast RNN” cell with two scalar gates α and β.
+    r"""A “Fast RNN” cell with two scalar gates α and β [`arXiv <https://arxiv.org/abs/1901.02358>`_].
 
-    This cell first computes a candidate hidden state via a standard
-    RNN update, then linearly interpolates between the candidate and
-    the previous hidden state:
+        .. math::
 
-    .. math::
+            \tilde{\mathbf{h}}(t) &= \phi\bigl(
+                \mathbf{W}_{ih}\,\mathbf{x}(t)
+                + \mathbf{b}_{ih}
+                + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
+                + \mathbf{b}_{hh}
+            \bigr), \\[6pt]
+            \mathbf{h}(t) &= \alpha\,\tilde{\mathbf{h}}(t)
+                            + \beta\,\mathbf{h}(t-1),
 
-        \tilde{\mathbf{h}}(t) &= \phi\bigl(
-            \mathbf{W}_{ih}\,\mathbf{x}(t)
-            + \mathbf{b}_{ih}
-            + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
-            + \mathbf{b}_{hh}
-        \bigr), \\[6pt]
-        \mathbf{h}(t) &= \alpha\,\tilde{\mathbf{h}}(t)
-                        + \beta\,\mathbf{h}(t-1),
+        where :math:`\phi` is a pointwise nonlinearity (e.g., tanh), and :math:`\alpha` / :math:`\beta` are learnable scalars.
 
-    where :math:`\phi` is a pointwise nonlinearity (e.g. tanh), and
-    :math:`\alpha` / :math:`\beta` are learnable scalars.
+        Args:
+            input_size: The number of expected features in the input ``x``
+            hidden_size: The number of features in the hidden state ``h``
+            bias: If ``False``, the layer does not use input-side bias ``b_{ih}``. Default: ``True``
+            recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_{hh}``. Default: ``True``
+            nonlinearity: Activation function :math:`\phi` for the candidate. Default: :func:`torch.tanh`
+            kernel_init: Initializer for ``W_{ih}``. Default: :func:`torch.nn.init.xavier_uniform_`
+            recurrent_kernel_init: Initializer for ``W_{hh}``. Default: :func:`torch.nn.init.xavier_uniform_`
+            bias_init: Initializer for ``b_{ih}`` when ``bias=True``. Default: :func:`torch.nn.init.zeros_`
+            recurrent_bias_init: Initializer for ``b_{hh}`` when ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`
+            alpha_init: Initial value for the learnable scalar :math:`\alpha`. Default: ``3.0``
+            beta_init: Initial value for the learnable scalar :math:`\beta`. Default: ``-3.0``
+            device: The desired device of parameters.
+            dtype: The desired floating point type of parameters.
 
-    See also: [Fast RNN Cell (Zhang et al., 2019)](https://arxiv.org/abs/1901.02358).
+        Inputs: input, h_0
+            - **input** of shape ``(batch, input_size)`` or ``(input_size,)``: tensor containing input features
+            - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the initial hidden state
 
-    Args:
-        input_size (int):  Number of features in the input :math:`\mathbf{x}(t)`.
-        hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        nonlinearity (Callable, optional): Activation function :math:`\phi` for the
-            candidate. Default: ``torch.tanh``.
-        kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{ih}`.
-            Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{hh}`.
-            Default: ``nn.init.xavier_uniform_``.
-        bias_init (Callable, optional): Initializer for :math:`\mathbf{b}_{ih}` when
-            `bias=True`. Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for :math:`\mathbf{b}_{hh}`
-            when `bias=True`. Default: ``nn.init.zeros_``.
-        alpha_init (float, optional): Initial value for the learnable scalar :math:`\alpha`.
-            Default: ``3.0``.
-        beta_init (float, optional):  Initial value for the learnable scalar :math:`\beta`.
-            Default: ``-3.0``.
-        device (torch.device, optional): Device for all parameters.
-            Default: CPU.
-        dtype (torch.dtype, optional): Data type for all parameters.
-            Default: PyTorch default float.
+            If **h_0** is not provided, it defaults to zero.
 
-    Inputs: input, hidden
-        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
-        - **hidden** (Tensor, optional): previous hidden state of shape
-            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
-            Defaults to zero if not provided.
+        Outputs: h_1
+            - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the next hidden state
 
-    Outputs: h’
-        - **h’** (Tensor): next hidden state, same shape as **hidden**.
+        Variables:
+            weight_ih: the learnable input–hidden weights, of shape ``(hidden_size, input_size)``
+            weight_hh: the learnable hidden–hidden weights, of shape ``(hidden_size, hidden_size)``
+            bias_ih: the learnable input–hidden bias, of shape ``(hidden_size)`` if ``bias=True``
+            bias_hh: the learnable hidden–hidden bias, of shape ``(hidden_size)`` if ``recurrent_bias=True``
+            alpha: the learnable scalar gating coefficient :math:`\alpha`, shape ``(1,)``
+            beta: the learnable scalar gating coefficient :math:`\beta`, shape ``(1,)``
 
-    Shape:
-        - input:  :math:`(N, H_{\mathrm{in}})` or :math:`(H_{\mathrm{in}})`.
-        - hidden: :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
-        - output: :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
+        Examples::
 
-    Attributes:
-        weight_ih (Tensor): Learnable input-to-hidden weights, shape
-            `(hidden_size, input_size)`.
-        weight_hh (Tensor): Learnable hidden-to-hidden weights, shape
-            `(hidden_size, hidden_size)`.
-        bias_ih (Tensor): Learnable input bias, shape `(hidden_size,)` if `bias=True`.
-        bias_hh (Tensor): Learnable hidden bias, shape `(hidden_size,)` if `bias=True`.
-        alpha (Tensor):  Learnable scalar gating coefficient α, shape `(1,)`.
-        beta (Tensor):   Learnable scalar gating coefficient β, shape `(1,)`.
-
-    Examples::
-        >>> cell = FastRNNCell(10, 20)
-        >>> x = torch.randn(5, 10)
-        >>> hx = torch.zeros(20)
-        >>> outputs = []
-        >>> for t in range(x.size(0)):
-        ...     hx = cell(x[t], hx)
-        ...     outputs.append(hx)
+            >>> cell = FastRNNCell(10, 20)
+            >>> x = torch.randn(5, 3, 10)      # (time_steps, batch, input_size)
+            >>> h = torch.zeros(3, 20)         # (batch, hidden_size)
+            >>> out = []
+            >>> for t in range(x.size(0)):
+            ...     h = cell(x[t], h)
+            ...     out.append(h)
+            >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -218,89 +195,71 @@ class FastGRNN(BaseSingleRecurrentLayer):
 
 
 class FastGRNNCell(BaseSingleRecurrentCell):
-    r"""A Fast gated recurrent neural network cell.
+    r"""A “Fast RNN” cell with two scalar gates α and β [`arXiv <https://arxiv.org/abs/1901.02358>`_].
 
-    This cell computes a sigmoid gate and a tanh candidate, then
-    combines them with learnable scalars ζ and ν:
+        .. math::
 
-    .. math::
+            \mathbf{z}(t) &= \sigma\Bigl(
+                \mathbf{W}_{ih}\,\mathbf{x}(t)
+                + \mathbf{b}_{ih}^{z}
+                + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
+                + \mathbf{b}_{hh}^{z}
+            \Bigr), \\[6pt]
+            \tilde{\mathbf{h}}(t) &= \tanh\Bigl(
+                \mathbf{W}_{ih}\,\mathbf{x}(t)
+                + \mathbf{b}_{ih}^{h}
+                + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
+                + \mathbf{b}_{hh}^{h}
+            \Bigr), \\[6pt]
+            \mathbf{h}(t) &= \Bigl[\zeta\,\bigl(1 - \mathbf{z}(t)\bigr) + \nu\Bigr]
+                \circ \tilde{\mathbf{h}}(t)
+                \;+\;\mathbf{z}(t)\,\circ\,\mathbf{h}(t-1),
 
-        \mathbf{z}(t) &= \sigma\Bigl(
-            \mathbf{W}_{ih}\,\mathbf{x}(t)
-            + \mathbf{b}_{ih}^{z}
-            + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
-            + \mathbf{b}_{hh}^{z}
-        \Bigr), \\[6pt]
-        \tilde{\mathbf{h}}(t) &= \tanh\Bigl(
-            \mathbf{W}_{ih}\,\mathbf{x}(t)
-            + \mathbf{b}_{ih}^{h}
-            + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
-            + \mathbf{b}_{hh}^{h}
-        \Bigr), \\[6pt]
-        \mathbf{h}(t) &= \Bigl[\zeta\,\bigl(1 - \mathbf{z}(t)\bigr) + \nu\Bigr]
-            \circ \tilde{\mathbf{h}}(t)
-            \;+\;\mathbf{z}(t)\,\circ\,\mathbf{h}(t-1),
+        where :math:`\circ` denotes element‐wise product.
 
-    where :math:`\circ` denotes element‐wise product.
+        Args:
+            input_size: The number of expected features in the input ``x``
+            hidden_size: The number of features in the hidden state ``h``
+            bias: If ``False``, the layer does not use input-side biases. Default: ``True``
+            recurrent_bias: If ``False``, the layer does not use recurrent biases. Default: ``True``
+            nonlinearity: Activation for the gate :math:`\mathbf{z}`. Default: :func:`torch.sigmoid`
+            kernel_init: Initializer for ``W_{ih}``. Default: :func:`torch.nn.init.xavier_uniform_`
+            recurrent_kernel_init: Initializer for ``W_{hh}``. Default: :func:`torch.nn.init.xavier_uniform_`
+            bias_init: Initializer for ``b_{ih}^{*}`` when ``bias=True``. Default: :func:`torch.nn.init.zeros_`
+            recurrent_bias_init: Initializer for ``b_{hh}^{*}`` when ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`
+            zeta_init: Initial value for scalar gate :math:`\zeta`. Default: ``3.0``
+            nu_init: Initial value for scalar gate :math:`\nu`. Default: ``-3.0``
+            device: The desired device of parameters.
+            dtype: The desired floating point type of parameters.
 
-    See also: [Fast GRNN (Zhang et al., 2019)](https://arxiv.org/abs/1901.02358).
+        Inputs: input, h_0
+            - **input** of shape ``(batch, input_size)`` or ``(input_size,)``: tensor containing input features
+            - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the initial hidden state
 
-    Args:
-        input_size (int):  Number of features in the input :math:`\mathbf{x}(t)`.
-        hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        nonlinearity (Callable, optional): Activation for the gate :math:`\mathbf{z}`.
-            Default: ``torch.tanh``.
-        kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{ih}`.
-            Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional): Initializer for :math:`\mathbf{W}_{hh}`.
-            Default: ``nn.init.xavier_uniform_``.
-        bias_init (Callable, optional): Initializer for input biases
-            :math:`\mathbf{b}_{ih}^{*}` when `bias=True`. Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for hidden biases
-            :math:`\mathbf{b}_{hh}^{*}` when `bias=True`. Default: ``nn.init.zeros_``.
-        zeta_init (float, optional): Initial value for scalar gate ζ. Default: ``3.0``.
-        nu_init (float, optional):  Initial value for scalar gate ν. Default: ``-3.0``.
-        device (torch.device, optional): Device of the parameters. Default: CPU.
-        dtype (torch.dtype, optional): Data type of the parameters.
-        Default: PyTorch default float.
+            If **h_0** is not provided, it defaults to zero.
 
-    Inputs: input, hidden
-        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
-        - **hidden** (Tensor, optional): previous hidden state of shape
-            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
-            Defaults to zero if not provided.
+        Outputs: h_1
+            - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the next hidden state
 
-    Outputs: h’
-        - **h’** (Tensor): next hidden state, same shape as **hidden**.
+        Variables:
+            weight_ih: the learnable input–hidden weights, of shape ``(hidden_size, input_size)``
+            weight_hh: the learnable hidden–hidden weights, of shape ``(hidden_size, hidden_size)``
+            bias_ih: the learnable input–hidden biases, of shape ``(2*hidden_size)`` (split into z & h) if ``bias=True``
+            bias_hh: the learnable hidden–hidden biases, of shape ``(2*hidden_size)`` (split into z & h) if ``recurrent_bias=True``
+            zeta: the learnable scalar gate :math:`\zeta`, shape ``(1,)``
+            nu: the learnable scalar gate :math:`\nu`, shape ``(1,)``
+            t_ones: a constant ones buffer, shape ``(hidden_size,)``
 
-    Shape:
-        - input:  :math:`(N, H_{\mathrm{in}})` or :math:`(H_{\mathrm{in}})`.
-        - hidden: :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
-        - output: :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
+        Examples::
 
-    Attributes:
-        weight_ih (Tensor): input‐to‐hidden weights, shape `(hidden_size, input_size)`.
-        weight_hh (Tensor): hidden‐to‐hidden weights, shape `(hidden_size, hidden_size)`.
-        bias_ih (Tensor): input biases, shape `(2*hidden_size,)`
-            if `bias=True` (split into z & h).
-        bias_hh (Tensor): hidden biases, shape `(2*hidden_size,)`
-            if `bias=True` (split into z & h).
-        zeta (Tensor): scalar gate ζ, shape `(1,)`.
-        nu (Tensor):    scalar gate ν, shape `(1,)`.
-        t_ones (Tensor): constant ones vector, shape `(hidden_size,)`.
-
-    Examples::
-        >>> cell = FastGRNNCell(10, 20)
-        >>> x = torch.randn(5, 10)
-        >>> hx = torch.zeros(20)
-        >>> outputs = []
-        >>> for t in range(x.size(0)):
-        ...     hx = cell(x[t], hx)
-        ...     outputs.append(hx)
+            >>> cell = FastGRNNCell(10, 20)
+            >>> x = torch.randn(5, 3, 10)      # (time_steps, batch, input_size)
+            >>> h = torch.zeros(3, 20)         # (batch, hidden_size)
+            >>> out = []
+            >>> for t in range(x.size(0)):
+            ...     h = cell(x[t], h)
+            ...     out.append(h)
+            >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [

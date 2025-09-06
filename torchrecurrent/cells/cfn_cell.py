@@ -20,85 +20,65 @@ class CFN(BaseSingleRecurrentLayer):
 
 
 class CFNCell(BaseSingleRecurrentCell):
-    r"""A Chaos Free Network (CFN) cell.
+    r"""A Chaos Free Network (CFN) cell [`arXiv <https://arxiv.org/abs/1612.06212`_].
 
-    This cell uses two gates—“horizontal” θ and “vertical” η—together with
-    a third input projection to update the hidden state without chaotic
-    dynamics:
+        .. math::
 
-    .. math::
+            \boldsymbol{\theta}(t) &= \sigma\bigl(
+                \mathbf{W}_{ih}^{\theta}\,\mathbf{x}(t)
+                + \mathbf{b}_{ih}^{\theta}
+                + \mathbf{W}_{hh}^{\theta}\,\mathbf{h}(t-1)
+                + \mathbf{b}_{hh}^{\theta}
+            \bigr), \\
+            \boldsymbol{\eta}(t) &= \sigma\bigl(
+                \mathbf{W}_{ih}^{\eta}\,\mathbf{x}(t)
+                + \mathbf{b}_{ih}^{\eta}
+                + \mathbf{W}_{hh}^{\eta}\,\mathbf{h}(t-1)
+                + \mathbf{b}_{hh}^{\eta}
+            \bigr), \\
+            \mathbf{h}(t) &= \boldsymbol{\theta}(t)\,\circ\,\tanh\bigl(\mathbf{h}(t-1)\bigr)
+                \;+\;\boldsymbol{\eta}(t)\,\circ\,\tanh\bigl(
+                    \mathbf{W}_{ih}^{h}\,\mathbf{x}(t)
+                    + \mathbf{b}_{ih}^{h}
+                \bigr)\,.
 
-        \boldsymbol{\theta}(t) &= \sigma\bigl(
-            \mathbf{W}_{ih}^{\theta}\,\mathbf{x}(t)
-            + \mathbf{b}_{ih}^{\theta}
-            + \mathbf{W}_{hh}^{\theta}\,\mathbf{h}(t-1)
-            + \mathbf{b}_{hh}^{\theta}
-        \bigr), \\[6pt]
-        \boldsymbol{\eta}(t) &= \sigma\bigl(
-            \mathbf{W}_{ih}^{\eta}\,\mathbf{x}(t)
-            + \mathbf{b}_{ih}^{\eta}
-            + \mathbf{W}_{hh}^{\eta}\,\mathbf{h}(t-1)
-            + \mathbf{b}_{hh}^{\eta}
-        \bigr), \\[6pt]
-        \mathbf{h}(t) &= \boldsymbol{\theta}(t)\,\circ\,\tanh\bigl(\mathbf{h}(t-1)\bigr)
-            \;+\;\boldsymbol{\eta}(t)\,\circ\,\tanh\bigl(
-                \mathbf{W}_{ih}^{h}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}^{h}
-            \bigr)\,.
+        Args:
+            input_size: The number of expected features in the input ``x``
+            hidden_size: The number of features in the hidden state ``h``
+            bias: If ``False``, the layer does not use input-side biases. Default: ``True``
+            recurrent_bias: If ``False``, the layer does not use recurrent biases. Default: ``True``
+            kernel_init: Initializer for input–hidden weights ``W_{ih}^*``. Default: :func:`torch.nn.init.xavier_uniform_`
+            recurrent_kernel_init: Initializer for hidden–hidden weights ``W_{hh}^*``. Default: :func:`torch.nn.init.xavier_uniform_`
+            bias_init: Initializer for input-side biases ``b_{ih}^*`` when ``bias=True``. Default: :func:`torch.nn.init.zeros_`
+            recurrent_bias_init: Initializer for hidden biases ``b_{hh}^*`` when ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`
+            device: The desired device of parameters.
+            dtype: The desired floating point type of parameters.
 
-    Args:
-        input_size (int):   Number of features in the input :math:`\mathbf{x}(t)`.
-        hidden_size (int):  Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        kernel_init (Callable, optional): Initializer for input-to-hidden
-            weights :math:`\mathbf{W}_{ih}^*`. Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional): Initializer for
-            hidden-to-hidden weights :math:`\mathbf{W}_{hh}^*`.
-            Default: ``nn.init.xavier_uniform_``.
-        bias_init (Callable, optional): Initializer for input biases
-            :math:`\mathbf{b}_{ih}^*` when `bias=True`. Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for hidden
-            biases :math:`\mathbf{b}_{hh}^*` when `bias=True`.
-            Default: ``nn.init.zeros_``.
-        device (torch.device, optional): Device for all parameters.
-            Default: CPU.
-        dtype (torch.dtype, optional): Data type for all parameters.
-            Default: PyTorch default float.
+        Inputs: input, h_0
+            - **input** of shape ``(batch, input_size)`` or ``(input_size,)``: tensor containing input features
+            - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the initial hidden state
 
-    Inputs: input, hidden
-        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
-        - **hidden** (Tensor, optional): previous hidden state of shape
-            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
-            Defaults to zero if not provided.
+            If **h_0** is not provided, it defaults to zero.
 
-    Outputs: h’
-        - **h’** (Tensor): next hidden state, same shape as **hidden**.
+        Outputs: h_1
+            - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the next hidden state
 
-    Shape:
-        - input:  :math:`(N, H_{\mathrm{in}})` or :math:`(H_{\mathrm{in}})`.
-        - hidden: :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
-        - output: :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
+        Variables:
+            weight_ih: the learnable input–hidden weights, of shape ``(3*hidden_size, input_size)`` (split into θ/η/h parts)
+            weight_hh: the learnable hidden–hidden weights, of shape ``(2*hidden_size, hidden_size)`` (split into θ/η parts)
+            bias_ih: the learnable input–hidden biases, of shape ``(3*hidden_size)``
+            bias_hh: the learnable hidden–hidden biases, of shape ``(2*hidden_size)``
 
-    Attributes:
-        weight_ih (Tensor): input-to-hidden weights of shape
-            `(3 * hidden_size, input_size)`, chunked into θ, η, and “h” parts.
-        weight_hh (Tensor): hidden-to-hidden weights of shape
-            `(2 * hidden_size, hidden_size)`, chunked into θ and η parts.
-        bias_ih (Tensor): input biases of shape `(3 * hidden_size,)` if `bias=True`.
-        bias_hh (Tensor): hidden biases of shape `(2 * hidden_size,)` if `bias=True`.
+        Examples::
 
-    Examples::
-        >>> cell = CFNCell(10, 20)
-        >>> x = torch.randn(5, 10)      # sequence length 5, feature size 10
-        >>> h0 = torch.zeros(20)        # initial hidden state
-        >>> hx = h0
-        >>> outputs = []
-        >>> for t in range(x.size(0)):
-        ...     hx = cell(x[t], hx)
-        ...     outputs.append(hx)
+            >>> cell = CFNCell(10, 20)              # (input_size, hidden_size)
+            >>> x = torch.randn(5, 3, 10)           # (time_steps, batch, input_size)
+            >>> h = torch.zeros(3, 20)              # (batch, hidden_size)
+            >>> out = []
+            >>> for t in range(x.size(0)):
+            ...     h = cell(x[t], h)
+            ...     out.append(h)
+            >>> out = torch.stack(out, dim=0)       # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
