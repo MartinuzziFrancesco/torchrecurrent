@@ -45,66 +45,78 @@ class AntisymmetricRNN(BaseSingleRecurrentLayer):
 
 
 class AntisymmetricRNNCell(BaseSingleRecurrentCell):
-    r"""An antisymmetric recurrent neural network cell [`arXiv <https://arxiv.org/abs/1902.09689>`_].
+    r"""An antisymmetric recurrent neural network cell.
 
-        .. math::
+    [`arXiv <https://arxiv.org/abs/1902.09689>`_]
 
-            \begin{array}{ll}
-            \mathbf{A} = \mathbf{W}_{hh} - \mathbf{W}_{hh}^\top - \gamma \mathbf{I} \\
-            h' = h + \varepsilon \,\tanh(\mathbf{W}_{ih} x + \mathbf{b}_{ih} + \mathbf{A} h + \mathbf{b}_{hh})
-            \end{array}
+    .. math::
 
-        where :math:`\varepsilon` is a step-size scalar, :math:`\gamma \ge 0` adds diagonal damping for stability.
+        \begin{array}{ll}
+            \mathbf{A} = \mathbf{W}_{hh} - \mathbf{W}_{hh}^\top -
+                \gamma \mathbf{I} \\
+            h' = h + \varepsilon \,\tanh(\mathbf{W}_{ih} x +
+                \mathbf{b}_{ih} + \mathbf{A} h + \mathbf{b}_{hh})
+        \end{array}
 
-        Args:
-            input_size: The number of expected features in the input `x`
-            hidden_size: The number of features in the hidden state `h`
-            bias: If ``False``, then the layer does not use input-side bias `b_ih`. Default: ``True``
-            recurrent_bias: If ``False``, then the layer does not use recurrent bias `b_hh`. Default: ``True``
-            nonlinearity: Elementwise nonlinearity applied to the pre-activation. Default: :func:`torch.tanh`
-            kernel_init: Initializer for `weight_ih`. Default: :func:`torch.nn.init.xavier_uniform_`
-            recurrent_kernel_init: Initializer for `weight_hh`. Default: :func:`torch.nn.init.normal_`
-            bias_init: Initializer for `bias_ih`. Default: :func:`torch.nn.init.zeros_`
-            recurrent_bias_init: Initializer for `bias_hh`. Default: :func:`torch.nn.init.zeros_`
-            epsilon: Step-size multiplier :math:`\varepsilon`. Default: ``1.0``
-            gamma: Damping coefficient :math:`\gamma` used in the antisymmetric transform. Default: ``0.0``
-            device: The desired device of parameters.
-            dtype: The desired floating point type of parameters.
+    where :math:`\varepsilon` is a step-size scalar,
+    :math:`\gamma \ge 0` adds diagonal damping for stability.
 
-        Inputs: input, h_0
-            - **input** of shape `(batch, input_size)` or `(input_size,)`: tensor containing input features
-            - **h_0** of shape `(batch, hidden_size)` or `(hidden_size,)`: tensor containing the initial hidden state
+    Args:
+        input_size: The number of expected features in the input `x`
+        hidden_size: The number of features in the hidden state `h`
+        bias: If ``False``, then the layer does not use input-side bias `b_ih`.
+            Default: ``True``
+        recurrent_bias: If ``False``, then the layer does not use recurrent
+            bias `b_hh`. Default: ``True``
+        nonlinearity: Elementwise nonlinearity applied to the pre-activation.
+            Default: :func:`torch.tanh`
+        kernel_init: Initializer for `weight_ih`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `weight_hh`.
+            Default: :func:`torch.nn.init.normal_`
+        bias_init: Initializer for `bias_ih`.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for `bias_hh`.
+            Default: :func:`torch.nn.init.zeros_`
+        epsilon: Step-size multiplier :math:`\varepsilon`.
+            Default: ``1.0``
+        gamma: Damping coefficient :math:`\gamma` used in the
+            antisymmetric transform. Default: ``0.0``
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-            If **h_0** is not provided, it defaults to zero.
+    Inputs: input, h_0
+        - **input** of shape `(batch, input_size)` or `(input_size,)`:
+          tensor containing input features
+        - **h_0** of shape `(batch, hidden_size)` or `(hidden_size,)`:
+          tensor containing the initial hidden state
 
-        Outputs: h_1
-            - **h_1** of shape `(batch, hidden_size)` or `(hidden_size,)`: tensor containing the next hidden state
+        If **h_0** is not provided, it defaults to zero.
 
-        Variables:
-            weight_ih: the learnable input–hidden weights, of shape `(hidden_size, input_size)`
-            weight_hh: the learnable hidden–hidden weights, of shape `(hidden_size, hidden_size)`
-            bias_ih: the learnable input–hidden bias, of shape `(hidden_size)`
-            bias_hh: the learnable hidden–hidden bias, of shape `(hidden_size)`
+    Outputs: h_1
+        - **h_1** of shape `(batch, hidden_size)` or `(hidden_size,)`:
+          tensor containing the next hidden state
 
-        .. note::
-            On each call, the antisymmetric transform
-            :math:`\mathbf{A} = \mathbf{W}_{hh} - \mathbf{W}_{hh}^\top - \gamma \mathbf{I}`
-            is formed and used in the update; gradients flow to :math:`\mathbf{W}_{hh}`.
-            By default, parameters are initialized by calling
-            ``kernel_init`` / ``recurrent_kernel_init`` for weights and
-            ``bias_init`` / ``recurrent_bias_init`` for biases; override these
-            or :meth:`init_weights` to customize initialization.
+    Variables:
+        weight_ih: the learnable input–hidden weights,
+            of shape `(hidden_size, input_size)`
+        weight_hh: the learnable hidden–hidden weights,
+            of shape `(hidden_size, hidden_size)`
+        bias_ih: the learnable input–hidden bias,
+            of shape `(hidden_size)`
+        bias_hh: the learnable hidden–hidden bias,
+            of shape `(hidden_size)`
 
-        Examples::
+    Examples::
 
-            >>> rnn = AntisymmetricRNNCell(10, 20)  # (input_size, hidden_size)
-            >>> x = torch.randn(5, 3, 10)           # (time_steps, batch, input_size)
-            >>> h = torch.zeros(3, 20)              # (batch, hidden_size)
-            >>> out = []
-            >>> for t in range(x.size(0)):
-            ...     h = rnn(x[t], h)
-            ...     out.append(h)
-            >>> out = torch.stack(out, dim=0)       # (time_steps, batch, hidden_size)
+        >>> rnn = AntisymmetricRNNCell(10, 20)  # (input_size, hidden_size)
+        >>> x = torch.randn(5, 3, 10)           # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)              # (batch, hidden_size)
+        >>> out = []
+        >>> for t in range(x.size(0)):
+        ...     h = rnn(x[t], h)
+        ...     out.append(h)
+        >>> out = torch.stack(out, dim=0)       # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -205,71 +217,84 @@ class GatedAntisymmetricRNN(BaseSingleRecurrentLayer):
 
 
 class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
-    r"""A gated antisymmetric recurrent neural network (RNN) cell [`arXiv <https://arxiv.org/abs/1902.09689>`_].
+    r"""A gated antisymmetric recurrent neural network (RNN) cell.
 
-        .. math::
+    [`arXiv <https://arxiv.org/abs/1902.09689>`_]
 
-            \begin{aligned}
-                \mathbf{z}(t) &= \sigma\Bigl(
+    .. math::
+
+        \begin{aligned}
+            \mathbf{z}(t) &= \sigma\Bigl(
+            (\mathbf{W}_{hh} - \mathbf{W}_{hh}^\top - \gamma\,\mathbf{I})
+            \,\mathbf{h}(t-1) + \mathbf{b}_{hh}
+            + \mathbf{W}_{ih}^z\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^z \Bigr), \\
+                \mathbf{h}(t) &= \mathbf{h}(t-1)
+            + \epsilon \,\mathbf{z}(t)\,\circ\,
+            \tanh\Bigl(
                 (\mathbf{W}_{hh} - \mathbf{W}_{hh}^\top - \gamma\,\mathbf{I})
                 \,\mathbf{h}(t-1) + \mathbf{b}_{hh}
-                + \mathbf{W}_{ih}^z\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}^z \Bigr), \\
-                \mathbf{h}(t) &= \mathbf{h}(t-1)
-                + \epsilon \,\mathbf{z}(t)\,\circ\,
-                \tanh\Bigl(
-                    (\mathbf{W}_{hh} - \mathbf{W}_{hh}^\top - \gamma\,\mathbf{I})
-                    \,\mathbf{h}(t-1) + \mathbf{b}_{hh}
-                    + \mathbf{W}_{ih}^x\,\mathbf{x}(t)
-                    + \mathbf{b}_{ih}^h \Bigr)
-            \end{aligned}
+                + \mathbf{W}_{ih}^x\,\mathbf{x}(t)
+                + \mathbf{b}_{ih}^h \Bigr)
+        \end{aligned}
 
-        where :math:`\epsilon` controls the integration step size, :math:`\gamma` is a stability damping, and :math:`\circ` is element-wise product.
+    where :math:`\epsilon` controls the integration step size, :math:`\gamma`
+    is a stability damping, and :math:`\circ` is element-wise product.
 
-        Args:
-            input_size: The number of expected features in the input `x`
-            hidden_size: The number of features in the hidden state `h`
-            bias: If ``False``, then the layer does not use input-side biases. Default: ``True``
-            recurrent_bias: If ``False``, then the layer does not use recurrent bias. Default: ``True``
-            nonlinearity: Elementwise nonlinearity applied to the candidate pre-activation. Default: :func:`torch.tanh`
-            kernel_init: Initializer for `weight_ih`. Default: :func:`torch.nn.init.xavier_uniform_`
-            recurrent_kernel_init: Initializer for `weight_hh`. Default: :func:`torch.nn.init.normal_`
-            bias_init: Initializer for input-side biases. Default: :func:`torch.nn.init.zeros_`
-            epsilon: Step-size multiplier :math:`\epsilon`. Default: ``1.0``
-            gamma: Damping coefficient :math:`\gamma` used in the antisymmetric transform. Default: ``0.0``
-            device: The desired device of parameters.
-            dtype: The desired floating point type of parameters.
+    Args:
+        input_size: The number of expected features in the input `x`
+        hidden_size: The number of features in the hidden state `h`
+        bias: If ``False``, then the layer does not use input-side biases.
+            Default: ``True``
+        recurrent_bias: If ``False``, then the layer does not use recurrent bias.
+            Default: ``True``
+        nonlinearity: Elementwise nonlinearity applied to the
+            candidate pre-activation. Default: :func:`torch.tanh`
+        kernel_init: Initializer for `weight_ih`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `weight_hh`.
+            Default: :func:`torch.nn.init.normal_`
+        bias_init: Initializer for input-side biases.
+            Default: :func:`torch.nn.init.zeros_`
+        epsilon: Step-size multiplier :math:`\epsilon`.
+            Default: ``1.0``
+        gamma: Damping coefficient :math:`\gamma` used in the
+            antisymmetric transform. Default: ``0.0``
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-        Inputs: input, h_0
-            - **input** of shape `(batch, input_size)` or `(input_size,)`: tensor containing input features
-            - **h_0** of shape `(batch, hidden_size)` or `(hidden_size,)`: tensor containing the initial hidden state
+    Inputs: input, h_0
+        - **input** of shape `(batch, input_size)` or `(input_size,)`:
+          tensor containing input features
+        - **h_0** of shape `(batch, hidden_size)` or `(hidden_size,)`:
+          tensor containing the initial hidden state
 
-            If **h_0** is not provided, it defaults to zero.
+        If **h_0** is not provided, it defaults to zero.
 
-        Outputs: h_1
-            - **h_1** of shape `(batch, hidden_size)` or `(hidden_size,)`: tensor containing the next hidden state
+    Outputs: h_1
+        - **h_1** of shape `(batch, hidden_size)` or `(hidden_size,)`:
+          tensor containing the next hidden state
 
-        Variables:
-            weight_ih: the learnable input–hidden weights, of shape `(2*hidden_size, input_size)` (gate and candidate)
-            weight_hh: the learnable hidden–hidden weights, of shape `(hidden_size, hidden_size)`
-            bias_ih: the learnable input–hidden bias, of shape `(2*hidden_size)`
-            bias_hh: the learnable hidden–hidden bias, of shape `(hidden_size)`
+    Variables:
+        weight_ih: the learnable input–hidden weights,
+            of shape `(2*hidden_size, input_size)` (gate and candidate)
+        weight_hh: the learnable hidden–hidden weights,
+            of shape `(hidden_size, hidden_size)`
+        bias_ih: the learnable input–hidden bias,
+            of shape `(2*hidden_size)`
+        bias_hh: the learnable hidden–hidden bias,
+            of shape `(hidden_size)`
 
-        .. note::
-            This cell splits the input projection into a gate and a candidate,
-            then applies an antisymmetric recurrent transformation plus gating
-            to ensure stable, expressive dynamics.
+    Examples::
 
-        Examples::
-
-            >>> cell = GatedAntisymmetricRNNCell(8, 16, epsilon=0.5, gamma=0.1)
-            >>> x = torch.randn(5, 3, 8)     # (time_steps, batch, input_size)
-            >>> h = torch.zeros(3, 16)       # (batch, hidden_size)
-            >>> out = []
-            >>> for t in range(x.size(0)):
-            ...     h = cell(x[t], h)
-            ...     out.append(h)
-            >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
+        >>> cell = GatedAntisymmetricRNNCell(8, 16, epsilon=0.5, gamma=0.1)
+        >>> x = torch.randn(5, 3, 8)     # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 16)       # (batch, hidden_size)
+        >>> out = []
+        >>> for t in range(x.size(0)):
+        ...     h = cell(x[t], h)
+        ...     out.append(h)
+        >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [

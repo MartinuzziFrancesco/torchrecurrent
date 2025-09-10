@@ -20,61 +20,76 @@ class BR(BaseSingleRecurrentLayer):
 
 
 class BRCell(BaseSingleRecurrentCell):
-    r"""A Bistable recurrent cell [`pub <https://doi.org/10.1371/journal.pone.0252676>`_].
+    r"""A Bistable recurrent cell.
 
-        .. math::
+    [`pub <https://doi.org/10.1371/journal.pone.0252676>`_]
 
-            \mathbf{a}(t) &= 1 + \tanh\Bigl(\mathbf{W}_{ih}^{a}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}^{a}
-                + \mathbf{w}_{hh}^{a} \,\circ\, \mathbf{h}(t-1)
-                + \mathbf{b}_{hh}^{a}\Bigr), \\
-            \mathbf{c}(t) &= \sigma\Bigl(\mathbf{W}_{ih}^{c}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}^{c}
-                + \mathbf{w}_{hh}^{c} \,\circ\, \mathbf{h}(t-1)
-                + \mathbf{b}_{hh}^{c}\Bigr), \\
-            \mathbf{h}(t) &= \mathbf{c}(t)\,\circ\,\mathbf{h}(t-1)
-                \;+\;\bigl(1 - \mathbf{c}(t)\bigr)\,\circ\,
-                \tanh\Bigl(\mathbf{W}_{ih}^{h}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}^{h}
-                + \mathbf{a}(t)\,\circ\,\mathbf{h}(t-1)\Bigr).
+    .. math::
 
-        Args:
-            input_size: The number of expected features in the input ``x``
-            hidden_size: The number of features in the hidden state ``h``
-            bias: If ``False``, the layer does not use input-side biases. Default: ``True``
-            recurrent_bias: If ``False``, the layer does not use recurrent biases. Default: ``True``
-            kernel_init: Initializer for input–hidden weights ``W_ih^*``. Default: :func:`torch.nn.init.xavier_uniform_`
-            recurrent_kernel_init: Initializer for hidden recurrence vectors ``w_{hh}^*``. Default: :func:`torch.nn.init.normal_`
-            bias_init: Initializer for input-side biases ``b_{ih}^*`` when ``bias=True``. Default: :func:`torch.nn.init.zeros_`
-            recurrent_bias_init: Initializer for hidden biases ``b_{hh}^*`` when ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`
-            device: The desired device of parameters.
-            dtype: The desired floating point type of parameters.
+        \mathbf{a}(t) &= 1 + \tanh\Bigl(\mathbf{W}_{ih}^{a}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{a}
+            + \mathbf{w}_{hh}^{a} \,\circ\, \mathbf{h}(t-1)
+            + \mathbf{b}_{hh}^{a}\Bigr), \\
+        \mathbf{c}(t) &= \sigma\Bigl(\mathbf{W}_{ih}^{c}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{c}
+            + \mathbf{w}_{hh}^{c} \,\circ\, \mathbf{h}(t-1)
+            + \mathbf{b}_{hh}^{c}\Bigr), \\
+        \mathbf{h}(t) &= \mathbf{c}(t)\,\circ\,\mathbf{h}(t-1)
+            \;+\;\bigl(1 - \mathbf{c}(t)\bigr)\,\circ\,
+            \tanh\Bigl(\mathbf{W}_{ih}^{h}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}^{h}
+            + \mathbf{a}(t)\,\circ\,\mathbf{h}(t-1)\Bigr).
 
-        Inputs: input, h_0
-            - **input** of shape ``(batch, input_size)`` or ``(input_size,)``: tensor containing input features
-            - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the initial hidden state
+    Args:
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden state ``h``.
+        bias: If ``False``, the layer does not use input-side biases.
+            Default: ``True``.
+        recurrent_bias: If ``False``, the layer does not use recurrent biases.
+            Default: ``True``.
+        kernel_init: Initializer for input–hidden weights ``W_ih^*``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        recurrent_kernel_init: Initializer for hidden recurrence vectors
+            ``w_{hh}^*``. Default: :func:`torch.nn.init.normal_`.
+        bias_init: Initializer for input-side biases ``b_{ih}^*`` when
+            ``bias=True``. Default: :func:`torch.nn.init.zeros_`.
+        recurrent_bias_init: Initializer for hidden biases ``b_{hh}^*`` when
+            ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-            If **h_0** is not provided, it defaults to zero.
+    Inputs: input, h_0
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the initial hidden state.
 
-        Outputs: h_1
-            - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the next hidden state
+        If **h_0** is not provided, it defaults to zero.
 
-        Variables:
-            weight_ih: the learnable input–hidden weights, of shape ``(3*hidden_size, input_size)`` (split into a/c/h parts)
-            weight_hh: the learnable hidden recurrence vectors, of shape ``(2*hidden_size,)`` (split into a/c parts)
-            bias_ih: the learnable input–hidden biases, of shape ``(3*hidden_size)``
-            bias_hh: the learnable hidden biases, of shape ``(2*hidden_size)``
+    Outputs: h_1
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next hidden state.
 
-        Examples::
+    Variables:
+        weight_ih: The learnable input–hidden weights, of shape
+            ``(3*hidden_size, input_size)`` (split into a/c/h parts).
+        weight_hh: The learnable hidden recurrence vectors, of shape
+            ``(2*hidden_size,)`` (split into a/c parts).
+        bias_ih: The learnable input–hidden biases,
+            of shape ``(3*hidden_size)``.
+        bias_hh: The learnable hidden biases,
+            of shape ``(2*hidden_size)``.
 
-            >>> cell = BRCell(10, 20)
-            >>> x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)
-            >>> h = torch.zeros(3, 20)        # (batch, hidden_size)
-            >>> out = []
-            >>> for t in range(x.size(0)):
-            ...     h = cell(x[t], h)
-            ...     out.append(h)
-            >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
+    Examples::
+
+        >>> cell = BRCell(10, 20)
+        >>> x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)        # (batch, hidden_size)
+        >>> out = []
+        >>> for t in range(x.size(0)):
+        ...     h = cell(x[t], h)
+        ...     out.append(h)
+        >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -165,7 +180,9 @@ class NBR(BaseSingleRecurrentLayer):
 
 
 class NBRCell(BaseSingleRecurrentCell):
-    r"""A Neuromodulated Bistable Recurrent cell [`pub <https://doi.org/10.1371/journal.pone.0252676>`_].
+    r"""A Neuromodulated Bistable Recurrent cell.
+
+    [`pub <https://doi.org/10.1371/journal.pone.0252676>`_]
 
     .. math::
 
@@ -186,29 +203,42 @@ class NBRCell(BaseSingleRecurrentCell):
     Args:
         input_size: The number of expected features in the input ``x``
         hidden_size: The number of features in the hidden state ``h``
-        bias: If ``False``, the layer does not use input-side biases. Default: ``True``
-        recurrent_bias: If ``False``, the layer does not use recurrent biases. Default: ``True``
-        kernel_init: Initializer for input–hidden weights ``W_ih^*``. Default: :func:`torch.nn.init.xavier_uniform_`
-        recurrent_kernel_init: Initializer for hidden–hidden weights ``W_hh^*``. Default: :func:`torch.nn.init.xavier_uniform_`
-        bias_init: Initializer for input-side biases ``b_{ih}^*`` when ``bias=True``. Default: :func:`torch.nn.init.zeros_`
-        recurrent_bias_init: Initializer for hidden biases ``b_{hh}^*`` when ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`
+        bias: If ``False``, the layer does not use input-side biases.
+            Default: ``True``
+        recurrent_bias: If ``False``, the layer does not use recurrent biases.
+            Default: ``True``
+        kernel_init: Initializer for input–hidden weights ``W_ih^*``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for hidden–hidden weights ``W_hh^*``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for input-side biases ``b_{ih}^*`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for hidden biases ``b_{hh}^*``
+            when ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`
         device: The desired device of parameters.
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``: tensor containing input features
-        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the initial hidden state
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          tensor containing input features
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the initial hidden state
 
         If **h_0** is not provided, it defaults to zero.
 
     Outputs: h_1
-        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the next hidden state
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the next hidden state
 
     Variables:
-        weight_ih: the learnable input–hidden weights, of shape ``(3*hidden_size, input_size)`` (split into a/c/h parts)
-        weight_hh: the learnable hidden–hidden weights, of shape ``(2*hidden_size, hidden_size)`` (split into a/c parts)
-        bias_ih: the learnable input–hidden biases, of shape ``(3*hidden_size)``
-        bias_hh: the learnable hidden–hidden biases, of shape ``(2*hidden_size)``
+        weight_ih: the learnable input–hidden weights,
+            of shape ``(3*hidden_size, input_size)`` (split into a/c/h parts)
+        weight_hh: the learnable hidden–hidden weights,
+            of shape ``(2*hidden_size, hidden_size)`` (split into a/c parts)
+        bias_ih: the learnable input–hidden biases,
+            of shape ``(3*hidden_size)``
+        bias_hh: the learnable hidden–hidden biases,
+            of shape ``(2*hidden_size)``
 
     Examples::
 

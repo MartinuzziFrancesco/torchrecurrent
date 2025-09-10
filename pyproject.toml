@@ -42,3 +42,13 @@ test = [
   "pytest>=7.0",
   "coverage",
 ]
+
+[tool.ruff]
+line-length = 88
+extend-select = ["D"]
+
+[tool.ruff.lint]
+ignore = ["D100", "D107", "D102"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

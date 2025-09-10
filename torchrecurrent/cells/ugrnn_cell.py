@@ -22,10 +22,9 @@ class UGRNN(BaseSingleRecurrentLayer):
 
 
 class UGRNNCell(BaseSingleRecurrentCell):
-    r"""Update Gate recurrent cell.
+    r"""An Update Gate RNN (UGRNN) cell.
 
-    A streamlined gated cell that computes a single update gate
-    and a candidate update.
+    [`arXiv <https://arxiv.org/abs/1611.09913>`_]
 
     .. math::
 
@@ -33,57 +32,62 @@ class UGRNNCell(BaseSingleRecurrentCell):
             \mathbf{c}(t) &= s\left( \mathbf{W}_{hh}^c \, \mathbf{h}(t-1) +
                 \mathbf{b}_{hh}^c + \mathbf{W}_{xh}^c \, \mathbf{x}(t) +
                 \mathbf{b}_{ih}^c \right), \\
-            \mathbf{g}(t) &= \sigma\left( \mathbf{W}_{hh}^g \, \mathbf{h}(t-1) +
+                \mathbf{g}(t) &= \sigma\left( \mathbf{W}_{hh}^g \, \mathbf{h}(t-1) +
                 \mathbf{b}_{hh}^g + \mathbf{W}_{xh}^g \, \mathbf{x}(t) +
                 \mathbf{b}_{ih}^g \right), \\
-            \mathbf{h}(t) &= \mathbf{g}(t) \circ \mathbf{h}(t-1) +
+                \mathbf{h}(t) &= \mathbf{g}(t) \circ \mathbf{h}(t-1) +
                 \left( 1 - \mathbf{g}(t) \right) \circ \mathbf{c}(t).
         \end{aligned}
 
-    where :math:`\sigma` is the sigmoid function and :math:`\circ`
-    denotes element-wise multiplication.
+    where :math:`\sigma` is the sigmoid function and
+    :math:`\circ` denotes element-wise multiplication.
 
     Args:
-        input_size (int):  Size of the input feature vector.
-        hidden_size (int): Size of the hidden state.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        kernel_init (Callable):
-                            Initializer for input-to-hidden weights
-                            (default: ``nn.init.xavier_uniform_``).
-        recurrent_kernel_init (Callable):
-                            Initializer for hidden-to-hidden weights
-                            (default: ``nn.init.xavier_uniform_``).
-        bias_init (Callable):
-                            Initializer for input biases
-                            (default: ``nn.init.zeros_``).
-        recurrent_bias_init (Callable):
-                            Initializer for hidden biases
-                            (default: ``nn.init.zeros_``).
-        device (torch.device, optional): Device for parameters.
-        dtype (torch.dtype, optional):   Data type for parameters.
+        input_size: Size of the input feature vector
+        hidden_size: Size of the hidden state
+        bias: If ``False``, disables :math:`\mathbf{b}_{ih}`.
+            Default: ``True``
+        recurrent_bias: If ``False``, disables :math:`\mathbf{b}_{hh}`.
+            Default: ``True``
+        kernel_init: Initializer for ``weight_ih``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for ``weight_hh``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for ``bias_ih`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for ``bias_hh`` when ``recurrent_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters
+        dtype: The desired floating point type of parameters
 
-    Inputs:
-        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`.
-        - **state** (Tensor, optional): previous hidden state of shape
-            `(batch, hidden_size)` or `(hidden_size,)`. Defaults to zero.
+    Inputs: input, hidden
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          tensor containing input features
+        - **hidden** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the previous hidden state
 
-    Outputs:
-        - **new_state** (Tensor): Updated hidden state, same shape as `state`.
+        If **hidden** is not provided, it defaults to zero.
 
-    Attributes:
-        weight_ih (Tensor): Input-to-hidden weights, shape `(2*hidden_size, input_size)`.
-        weight_hh (Tensor): Hidden-to-hidden weights, shape `(hidden_size, hidden_size)`.
-        bias_ih   (Tensor): Input bias, shape `(2*hidden_size,)`.
-        bias_hh   (Tensor): Hidden bias, shape `(hidden_size,)`.
+    Outputs: h_1
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the next hidden state
+
+    Variables:
+        weight_ih: input–hidden weights, of shape ``(2*hidden_size, input_size)``
+        weight_hh: hidden–hidden weights, of shape ``(2*hidden_size, hidden_size)``
+        bias_ih: input biases, of shape ``(2*hidden_size,)`` if ``bias=True``
+        bias_hh: hidden biases, of shape ``(2*hidden_size,)`` if ``recurrent_bias=True``
 
     Examples::
+
         >>> cell = UGRNNCell(8, 16)
-        >>> x = torch.randn(4, 8)   # batch=4, input_size=8
-        >>> h0 = torch.zeros(4, 16)
-        >>> h1 = cell(x, h0)
+        >>> x = torch.randn(5, 8)      # (time, input_size)
+        >>> h = torch.zeros(16)        # (hidden_size,)
+        >>> outs = []
+        >>> for t in range(x.size(0)):
+        ...     h = cell(x[t], h)
+        ...     outs.append(h)
+        >>> outs = torch.stack(outs, dim=0)  # (time, hidden_size)
     """
 
     __constants__ = [
@@ -116,7 +120,7 @@ class UGRNNCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(UGRNNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init

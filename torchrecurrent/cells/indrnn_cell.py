@@ -22,53 +22,67 @@ class IndRNN(BaseSingleRecurrentLayer):
 
 
 class IndRNNCell(BaseSingleRecurrentCell):
-    r"""An Independently Recurrent Neural Network (IndRNN) cell [`arXiv <https://arxiv.org/abs/1803.04831>`_].
+    r"""An Independently Recurrent Neural Network (IndRNN) cell.
 
-        .. math::
+    [`arXiv <https://arxiv.org/abs/1803.04831>`_]
 
-            \mathbf{h}(t) = \phi\bigl(\mathbf{W}_{ih}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}
-                + \mathbf{w}_{hh}\,\circ\,\mathbf{h}(t-1)\bigr)
+    .. math::
 
-        where :math:`\circ` denotes element‐wise (Hadamard) product and
-        :math:`\phi` is a pointwise nonlinearity (e.g., tanh).
+        \mathbf{h}(t) = \phi\bigl(\mathbf{W}_{ih}\,\mathbf{x}(t)
+            + \mathbf{b}_{ih}
+            + \mathbf{w}_{hh}\,\circ\,\mathbf{h}(t-1)\bigr)
 
-        Args:
-            input_size: The number of expected features in the input ``x``
-            hidden_size: The number of features in the hidden state ``h``
-            bias: If ``False``, the layer does not use input-side bias ``b_{ih}``. Default: ``True``
-            recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_{hh}``. Default: ``True``
-            nonlinearity: Activation function :math:`\phi`. Default: :func:`torch.tanh`
-            kernel_init: Initializer for ``W_{ih}``. Default: :func:`torch.nn.init.xavier_uniform_`
-            recurrent_kernel_init: Initializer for the recurrent vector ``w_{hh}``. Default: :func:`torch.nn.init.normal_`
-            bias_init: Initializer for ``b_{ih}`` when ``bias=True``. Default: :func:`torch.nn.init.zeros_`
-            device: The desired device of parameters.
-            dtype: The desired floating point type of parameters.
+    where :math:`\circ` denotes element‐wise (Hadamard) product and
+    :math:`\phi` is a pointwise nonlinearity (e.g., tanh).
 
-        Inputs: input, h_0
-            - **input** of shape ``(batch, input_size)`` or ``(input_size,)``: tensor containing input features
-            - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the initial hidden state
+    Args:
+        input_size: The number of expected features in the input ``x``
+        hidden_size: The number of features in the hidden state ``h``
+        bias: If ``False``, the layer does not use input-side bias ``b_{ih}``.
+            Default: ``True``
+        recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_{hh}``.
+            Default: ``True``
+        nonlinearity: Activation function :math:`\phi`.
+            Default: :func:`torch.tanh`
+        kernel_init: Initializer for ``W_{ih}``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for the recurrent vector ``w_{hh}``.
+            Default: :func:`torch.nn.init.normal_`
+        bias_init: Initializer for ``b_{ih}`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-            If **h_0** is not provided, it defaults to zero.
+    Inputs: input, h_0
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          tensor containing input features
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the initial hidden state
 
-        Outputs: h_1
-            - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the next hidden state
+        If **h_0** is not provided, it defaults to zero.
 
-        Variables:
-            weight_ih: the learnable input–hidden weights, of shape ``(hidden_size, input_size)``
-            vector_u: the learnable recurrent vector ``w_{hh}``, shape ``(hidden_size,)``
-            bias_ih: the learnable input–hidden bias, of shape ``(hidden_size)`` if ``bias=True``
+    Outputs: h_1
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the next hidden state
 
-        Examples::
+    Variables:
+        weight_ih: the learnable input–hidden weights,
+            of shape ``(hidden_size, input_size)``
+        vector_u: the learnable recurrent vector ``w_{hh}``,
+            shape ``(hidden_size,)``
+        bias_ih: the learnable input–hidden bias,
+            of shape ``(hidden_size)`` if ``bias=True``
 
-            >>> cell = IndRNNCell(10, 20)
-            >>> x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)
-            >>> h = torch.zeros(3, 20)        # (batch, hidden_size)
-            >>> out = []
-            >>> for t in range(x.size(0)):
-            ...     h = cell(x[t], h)
-            ...     out.append(h)
-            >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
+    Examples::
+
+        >>> cell = IndRNNCell(10, 20)
+        >>> x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)        # (batch, hidden_size)
+        >>> out = []
+        >>> for t in range(x.size(0)):
+        ...     h = cell(x[t], h)
+        ...     out.append(h)
+        >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [

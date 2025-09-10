@@ -22,97 +22,111 @@ class WMCLSTM(BaseDoubleRecurrentLayer):
 
 
 class WMCLSTMCell(BaseDoubleRecurrentCell):
-    r"""A long short-term memory cell with working memory connections (WMCLSTMCell).
+    r"""A Long Short-Term Memory (LSTM) cell with working-memory connections.
 
-    Based on arXiv:2109.00020.
-
-    The cell update equations are:
+    [`arXiv <https://arxiv.org/abs/2109.00020>`_].
 
     .. math::
+
         \begin{aligned}
-            \mathbf{i}(t) &= \sigma\bigl(
-                \mathbf{W}_{ih}^{i}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{i} +
-                \mathbf{W}_{hh}^{i}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{i} +
-                \mathbf{W}_{mh}^{i}\,\mathbf{c}(t-1) + \mathbf{b}_{mh}^{i}
-            \bigr), \\
-            \mathbf{f}(t) &= \sigma\bigl(
-                \mathbf{W}_{ih}^{f}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{f} +
-                \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{f} +
-                \mathbf{W}_{mh}^{f}\,\mathbf{c}(t-1) + \mathbf{b}_{mh}^{f}
-            \bigr), \\
-            \mathbf{c}(t) &= \mathbf{f}(t) \circ \mathbf{c}(t-1)
-                \;+\;\mathbf{i}(t)\circ\sigma_c\bigl(\mathbf{W}_{ih}^{c}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}^{c}\bigr), \\
-            \mathbf{o}(t) &= \sigma\bigl(
-                \mathbf{W}_{ih}^{o}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{o} +
-                \mathbf{W}_{hh}^{o}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{o} +
-                \mathbf{W}_{mh}^{o}\,\mathbf{c}(t) + \mathbf{b}_{mh}^{o}
-            \bigr), \\
+            \mathbf{i}(t) &= \sigma\Bigl(
+                \mathbf{W}_{ih}^{i}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{i}
+                + \mathbf{W}_{hh}^{i}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{i}
+                + \mathbf{W}_{mh}^{i}\,\mathbf{c}(t-1) + \mathbf{b}_{mh}^{i}
+            \Bigr), \\
+            \mathbf{f}(t) &= \sigma\Bigl(
+                \mathbf{W}_{ih}^{f}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{f}
+                + \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{f}
+                + \mathbf{W}_{mh}^{f}\,\mathbf{c}(t-1) + \mathbf{b}_{mh}^{f}
+            \Bigr), \\
+            \mathbf{c}(t) &= \mathbf{f}(t)\circ\mathbf{c}(t-1)
+                + \mathbf{i}(t)\circ\sigma_c\Bigl(
+                    \mathbf{W}_{ih}^{c}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{c}
+                \Bigr), \\
+            \mathbf{o}(t) &= \sigma\Bigl(
+                \mathbf{W}_{ih}^{o}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{o}
+                + \mathbf{W}_{hh}^{o}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{o}
+                + \mathbf{W}_{mh}^{o}\,\mathbf{c}(t) + \mathbf{b}_{mh}^{o}
+            \Bigr), \\
             \mathbf{h}(t) &= \mathbf{o}(t)\circ\sigma_h\bigl(\mathbf{c}(t)\bigr),
         \end{aligned}
 
-    where :math:`\sigma` is the sigmoid function, :math:`\sigma_c` and
-    :math:`\sigma_h` are cell and output activations (here both are `torch.tanh`),
-    and :math:`\circ` denotes elementwise multiplication.
+    where :math:`\sigma` is the sigmoid, :math:`\sigma_c` and :math:`\sigma_h`
+    are cell/output activations (typically :func:`torch.tanh`), and
+    :math:`\circ` is element‐wise (Hadamard) multiplication.
 
     Args:
-        input_size (int):   Number of features in the input :math:`\mathbf{x}(t)`.
-        hidden_size (int):  Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        memory_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{mh}`.
-            Default: ``True``.
-        kernel_init (Callable, optional): Initializer for input-to-hidden weights
-            :math:`\mathbf{W}_{ih}^{\{i,f,c,o\}}`. Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional):
-            Initializer for hidden-to-hidden weights
-            :math:`\mathbf{W}_{hh}^{\{i,f,o\}}`. Default: ``nn.init.xavier_uniform_``.
-        memory_kernel_init (Callable, optional): Initializer for working-memory weights
-            :math:`\mathbf{W}_{mh}^{\{i,f,o\}}`. Default: ``nn.init.xavier_uniform_``.
-        bias_init (Callable, optional): Initializer for input biases
-            :math:`\mathbf{b}_{ih}^{\{i,f,c,o\}}`. Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for hidden biases
-            :math:`\mathbf{b}_{hh}^{\{i,f,o\}}`. Default: ``nn.init.zeros_``.
-        memory_bias_init (Callable, optional): Initializer for memory biases
-            :math:`\mathbf{b}_{mh}^{\{i,f,o\}}`. Default: ``nn.init.zeros_``.
-        device (torch.device, optional): Device for parameters.
-        dtype (torch.dtype, optional): Data type for parameters.
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden and cell states.
+        bias: If ``False``, the layer does not use input biases
+            ``b_{ih}``. Default: ``True``.
+        recurrent_bias: If ``False``, the layer does not use recurrent
+            biases ``b_{hh}``. Default: ``True``.
+        memory_bias: If ``False``, the layer does not use memory biases
+            ``b_{mh}``. Default: ``True``.
+        kernel_init: Initializer for
+            ``W_{ih}^{\{i,f,c,o\}}``. Default:
+            :func:`torch.nn.init.xavier_uniform_`.
+        recurrent_kernel_init: Initializer for
+            ``W_{hh}^{\{i,f,o\}}``. Default:
+            :func:`torch.nn.init.xavier_uniform_`.
+        memory_kernel_init: Initializer for
+            ``W_{mh}^{\{i,f,o\}}``. Default:
+            :func:`torch.nn.init.xavier_uniform_`.
+        bias_init: Initializer for
+            ``b_{ih}^{\{i,f,c,o\}}``. Default:
+            :func:`torch.nn.init.zeros_`.
+        recurrent_bias_init: Initializer for
+            ``b_{hh}^{\{i,f,o\}}``. Default:
+            :func:`torch.nn.init.zeros_`.
+        memory_bias_init: Initializer for
+            ``b_{mh}^{\{i,f,o\}}``. Default:
+            :func:`torch.nn.init.zeros_`.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs:
-        - **inp** (Tensor): Current input :math:`\mathbf{x}(t)`,
-            shape :math:`(N, input\_size)` or :math:`(input\_size)`.
-        - **state** (Tuple[Tensor, Tensor], optional): Previous hidden and cell states
-            (:math:`\mathbf{h}(t-1)`, :math:`\mathbf{c}(t-1)`), each of shape
-            :math:`(N, hidden\_size)` or :math:`(hidden\_size)`. Defaults to zeros.
+    Inputs: input, (h, c)
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **h** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Previous hidden state.
+        - **c** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Previous cell state.
 
-    Outputs:
-        - **new_state** (Tensor): Updated hidden state :math:`\mathbf{h}(t)`,
-            shape :math:`(N, hidden\_size)` or :math:`(hidden\_size)`.
-        - **new_cstate** (Tensor): Updated cell state :math:`\mathbf{c}(t)`,
-            shape :math:`(N, hidden\_size)` or :math:`(hidden\_size)`.
+        If **(h, c)** is not provided, both default to zeros.
 
-    Attributes:
-        weight_ih (Tensor): Input-to-hidden weights, shape `(4*hidden_size, input_size)`,
-            split into i, f, c, o gates along dim=0.
-        weight_hh (Tensor): Hidden-to-hidden weights, shape `(4*hidden_size, hidden_size)`,
-            split into i, f, c, o gates.
-        weight_mh (Tensor): Working-memory weights, shape `(3*hidden_size, hidden_size)`,
-            split into i, f, o contributions.
-        bias_ih (Tensor): Input biases, shape `(4*hidden_size,)`.
-        bias_hh (Tensor): Hidden biases, shape `(4*hidden_size,)`.
-        bias_mh (Tensor): Memory biases, shape `(3*hidden_size,)`.
+    Outputs: (h_1, c_1)
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Next hidden state.
+        - **c_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Next cell state.
+
+    Variables:
+        weight_ih: The learnable input–hidden weights,
+            of shape ``(4*hidden_size, input_size)``.
+        weight_hh: The learnable hidden–hidden weights,
+            of shape ``(4*hidden_size, hidden_size)`` (for i, f, o gates).
+        weight_mh: The learnable memory–hidden weights,
+            of shape ``(3*hidden_size, hidden_size)``
+            (i, f use :math:`c(t-1)`, o uses :math:`c(t)`).
+        bias_ih: The learnable input biases,
+            of shape ``(4*hidden_size,)``.
+        bias_hh: The learnable hidden biases,
+            of shape ``(4*hidden_size,)``.
+        bias_mh: The learnable memory biases,
+            of shape ``(3*hidden_size,)``.
 
     Examples::
-        >>> cell = WMCLSTMCell(input_size=8, hidden_size=16)
-        >>> seq = torch.randn(12, 4, 8)    # seq length 12, batch size 4
-        >>> h = torch.zeros(4, 16)         # initial hidden state
-        >>> c = torch.zeros(4, 16)         # initial cell state
-        >>> outputs = []
-        >>> for t in range(12):
-        ...     h, c = cell(seq[t], (h, c))
-        ...     outputs.append(h)
+
+        >>> cell = WMCLSTMCell(8, 16)
+        >>> x = torch.randn(12, 4, 8)     # (time_steps, batch, input_size)
+        >>> h = torch.zeros(4, 16)        # (batch, hidden_size)
+        >>> c = torch.zeros(4, 16)        # (batch, hidden_size)
+        >>> outs = []
+        >>> for t in range(x.size(0)):
+        ...     h, c = cell(x[t], (h, c))
+        ...     outs.append(h)
+        >>> outs = torch.stack(outs, dim=0)  # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -153,7 +167,7 @@ class WMCLSTMCell(BaseDoubleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(WMCLSTMCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init

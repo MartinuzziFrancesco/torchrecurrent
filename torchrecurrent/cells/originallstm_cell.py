@@ -22,69 +22,80 @@ class OriginalLSTM(BaseDoubleRecurrentLayer):
 
 
 class OriginalLSTMCell(BaseDoubleRecurrentCell):
-    r"""Original formulation of the LSTM cell with no forget gate.
+    r"""Original formulation of the LSTM cell (no forget gate).
+
+    [`pub <https://ieeexplore.ieee.org/abstract/document/6795963>`_]
 
     .. math::
 
         \begin{aligned}
         \mathbf{g}(t) &= \mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}
             + \mathbf{W}_{hh}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}, \\
-        \mathbf{i}(t) &= \sigma\bigl(g_i(t)\bigr), \\
-        \tilde{\mathbf{c}}(t) &= \tanh\bigl(g_c(t)\bigr), \\
-        \mathbf{o}(t) &= \sigma\bigl(g_o(t)\bigr), \\
-        \mathbf{c}(t) &= \mathbf{c}(t-1)
+            \mathbf{i}(t) &= \sigma\bigl(g_i(t)\bigr), \\
+            \tilde{\mathbf{c}}(t) &= \tanh\bigl(g_c(t)\bigr), \\
+            \mathbf{o}(t) &= \sigma\bigl(g_o(t)\bigr), \\
+            \mathbf{c}(t) &= \mathbf{c}(t-1)
             + \mathbf{i}(t)\,\odot\,\tilde{\mathbf{c}}(t), \\
-        \mathbf{h}(t) &= \mathbf{o}(t)\,\odot\,\tanh\bigl(\mathbf{c}(t)\bigr),
+            \mathbf{h}(t) &= \mathbf{o}(t)\,\odot\,\tanh\bigl(\mathbf{c}(t)\bigr),
         \end{aligned}
 
-    where :math:`\odot` denotes
-    element‐wise multiplication.
+    where :math:`\odot` denotes element-wise multiplication.
 
     Args:
-        input_size (int):        Dimensionality of the input features.
-        hidden_size (int):       Dimensionality of the hidden and cell states.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        kernel_init (Callable):  Initializer for input‐to‐hidden weights.
-        recurrent_kernel_init (Callable):
-                                    Initializer for hidden‐to‐hidden weights.
-        bias_init (Callable):    Initializer for input biases.
-        recurrent_bias_init (Callable):
-                                    Initializer for hidden biases.
-        device (torch.device, optional):
-                                    Device on which to allocate parameters.
-        dtype (torch.dtype, optional):
-                                    Data type for parameters.
+        input_size: The number of expected features in the input ``x``
+        hidden_size: The number of features in the hidden and cell states
+        bias: If ``False``, the layer does not use input-side bias ``b_{ih}``.
+            Default: ``True``
+        recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_{hh}``.
+            Default: ``True``
+        kernel_init: Initializer for ``W_{ih}``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for ``W_{hh}``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for ``b_{ih}`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for ``b_{hh}`` when ``recurrent_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs:
-        - **inp** (Tensor):      Shape `(batch, input_size)` or `(input_size,)`.
-        - **state** (Tuple[Tensor, Tensor], optional):
-            Previous `(h, c)` each of shape `(batch, hidden_size)` or
-            `(hidden_size,)`. Defaults to zeros if not provided.
+    Inputs: input, (h_0, c_0)
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          tensor containing input features
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          initial hidden state
+        - **c_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          initial cell state
 
-    Outputs:
-        - **new_h** (Tensor):    Updated hidden state, same shape as `h`.
-        - **new_c** (Tensor):    Updated cell state, same shape as `c`.
+        If **(h_0, c_0)** is not provided, both default to zero.
 
-    Attributes:
-        weight_ih (Tensor):      Input‐to‐hidden weight matrix of shape
-                                    `(3*hidden_size, input_size)`.
-        weight_hh (Tensor):      Hidden‐to‐hidden weight matrix of shape
-                                    `(hidden_size, hidden_size)`.
-        weight_ph (Tensor):      Additional hidden‐to‐hidden weight for
-                                    candidate update, shape `(hidden_size, hidden_size)`.
-        bias_ih   (Tensor):      Input bias, shape `(3*hidden_size,)`.
-        bias_hh   (Tensor):      Hidden bias, shape `(3*hidden_size,)`.
-        bias_ph   (Tensor):      Additional hidden bias, shape `(hidden_size,)`.
+    Outputs: (h_1, c_1)
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          next hidden state
+        - **c_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          next cell state
+
+    Variables:
+        weight_ih: the learnable input–hidden weights,
+            of shape ``(3*hidden_size, input_size)``
+        weight_hh: the learnable hidden–hidden weights,
+            of shape ``(3*hidden_size, hidden_size)``
+        bias_ih: the learnable input–hidden biases,
+            of shape ``(3*hidden_size)``
+        bias_hh: the learnable hidden–hidden biases,
+            of shape ``(3*hidden_size)``
 
     Examples::
+
         >>> cell = OriginalLSTMCell(10, 20)
-        >>> x = torch.randn(5, 10)          # (batch=5, input_size=10)
-        >>> h0 = torch.zeros(5, 20)
-        >>> c0 = torch.zeros(5, 20)
-        >>> h1, c1 = cell(x, (h0, c0))
+        >>> x = torch.randn(5, 3, 10)   # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)
+        >>> c = torch.zeros(3, 20)
+        >>> out_h = []
+        >>> for t in range(x.size(0)):
+        ...     h, c = cell(x[t], (h, c))
+        ...     out_h.append(h)
+        >>> out_h = torch.stack(out_h, dim=0)  # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -117,7 +128,7 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(OriginalLSTMCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init

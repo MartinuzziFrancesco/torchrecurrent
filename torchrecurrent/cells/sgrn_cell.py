@@ -22,77 +22,78 @@ class SGRN(BaseSingleRecurrentLayer):
 
 
 class SGRNCell(BaseSingleRecurrentCell):
-    r"""A simple gated recurrent network (SGRN) cell.
+    r"""A Simple Gated Recurrent Network (SGRN) cell.
 
-    Based on the “Simple gated recurrent network” described in:
-    Galeja, J., & Maignan, C. (2018). Simple gated recurrent network.
-    IET Conference Publication. https://doi.org/10.1049/gtd2.12056
-
-    The cell updates its hidden state according to:
+    [`DOI <https://doi.org/10.1049/gtd2.12056>`_]
 
     .. math::
 
         \begin{aligned}
-            \mathbf{f}(t) &= \sigma\bigl(
-                \mathbf{W}_{ih}\mathbf{x}(t) + \mathbf{b}_{ih} +
-                \mathbf{W}_{hh}\mathbf{h}(t-1) + \mathbf{b}_{hh}\bigr), \\
+            \mathbf{f}(t) &= \sigma\Bigl(
+                \mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}
+                + \mathbf{W}_{hh}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}
+            \Bigr), \\
             \mathbf{i}(t) &= 1 - \mathbf{f}(t), \\
-            \mathbf{h}(t) &= \tanh\bigl(
-                \mathbf{i}(t) \circ (\mathbf{W}_{ih}\mathbf{x}(t) + \mathbf{b}_{ih}) +
-                \mathbf{f}(t) \circ \mathbf{h}(t-1)\bigr)
+            \mathbf{h}(t) &= \tanh\Bigl(
+                \mathbf{i}(t)\,\circ\,
+                \bigl(\mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}\bigr)
+                + \mathbf{f}(t)\,\circ\,\mathbf{h}(t-1)
+            \Bigr)
         \end{aligned}
 
-    where :math:`\sigma` is the sigmoid function and :math:`\circ` denotes
-    elementwise (Hadamard) multiplication.
+    where :math:`\sigma` is the sigmoid function and
+    :math:`\circ` denotes element-wise (Hadamard) multiplication.
 
     Args:
-        input_size (int):  Number of features in the input :math:`\mathbf{x}(t)`.
-        hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        kernel_init (Callable, optional): Initialization function for
-            input-to-hidden weights :math:`\mathbf{W}_{ih}`.
-            Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional): Initialization for
-            hidden-to-hidden weights :math:`\mathbf{W}_{hh}`.
-            Default: ``nn.init.xavier_uniform_``.
-        bias_init (Callable, optional): Initialization for input bias
-            :math:`\mathbf{b}_{ih}`. Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initialization for
-            hidden bias :math:`\mathbf{b}_{hh}`. Default: ``nn.init.zeros_``.
-        device (torch.device, optional): Device on which to place the weights.
-        dtype (torch.dtype, optional): Data type for weights and biases.
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden state ``h``.
+        bias: If ``False``, the layer does not use input-side bias
+            ``b_{ih}``. Default: ``True``.
+        recurrent_bias: If ``False``, the layer does not use recurrent
+            bias ``b_{hh}``. Default: ``True``.
+        kernel_init: Initializer for ``weight_ih``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        recurrent_kernel_init: Initializer for ``weight_hh``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        bias_init: Initializer for ``bias_ih`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`.
+        recurrent_bias_init: Initializer for ``bias_hh`` when
+            ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs:
-        - **inp** (Tensor): Input tensor at current time step,
-            of shape :math:`(N, input\_size)` or :math:`(input\_size)`.
-        - **state** (Tensor or Tuple[Tensor,…], optional): Previous hidden
-            state :math:`\mathbf{h}(t-1)`, of shape :math:`(N, hidden\_size)`
-            or :math:`(hidden\_size)`. Defaults to zero if not provided.
+    Inputs: input, hidden
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **hidden** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the previous hidden state.
 
-    Outputs:
-        - **new_state** (Tensor): Updated hidden state
-            :math:`\mathbf{h}(t)`, of shape :math:`(N, hidden\_size)`
-            or :math:`(hidden\_size)`.
+        If **hidden** is not provided, it defaults to zero.
 
-    Attributes:
-        weight_ih (Tensor): Learnable input-to-hidden weights,
-            of shape `(hidden_size, input_size)`.
-        weight_hh (Tensor): Learnable hidden-to-hidden weights,
-            of shape `(hidden_size, hidden_size)`.
-        bias_ih (Tensor): Learnable input bias, of shape `(hidden_size,)`.
-        bias_hh (Tensor): Learnable hidden bias, of shape `(hidden_size,)`.
+    Outputs: h_1
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next hidden state.
+
+    Variables:
+        weight_ih: The learnable input–hidden weights,
+            of shape ``(hidden_size, input_size)``.
+        weight_hh: The learnable hidden–hidden weights,
+            of shape ``(hidden_size, hidden_size)``.
+        bias_ih: The learnable input bias,
+            of shape ``(hidden_size,)`` if ``bias=True``.
+        bias_hh: The learnable hidden bias,
+            of shape ``(hidden_size,)`` if ``recurrent_bias=True``.
 
     Examples::
-        >>> cell = SGRNCell(input_size=10, hidden_size=20)
-        >>> x = torch.randn(5, 10)     # sequence length 5, batch size inferred
-        >>> h = torch.zeros(20)        # initial state
+
+        >>> cell = SGRNCell(10, 20)
+        >>> x = torch.randn(5, 10)        # (time_steps, input_size)
+        >>> h = torch.zeros(20)           # (hidden_size,)
         >>> out = []
-        >>> for t in range(5):
+        >>> for t in range(x.size(0)):
         ...     h = cell(x[t], h)
         ...     out.append(h)
+        >>> out = torch.stack(out, dim=0)  # (time_steps, hidden_size)
     """
 
     __constants__ = [
@@ -125,7 +126,7 @@ class SGRNCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(SGRNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init

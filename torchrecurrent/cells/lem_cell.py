@@ -22,87 +22,93 @@ class LEM(BaseDoubleRecurrentLayer):
 class LEMCell(BaseDoubleRecurrentCell):
     r"""A Long Expressive Memory (LEM) recurrent cell.
 
-    Implements the LEM update rule from
-    “Long expressive memory unit” <https://arxiv.org/pdf/2110.04744>_.
+    [`arXiv <https://arxiv.org/pdf/2110.04744>`_]
 
     .. math::
 
         \begin{aligned}
-            \boldsymbol{\Delta t}(t) &= \Delta t \,\hat{\sigma}\bigl(
+        \boldsymbol{\Delta t}(t) &= \Delta t \,\hat{\sigma}\bigl(
             \mathbf{W}_{ih}^{1}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{1}
             + \mathbf{W}_{hh}^{1}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{1}
-            \bigr), \\
-            \overline{\boldsymbol{\Delta t}}(t) &= \Delta t \,\hat{\sigma}\bigl(
+        \bigr), \\
+        \overline{\boldsymbol{\Delta t}}(t) &= \Delta t \,\hat{\sigma}\bigl(
             \mathbf{W}_{ih}^{2}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{2}
             + \mathbf{W}_{hh}^{2}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{2}
-            \bigr), \\
-            \mathbf{c}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{c}(t-1)
+        \bigr), \\
+        \mathbf{c}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{c}(t-1)
             + \boldsymbol{\Delta t}(t)\circ\sigma\bigl(
                 \mathbf{W}_{ih}^{c}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{c}
                 + \mathbf{W}_{hh}^{c}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{c}
             \bigr), \\
-            \mathbf{h}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{h}(t-1)
+        \mathbf{h}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{h}(t-1)
             + \boldsymbol{\Delta t}(t)\circ\sigma\bigl(
                 \mathbf{W}_{ih}^{h}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{h}
                 + \mathbf{W}_{ch}\,\mathbf{c}(t) + \mathbf{b}_{ch}
             \bigr)
         \end{aligned}
 
-    where :math:`\hat{\sigma}` is the sigmoid function and :math:`\circ`
-    denotes element-wise multiplication.
+    where :math:`\hat{\sigma}` is the sigmoid function and
+    :math:`\circ` denotes element-wise multiplication.
 
     Args:
-        input_size (int):  Number of expected features in the input tensor.
-        hidden_size (int): Number of features in the hidden and cell states.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden/cell states ``h`` and ``c``.
+        bias: If ``False``, the layer does not use input-side bias ``b_{ih}``.
             Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+        recurrent_bias: If ``False``, the layer does not use recurrent bias
+            ``b_{hh}``. Default: ``True``.
+        cell_bias: If ``False``, the layer does not use cell bias ``b_{ch}``.
             Default: ``True``.
-        cell_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ch}`.
-            Default: ``True``.
-        kernel_init (Callable):
-                            Initializer for the input-to-hidden weight matrix.
-        recurrent_kernel_init (Callable):
-                            Initializer for the hidden-to-hidden weight matrix.
-        cell_kernel_init (Callable):
-                            Initializer for the cell-to-hidden weight matrix.
-        bias_init (Callable):
-                            Initializer for input biases.
-        recurrent_bias_init (Callable):
-                            Initializer for hidden biases.
-        cell_bias_init (Callable):
-                            Initializer for cell biases.
-        dt (float):        Integration time step Δt. Default: 1.0.
-        device (torch.device, optional): Device on which to place parameters.
-        dtype (torch.dtype, optional):   Data type for parameters.
+        kernel_init: Initializer for ``W_{ih}``.
+        recurrent_kernel_init: Initializer for ``W_{hh}``.
+        cell_kernel_init: Initializer for ``W_{ch}``.
+        bias_init: Initializer for ``b_{ih}``.
+        recurrent_bias_init: Initializer for ``b_{hh}``.
+        cell_bias_init: Initializer for ``b_{ch}``.
+        dt: Integration time step :math:`\Delta t`. Default: ``1.0``.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs:
-        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`.
-        - **state** (Tensor or Tuple[Tensor, Tensor], optional):
-            Previous `(h, c)` states each of shape `(batch, hidden_size)` or
-            `(hidden_size,)`. Defaults to zeros if not provided.
+    Inputs: input, (h_0, c_0)
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the initial hidden state.
+        - **c_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the initial cell state.
 
-    Outputs:
-        - **new_state** (Tensor): Updated hidden state, same shape as `h`.
-        - **new_cstate** (Tensor): Updated cell state, same shape as `c`.
+        If ``(h_0, c_0)`` is not provided, both default to zeros.
 
-    Attributes:
-        weight_ih (Tensor): Input-to-hidden weight matrix, shape
-                                `(4*hidden_size, input_size)`.
-        weight_hh (Tensor): Hidden-to-hidden weight matrix, shape
-                                `(3*hidden_size, hidden_size)`.
-        weight_ch (Tensor): Cell-to-hidden weight matrix, shape
-                                `(hidden_size, hidden_size)`.
-        bias_ih   (Tensor): Input bias, shape `(4*hidden_size,)`.
-        bias_hh   (Tensor): Hidden bias, shape `(3*hidden_size,)`.
-        bias_ch   (Tensor): Cell bias,   shape `(hidden_size,)`.
+    Outputs: (h_1, c_1)
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next hidden state.
+        - **c_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next cell state.
+
+    Variables:
+        weight_ih: The learnable input–hidden weights,
+            of shape ``(4*hidden_size, input_size)``.
+        weight_hh: The learnable hidden–hidden weights,
+            of shape ``(3*hidden_size, hidden_size)``.
+        weight_ch: The learnable cell–hidden weights,
+            of shape ``(hidden_size, hidden_size)``.
+        bias_ih: The learnable input–hidden bias,
+            of shape ``(4*hidden_size)``.
+        bias_hh: The learnable hidden–hidden bias,
+            of shape ``(3*hidden_size)``.
+        bias_ch: The learnable cell–hidden bias,
+            of shape ``(hidden_size)``.
 
     Examples::
+
         >>> cell = LEMCell(16, 32, dt=0.5)
-        >>> x = torch.randn(8, 16)      # batch=8, input_size=16
-        >>> h0 = torch.zeros(8, 32)
-        >>> c0 = torch.zeros(8, 32)
-        >>> h1, c1 = cell(x, (h0, c0))
+        >>> x = torch.randn(5, 3, 16)      # (time_steps, batch, input_size)
+        >>> h, c = torch.zeros(3, 32), torch.zeros(3, 32)
+        >>> out_h = []
+        >>> for t in range(x.size(0)):
+        ...     h, c = cell(x[t], (h, c))
+        ...     out_h.append(h)
+        >>> out_h = torch.stack(out_h, dim=0)  # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -115,7 +121,8 @@ class LEMCell(BaseDoubleRecurrentCell):
         "recurrent_kernel_init",
         "cell_kernel_init",
         "bias_init",
-        "recurrent_bias_init" "cell_bias_init",
+        "recurrent_bias_init",
+        "cell_bias_init",
         "dt",
     ]
 
@@ -144,7 +151,7 @@ class LEMCell(BaseDoubleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(LEMCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, dt=dt, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -172,7 +179,7 @@ class LEMCell(BaseDoubleRecurrentCell):
                 self.kernel_init(param)
             elif "weight_hh" in name:
                 self.recurrent_kernel_init(param)
-            elif "weight_ph" in name:
+            elif "weight_ch" in name:
                 self.cell_kernel_init(param)
             elif "bias_ih" in name:
                 self.bias_init(param)

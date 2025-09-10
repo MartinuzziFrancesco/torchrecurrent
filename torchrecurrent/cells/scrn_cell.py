@@ -24,8 +24,7 @@ class SCRN(BaseDoubleRecurrentLayer):
 class SCRNCell(BaseDoubleRecurrentCell):
     r"""A Structurally Constrained Recurrent Network (SCRN) cell.
 
-    Implements the SCRN from
-    “Structurally Constrained Recurrent Networks” <https://arxiv.org/pdf/1412.7753>_.
+    [`arXiv <https://arxiv.org/pdf/1412.7753>`_]
 
     .. math::
 
@@ -33,7 +32,7 @@ class SCRNCell(BaseDoubleRecurrentCell):
         \mathbf{s}(t) &= (1 - \alpha)\,\bigl(\mathbf{W}_{ih}^{s}\,\mathbf{x}(t)
             + \mathbf{b}_{ih}^{s}\bigr)
             + \alpha\,\mathbf{s}(t-1), \\
-        \mathbf{h}(t) &= \sigma\Bigl(
+            \mathbf{h}(t) &= \sigma\Bigl(
             \mathbf{W}_{ch}^{h}\,\mathbf{s}(t)
             + \mathbf{b}_{ch}^{h}
             + \mathbf{W}_{ih}^{h}\,\mathbf{x}(t)
@@ -41,7 +40,7 @@ class SCRNCell(BaseDoubleRecurrentCell):
             + \mathbf{W}_{hh}^{h}\,\mathbf{h}(t-1)
             + \mathbf{b}_{hh}^{h}
         \Bigr), \\
-        \mathbf{y}(t) &= f\Bigl(
+            \mathbf{y}(t) &= f\Bigl(
             \mathbf{W}_{ch}^{y}\,\mathbf{s}(t)
             + \mathbf{b}_{ch}^{y}
             + \mathbf{W}_{hh}^{y}\,\mathbf{h}(t)
@@ -49,58 +48,77 @@ class SCRNCell(BaseDoubleRecurrentCell):
         \Bigr)
         \end{aligned}
 
-    where :math:`\sigma` is the sigmoid activation and :math:`f` is an
-    optional output nonlinearity.
+    where :math:`\sigma` is the sigmoid activation
+    and :math:`f` is an optional output nonlinearity.
 
     Args:
-        input_size (int):      Number of input features.
-        hidden_size (int):     Number of hidden (and context) features.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        context_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ch}`.
-            Default: ``True``.
-        kernel_init (Callable):
-                                Initializer for input‑to‑hidden kernels.
-        recurrent_kernel_init (Callable):
-                                Initializer for hidden‑to‑hidden kernels.
-        context_kernel_init (Callable):
-                                Initializer for context‑to‑hidden kernels.
-        bias_init (Callable):  Initializer for input biases.
-        recurrent_bias_init (Callable):
-                                Initializer for hidden biases.
-        context_bias_init (Callable):
-                                Initializer for context biases.
-        alpha (float):         Context interpolation parameter. Default: 1.0.
-        device (torch.device, optional): Device for parameters.
-        dtype (torch.dtype, optional):   Dtype for parameters.
+        input_size: Number of input features
+        hidden_size: Number of hidden (and context) features
+        bias: If ``False``, the layer does not use input-side bias ``b_ih``.
+            Default: ``True``
+        recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_hh``.
+            Default: ``True``
+        context_bias: If ``False``, the layer does not use context bias ``b_ch``.
+            Default: ``True``
+        kernel_init: Initializer for ``weight_ih``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for ``weight_hh``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        context_kernel_init: Initializer for ``weight_ch``.
+            Default: :func:`torch.nn.init.normal_`
+        bias_init: Initializer for ``bias_ih`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for ``bias_hh`` when ``recurrent_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        context_bias_init: Initializer for ``bias_ch`` when ``context_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        alpha: Context interpolation parameter :math:`\alpha`. Default: ``0.5``
+        device: The desired device of parameters
+        dtype: The desired floating point type of parameters
 
-    Inputs:
-        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`.
-        - **state** (Tuple[Tensor, Tensor], optional):
-            previous `(h, s)` where `h` is hidden and `s` is context, each of shape
-            `(batch, hidden_size)` or `(hidden_size,)`. Defaults to zeros.
+    Inputs: input, (h_0, s_0)
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          tensor containing input features
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          initial hidden state
+        - **s_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          initial context state
 
-    Outputs:
-        - **new_h** (Tensor):   Next hidden state, same shape as `h`.
-        - **new_s** (Tensor):   Next context state, same shape as `s`.
+        If **(h_0, s_0)** is not provided, both default to zero.
 
-    Attributes:
-        weight_ih (Tensor):    Input‑to‑hidden weights, shape `(2*H, I)`.
-        weight_hh (Tensor):    Hidden‑to‑hidden weights, shape `(2*H, H)`.
-        weight_ch (Tensor):    Context‑to‑hidden weights, shape `(2*H, H)`.
-        bias_ih   (Tensor):    Input biases, shape `(2*H,)`.
-        bias_hh   (Tensor):    Hidden biases, shape `(2*H,)`.
-        bias_ch   (Tensor):    Context biases, shape `(2*H,)`.
-        alpha     (Parameter): Learnable context interpolation scalar.
+    Outputs: (h_1, s_1)
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          next hidden state
+        - **s_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          next context state
+
+    Variables:
+        weight_ih: input–hidden weights,
+            of shape ``(2*hidden_size, input_size)``
+        weight_hh: hidden–hidden weights,
+            of shape ``(2*hidden_size, hidden_size)``
+        weight_ch: context–hidden weights,
+            of shape ``(2*hidden_size, hidden_size)``
+        bias_ih: input biases,
+            of shape ``(2*hidden_size)`` if ``bias=True``
+        bias_hh: hidden biases,
+            of shape ``(2*hidden_size)`` if ``recurrent_bias=True``
+        bias_ch: context biases,
+            of shape ``(2*hidden_size)`` if ``context_bias=True``
+        alpha: learnable context interpolation scalar
 
     Examples::
+
         >>> cell = SCRNCell(10, 20, alpha=0.5)
-        >>> x = torch.randn(4, 10)
-        >>> h0 = torch.zeros(4, 20)
-        >>> s0 = torch.zeros(4, 20)
-        >>> h1, s1 = cell(x, (h0, s0))
+        >>> x = torch.randn(6, 3, 10)   # (time, batch, input_size)
+        >>> h = torch.zeros(3, 20)      # (batch, hidden_size)
+        >>> s = torch.zeros(3, 20)      # (batch, hidden_size) context
+        >>> hs = []
+        >>> for t in range(x.size(0)):
+        ...     h, s = cell(x[t], (h, s))
+        ...     hs.append(h)
+        >>> hs = torch.stack(hs, dim=0)  # (time, batch, hidden_size)
+
     """
 
     __constants__ = [
@@ -142,7 +160,7 @@ class SCRNCell(BaseDoubleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(SCRNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init

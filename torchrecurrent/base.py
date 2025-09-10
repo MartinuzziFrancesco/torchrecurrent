@@ -136,8 +136,8 @@ class BaseRecurrentCell(nn.Module, ABC):
             )
 
     def _register_tensors(self, specs: Dict[str, Tuple[Tuple[int, ...], bool]]):
-        """Given a dict mapping attribute names to (shape, trainable_flag), create either
-        a Parameter (if trainable_flag=True) or a zero‐buffer otherwise.
+        """Given a dict mapping attribute names to (shape, trainable_flag), create
+        either a Parameter (if trainable_flag=True) or a zero‐buffer otherwise.
 
         Example specs:
             {
@@ -237,8 +237,8 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
     def _preprocess_input_and_state(
         self, inp: Tensor, state: Optional[Tensor]
     ) -> Tuple[Tensor, Tensor, bool]:
-        """1) Ensure `inp` is 2D by adding a batch dim if needed. 2) Initialize or reshape
-        `state` into a batched hidden tensor.
+        """1) Ensure `inp` is 2D by adding a batch dim if needed. 2) Initialize or
+        reshape `state` into a batched hidden tensor.
 
         Returns:
           - inp      : (batch_size, input_size)
@@ -259,7 +259,8 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
     def _check_state(
         self, state: Optional[Union[Tensor, Tuple[Tensor, ...]]]
     ) -> Optional[Tensor]:
-        """If user passed a tuple to a single‐state cell, warn and pick the first element.
+        """If user passed a tuple to a single‐state cell, warn and pick the first
+        element.
 
         Otherwise, return state unmodified.
         """
@@ -312,8 +313,7 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
         inp: Tensor,
         states: Optional[Tuple[Optional[Tensor], Optional[Tensor]]] = None,
     ) -> Tuple[Tensor, Tensor, Tensor, bool]:
-        """
-        - Ensures inp is treated as batched
+        """- Ensures inp is treated as batched
         - Initializes or reshapes both h and c to [batch_size, hidden_size]
         - Returns (inp, h, c, was_batched)
         """

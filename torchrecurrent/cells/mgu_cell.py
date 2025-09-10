@@ -22,8 +22,7 @@ class MGU(BaseSingleRecurrentLayer):
 class MGUCell(BaseSingleRecurrentCell):
     r"""A Minimal Gated Unit (MGU) cell.
 
-    This cell uses a single forget‐update gate to modulate both
-    carry and candidate, reducing parameters relative to an LSTM:
+    [`arXiv <https://arxiv.org/abs/1603.09420>`_]
 
     .. math::
 
@@ -42,62 +41,63 @@ class MGUCell(BaseSingleRecurrentCell):
         \mathbf{h}(t) &= \bigl(1 - \mathbf{f}(t)\bigr)\circ\mathbf{h}(t-1)
             \;+\;\mathbf{f}(t)\circ\tilde{\mathbf{h}}(t),
 
-    where :math:`\circ` is element‐wise product and :math:`\phi` is a pointwise
-    nonlinearity (default `tanh`).
+    where :math:`\circ` is element‐wise product and :math:`\phi` is a
+    pointwise nonlinearity (e.g., tanh).
 
     Args:
-        input_size (int):   Number of features in the input :math:`\mathbf{x}(t)`.
-        hidden_size (int):  Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden state ``h``.
+        bias: If ``False``, the layer does not use input-side biases.
             Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+        recurrent_bias: If ``False``, the layer does not use recurrent biases.
             Default: ``True``.
-        nonlinearity (Callable, optional): Nonlinearity :math:`\phi` for the candidate.
-            Default: ``torch.tanh``.
-        gate_nonlinearity (Callable, optional): Activation for the forget gate.
-            Default: ``torch.sigmoid``.
-        kernel_init (Callable, optional): Initializer for input‐to‐hidden weights
-            :math:`\mathbf{W}_{ih}^*`. Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional): Initializer for hidden‐to‐hidden weights
-            :math:`\mathbf{W}_{hh}^*`. Default: ``nn.init.xavier_uniform_``.
-        bias_init (Callable, optional): Initializer for input biases when `bias=True`.
-            Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for hidden biases
-            when `bias=True`. Default: ``nn.init.zeros_``.
-        device (torch.device, optional): Device of the parameters. Default: CPU.
-        dtype (torch.dtype, optional): Data type of the parameters. Default: PyTorch float.
+        nonlinearity: Nonlinearity :math:`\phi` for the candidate.
+            Default: :func:`torch.tanh`.
+        gate_nonlinearity: Activation for the forget gate.
+            Default: :func:`torch.sigmoid`.
+        kernel_init: Initializer for ``W_{ih}^*``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        recurrent_kernel_init: Initializer for ``W_{hh}^*``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        bias_init: Initializer for input-side biases when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`.
+        recurrent_bias_init: Initializer for recurrent biases when
+            ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs: input, hidden
-        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
-        - **hidden** (Tensor, optional): previous hidden state of shape
-            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
-            Defaults to zero if not provided.
+    Inputs: input, h_0
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the initial hidden state.
 
-    Outputs: h’
-        - **h’** (Tensor): next hidden state, same shape as **hidden**.
+        If **h_0** is not provided, it defaults to zero.
 
-    Shape:
-        - input:  :math:`(N, H_{\mathrm{in}})` or :math:`(H_{\mathrm{in}})`.
-        - hidden: :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
-        - output: :math:`(N, H_{\mathrm{out}})` or :math:`(H_{\mathrm{out}})`.
+    Outputs: h_1
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next hidden state.
 
-    Attributes:
-        weight_ih (Tensor): input‐to‐hidden weights, shape `(2*H, I)`,
-            chunked into forget (`f`) and candidate (`h`) parts.
-        weight_hh (Tensor): hidden‐to‐hidden weights, shape `(2*H, H)`,
-            chunked into forget and candidate parts.
-        bias_ih (Tensor): input biases, shape `(2*H,)` if `bias=True`.
-        bias_hh (Tensor): hidden biases, shape `(2*H,)` if `bias=True`.
+    Variables:
+        weight_ih: The learnable input–hidden weights,
+            of shape ``(2*hidden_size, input_size)`` (forget & candidate parts).
+        weight_hh: The learnable hidden–hidden weights,
+            of shape ``(2*hidden_size, hidden_size)`` (forget & candidate parts).
+        bias_ih: The learnable input–hidden biases,
+            of shape ``(2*hidden_size)`` if ``bias=True``.
+        bias_hh: The learnable hidden–hidden biases,
+            of shape ``(2*hidden_size)`` if ``recurrent_bias=True``.
 
     Examples::
+
         >>> cell = MGUCell(10, 20)
-        >>> x = torch.randn(5, 10)       # sequence length 5
-        >>> h0 = torch.zeros(20)         # initial hidden state
-        >>> hx = h0
-        >>> outs = []
+        >>> x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)        # (batch, hidden_size)
+        >>> out = []
         >>> for t in range(x.size(0)):
-        ...     hx = cell(x[t], hx)
-        ...     outs.append(hx)
+        ...     h = cell(x[t], h)
+        ...     out.append(h)
+        >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -134,7 +134,7 @@ class MGUCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(MGUCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.nonlinearity = nonlinearity
         self.gate_nonlinearity = gate_nonlinearity

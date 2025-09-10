@@ -20,7 +20,9 @@ class ATR(BaseSingleRecurrentLayer):
 
 
 class ATRCell(BaseSingleRecurrentCell):
-    r"""An Additive–Transform Recurrent cell [`arXiv <https://arxiv.org/abs/1810.12546>`_].
+    r"""An Additive–Transform Recurrent cell.
+
+    [`arXiv <https://arxiv.org/abs/1810.12546>`_]
 
     .. math::
 
@@ -34,29 +36,42 @@ class ATRCell(BaseSingleRecurrentCell):
     Args:
         input_size: The number of expected features in the input ``x``
         hidden_size: The number of features in the hidden state ``h``
-        bias: If ``False``, the layer does not use input-side bias ``b_ih``. Default: ``True``
-        recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_hh``. Default: ``True``
-        kernel_init: Initializer for ``W_ih``. Default: :func:`torch.nn.init.xavier_uniform_`
-        recurrent_kernel_init: Initializer for ``W_hh``. Default: :func:`torch.nn.init.normal_`
-        bias_init: Initializer for ``b_ih`` when ``bias=True``. Default: :func:`torch.nn.init.zeros_`
-        recurrent_bias_init: Initializer for ``b_hh`` when ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`
+        bias: If ``False``, the layer does not use input-side bias ``b_ih``.
+            Default: ``True``
+        recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_hh``.
+            Default: ``True``
+        kernel_init: Initializer for ``W_ih``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for ``W_hh``.
+            Default: :func:`torch.nn.init.normal_`
+        bias_init: Initializer for ``b_ih`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for ``b_hh`` when ``recurrent_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
         device: The desired device of parameters.
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``: tensor containing input features
-        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the initial hidden state
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          tensor containing input features
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the initial hidden state
 
         If **h_0** is not provided, it defaults to zero.
 
     Outputs: h_1
-        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``: tensor containing the next hidden state
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the next hidden state
 
     Variables:
-        weight_ih: the learnable input–hidden weights, of shape ``(hidden_size, input_size)``
-        weight_hh: the learnable hidden–hidden weights, of shape ``(hidden_size, hidden_size)``
-        bias_ih: the learnable input–hidden bias, of shape ``(hidden_size)``
-        bias_hh: the learnable hidden–hidden bias, of shape ``(hidden_size)``
+        weight_ih: the learnable input–hidden weights,
+            of shape ``(hidden_size, input_size)``
+        weight_hh: the learnable hidden–hidden weights,
+            of shape ``(hidden_size, hidden_size)``
+        bias_ih: the learnable input–hidden bias,
+            of shape ``(hidden_size)``
+        bias_hh: the learnable hidden–hidden bias,
+            of shape ``(hidden_size)``
 
     Examples::
 

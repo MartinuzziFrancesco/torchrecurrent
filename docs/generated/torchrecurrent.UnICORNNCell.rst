@@ -83,6 +83,7 @@
       ~UnICORNNCell.weight_ch
       ~UnICORNNCell.bias_ih
       ~UnICORNNCell.bias_hh
+      ~UnICORNNCell.alpha
       ~UnICORNNCell.input_size
       ~UnICORNNCell.hidden_size
       ~UnICORNNCell.bias

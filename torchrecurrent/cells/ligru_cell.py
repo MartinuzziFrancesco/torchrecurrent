@@ -24,8 +24,7 @@ class LiGRU(BaseSingleRecurrentLayer):
 class LiGRUCell(BaseSingleRecurrentCell):
     r"""A Light Gated Recurrent Unit (LiGRU) cell.
 
-    This variant simplifies the GRU by using a single update gate and a
-    rectified‐linear candidate, updating via:
+    [`arXiv <https://arxiv.org/abs/1803.10225>`_]
 
     .. math::
 
@@ -46,58 +45,60 @@ class LiGRUCell(BaseSingleRecurrentCell):
 
     where :math:`\circ` denotes element‐wise multiplication.
 
-    See: [“Light Gated Recurrent Unit: A Simplified GRU”](https://arxiv.org/pdf/1803.10225).
-
     Args:
-        input_size (int):  Dimensionality of input vector :math:`\mathbf{x}(t)`.
-        hidden_size (int): Number of features in hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden state ``h``.
+        bias: If ``False``, the layer does not use input-side biases.
             Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+        recurrent_bias: If ``False``, the layer does not use recurrent biases.
             Default: ``True``.
-        nonlinearity (Callable, optional): Activation for the candidate
-            :math:`\tilde{\mathbf{h}}` (default `torch.relu`).
-        gate_nonlinearity (Callable, optional): Activation for the update gate
-            :math:`\mathbf{z}` (default `torch.sigmoid`).
-        kernel_init (Callable, optional): Initializer for input‐to‐hidden weights
-            :math:`\mathbf{W}_{ih}`. Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional): Initializer for hidden‐to‐hidden
-            weights :math:`\mathbf{W}_{hh}`. Default: ``nn.init.xavier_uniform_``.
-        bias_init (Callable, optional): Initializer for input biases
-            :math:`\mathbf{b}_{ih}` when `bias=True`. Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for hidden biases
-            :math:`\mathbf{b}_{hh}` when `bias=True`. Default: ``nn.init.zeros_``.
-        device (torch.device, optional): Device of the parameters. Default: CPU.
-        dtype (torch.dtype, optional): Data type of the parameters. Default: PyTorch float.
+        nonlinearity: Activation for the candidate :math:`\tilde{h}`.
+            Default: :func:`torch.relu`.
+        gate_nonlinearity: Activation for the update gate :math:`z`.
+            Default: :func:`torch.sigmoid`.
+        kernel_init: Initializer for ``W_{ih}``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        recurrent_kernel_init: Initializer for ``W_{hh}``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        bias_init: Initializer for ``b_{ih}`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`.
+        recurrent_bias_init: Initializer for ``b_{hh}`` when
+            ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs:
-        - **input** (Tensor): `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
-        - **hidden** (Tensor, optional): `(H_out,)` or `(N, H_out)`,
-            where `H_out = hidden_size`. Defaults to zeros if not provided.
+    Inputs: input, h_0
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the initial hidden state.
 
-    Outputs:
-        - **h’** (Tensor): next hidden state, same shape as **hidden**.
+        If **h_0** is not provided, it defaults to zero.
 
-    Shape:
-        - **input**: `(N, H_in)` or `(H_in,)`
-        - **hidden**: `(N, H_out)` or `(H_out,)`
-        - **output**: `(N, H_out)` or `(H_out,)`
+    Outputs: h_1
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next hidden state.
 
-    Attributes:
-        weight_ih (Tensor): input‐to‐hidden weights, shape `(2*H, I)`.
-        weight_hh (Tensor): hidden‐to‐hidden weights, shape `(2*H, H)`.
-        bias_ih   (Tensor): input biases, shape `(2*H,)` if `bias=True`.
-        bias_hh   (Tensor): hidden biases, shape `(2*H,)` if `bias=True`.
+    Variables:
+        weight_ih: The learnable input–hidden weights,
+            of shape ``(2*hidden_size, input_size)``.
+        weight_hh: The learnable hidden–hidden weights,
+            of shape ``(2*hidden_size, hidden_size)``.
+        bias_ih: The learnable input–hidden biases,
+            of shape ``(2*hidden_size)`` if ``bias=True``.
+        bias_hh: The learnable hidden–hidden biases,
+            of shape ``(2*hidden_size)`` if ``recurrent_bias=True``.
 
     Examples::
+
         >>> cell = LiGRUCell(10, 20)
-        >>> x = torch.randn(5, 10)    # sequence length 5
-        >>> h0 = torch.zeros(20)
-        >>> h = h0
-        >>> outputs = []
+        >>> x = torch.randn(5, 3, 10)    # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)       # (batch, hidden_size)
+        >>> out = []
         >>> for t in range(x.size(0)):
         ...     h = cell(x[t], h)
-        ...     outputs.append(h)
+        ...     out.append(h)
+        >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -134,7 +135,7 @@ class LiGRUCell(BaseSingleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(LiGRUCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.nonlinearity = nonlinearity
         self.gate_nonlinearity = gate_nonlinearity

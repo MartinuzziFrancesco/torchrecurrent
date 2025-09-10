@@ -22,85 +22,98 @@ class UnICORNN(BaseDoubleRecurrentLayer):
 
 
 class UnICORNNCell(BaseDoubleRecurrentCell):
-    r"""An undamped independent controlled oscillatory recurrent neural unit (UnICORNN)
-    cell.
+    r"""An Undamped Independent Controlled Oscillatory RNN (UnICORNN) cell.
 
-    Implements the dynamics described in arXiv:2103.05487.
+    [`arXiv <https://arxiv.org/abs/2103.05487>`_]
 
-    The cell maintains two coupled state vectors, the hidden state :math:`\mathbf{h}(t)`
-    and the control state :math:`\mathbf{z}(t)`, which evolve according to
+    The cell maintains two coupled state vectors, the hidden state
+    :math:`\mathbf{h}(t)` and the control state :math:`\mathbf{z}(t)`,
+    which evolve according to
 
     .. math::
+
         \begin{aligned}
             \mathbf{h}(t) &= \mathbf{h}(t-1)
-                + \Delta t \;\hat{\sigma}(\mathbf{w}_{ch}) \circ \mathbf{z}(t), \\
+                + \Delta t\,\hat{\sigma}(\mathbf{w}_{ch})
+                \circ \mathbf{z}(t), \\
             \mathbf{z}(t) &= \mathbf{z}(t-1)
-                - \Delta t \;\hat{\sigma}(\mathbf{w}_{ch}) \circ
-                \Bigl[\sigma\bigl(\mathbf{W}_{hh}\,\mathbf{h}(t-1)
-                + \mathbf{W}_{ih}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}\bigr)
-                + \alpha\,\mathbf{h}(t-1)\Bigr],
+                - \Delta t\,\hat{\sigma}(\mathbf{w}_{ch}) \circ
+                \Bigl[
+                    \sigma\bigl(
+                        \mathbf{W}_{hh}\,\mathbf{h}(t-1)
+                        + \mathbf{W}_{ih}\,\mathbf{x}(t)
+                        + \mathbf{b}_{ih}
+                    \bigr)
+                    + \alpha\,\mathbf{h}(t-1)
+                \Bigr],
         \end{aligned}
 
-    where :math:`\Delta t` is the time step `dt`, and :math:`\alpha` is the
-    leakage constant.
+    where :math:`\Delta t` is the time step ``dt``, and :math:`\alpha`
+    is the leakage constant.
 
     Args:
-        input_size (int): Number of features in the input :math:`\mathbf{x}(t)`.
-        hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        kernel_init (Callable, optional): Initializer for input-to-hidden weights
-            :math:`\mathbf{W}_{ih}` (default: ``nn.init.xavier_uniform_``).
-        recurrent_kernel_init (Callable, optional): Initializer for hidden-to-hidden
-            weights :math:`\mathbf{W}_{hh}` (default: ``nn.init.xavier_uniform_``).
-        control_kernel_init (Callable, optional): Initializer for control weights
-            :math:`\mathbf{w}_{ch}` (default: ``nn.init.normal_``).
-        bias_init (Callable, optional): Initializer for input bias
-            :math:`\mathbf{b}_{ih}` (default: ``nn.init.zeros_``).
-        recurrent_bias_init (Callable, optional): Initializer for hidden bias
-            :math:`\mathbf{b}_{hh}` (default: ``nn.init.zeros_``).
-        dt (float, optional): Time step :math:`\Delta t` between updates (default: 1.0).
-        alpha (float, optional): Leakage coefficient in control update (default: 0.0).
-        device (torch.device, optional): Device for parameters.
-        dtype (torch.dtype, optional): Data type for parameters.
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden state ``h``.
+        bias: If ``False``, the layer does not use the input bias
+            ``b_{ih}``. Default: ``True``.
+        recurrent_bias: If ``False``, the layer does not use the hidden
+            bias ``b_{hh}``. Default: ``True``.
+        kernel_init: Initializer for ``W_{ih}``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        recurrent_kernel_init: Initializer for ``W_{hh}``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        control_kernel_init: Initializer for ``w_{ch}``.
+            Default: :func:`torch.nn.init.normal_`.
+        bias_init: Initializer for ``b_{ih}``.
+            Default: :func:`torch.nn.init.zeros_`.
+        recurrent_bias_init: Initializer for ``b_{hh}``.
+            Default: :func:`torch.nn.init.zeros_`.
+        dt: Time step :math:`\Delta t` between updates. Default: ``1.0``.
+        alpha: Leakage coefficient in the control update. Default: ``0.0``.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs:
-        - **inp** (Tensor): Input at current time step,
-            shape :math:`(N, input\_size)` or :math:`(input\_size)`.
-        - **state** (Tuple[Tensor, Tensor], optional): Previous states
-            (:math:`\mathbf{h}(t-1)`, :math:`\mathbf{z}(t-1)`), each of shape
-            :math:`(N, hidden\_size)` or :math:`(hidden\_size)`. Defaults to zero.
+    Inputs: input, (h, z)
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **h** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Previous hidden state.
+        - **z** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Previous control state.
 
-    Outputs:
-        - **new_state** (Tensor): Updated hidden state :math:`\mathbf{h}(t)`,
-            shape :math:`(N, hidden\_size)` or :math:`(hidden\_size)`.
-        - **new_cstate** (Tensor): Updated control state :math:`\mathbf{z}(t)`,
-            shape :math:`(N, hidden\_size)` or :math:`(hidden\_size)`.
+        If **(h, z)** is not provided, both default to zeros.
 
-    Attributes:
-        weight_ih (Tensor): Input-to-hidden weights :math:`\mathbf{W}_{ih}`,
-            shape `(hidden_size, input_size)`.
-        weight_hh (Tensor): Hidden-to-hidden weights :math:`\mathbf{W}_{hh}`,
-            shape `(hidden_size, hidden_size)`.
-        weight_ch (Tensor): Control weights :math:`\mathbf{w}_{ch}`,
-            shape `(hidden_size,)`.
-        bias_ih (Tensor): Input bias :math:`\mathbf{b}_{ih}`,
-            shape `(hidden_size,)`.
-        bias_hh (Tensor): Hidden bias :math:`\mathbf{b}_{hh}`,
-            shape `(hidden_size,)`.
+    Outputs: (h_1, z_1)
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Next hidden state.
+        - **z_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Next control state.
+
+    Variables:
+        weight_ih: The learnable input–hidden weights,
+            of shape ``(hidden_size, input_size)``.
+        weight_hh: The learnable hidden–hidden weights,
+            of shape ``(hidden_size, hidden_size)``.
+        weight_ch: The learnable control weights,
+            of shape ``(hidden_size,)``.
+        bias_ih: The learnable input bias,
+            of shape ``(hidden_size,)``.
+        bias_hh: The learnable hidden bias,
+            of shape ``(hidden_size,)``.
 
     Examples::
-        >>> cell = UnICORNNCell(input_size=10, hidden_size=20)
-        >>> seq = torch.randn(5, 3, 10)     # seq length 5, batch size 3
-        >>> h = torch.zeros(3, 20)          # initial hidden state
-        >>> z = torch.zeros(3, 20)          # initial control state
-        >>> outputs = []
-        >>> for t in range(5):
-        ...     h, z = cell(seq[t], (h, z))
-        ...     outputs.append((h, z))
+
+        >>> cell = UnICORNNCell(10, 20, dt=0.5, alpha=0.1)
+        >>> x = torch.randn(5, 3, 10)      # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)         # (batch, hidden_size)
+        >>> z = torch.zeros(3, 20)         # (batch, hidden_size)
+        >>> outs_h, outs_z = [], []
+        >>> for t in range(x.size(0)):
+        ...     h, z = cell(x[t], (h, z))
+        ...     outs_h.append(h)
+        ...     outs_z.append(z)
+        >>> outs_h = torch.stack(outs_h, dim=0)
+        >>> outs_z = torch.stack(outs_z, dim=0)
     """
 
     __constants__ = [
@@ -122,6 +135,7 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
     weight_ch: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
+    alpha: float
 
     def __init__(
         self,
@@ -140,7 +154,7 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(UnICORNNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
