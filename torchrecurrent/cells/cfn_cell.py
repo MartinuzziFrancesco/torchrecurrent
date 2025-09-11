@@ -140,7 +140,7 @@ class CFN(BaseSingleRecurrentLayer):
 class CFNCell(BaseSingleRecurrentCell):
     r"""A Chaos Free Network (CFN) cell.
 
-    [`arXiv <https://arxiv.org/abs/1612.06212`_]
+    [`arXiv <https://arxiv.org/abs/1612.06212>`_]
 
     .. math::
 

@@ -1,0 +1,87 @@
+﻿torchrecurrent.MUT3
+===================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MUT3
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MUT3.__init__
+      ~MUT3.add_module
+      ~MUT3.apply
+      ~MUT3.bfloat16
+      ~MUT3.buffers
+      ~MUT3.children
+      ~MUT3.compile
+      ~MUT3.cpu
+      ~MUT3.cuda
+      ~MUT3.double
+      ~MUT3.eval
+      ~MUT3.extra_repr
+      ~MUT3.float
+      ~MUT3.forward
+      ~MUT3.get_buffer
+      ~MUT3.get_extra_state
+      ~MUT3.get_parameter
+      ~MUT3.get_submodule
+      ~MUT3.half
+      ~MUT3.initialize_cells
+      ~MUT3.ipu
+      ~MUT3.load_state_dict
+      ~MUT3.modules
+      ~MUT3.mtia
+      ~MUT3.named_buffers
+      ~MUT3.named_children
+      ~MUT3.named_modules
+      ~MUT3.named_parameters
+      ~MUT3.parameters
+      ~MUT3.register_backward_hook
+      ~MUT3.register_buffer
+      ~MUT3.register_forward_hook
+      ~MUT3.register_forward_pre_hook
+      ~MUT3.register_full_backward_hook
+      ~MUT3.register_full_backward_pre_hook
+      ~MUT3.register_load_state_dict_post_hook
+      ~MUT3.register_load_state_dict_pre_hook
+      ~MUT3.register_module
+      ~MUT3.register_parameter
+      ~MUT3.register_state_dict_post_hook
+      ~MUT3.register_state_dict_pre_hook
+      ~MUT3.requires_grad_
+      ~MUT3.set_extra_state
+      ~MUT3.set_submodule
+      ~MUT3.share_memory
+      ~MUT3.state_dict
+      ~MUT3.to
+      ~MUT3.to_empty
+      ~MUT3.train
+      ~MUT3.type
+      ~MUT3.xpu
+      ~MUT3.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MUT3.T_destination
+      ~MUT3.call_super_init
+      ~MUT3.dump_patches
+      ~MUT3.input_size
+      ~MUT3.hidden_size
+      ~MUT3.bias
+      ~MUT3.dropout
+      ~MUT3.batch_first
+      ~MUT3.training
+   
+   

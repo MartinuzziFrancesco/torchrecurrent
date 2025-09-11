@@ -1,0 +1,87 @@
+﻿torchrecurrent.BR
+=================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: BR
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~BR.__init__
+      ~BR.add_module
+      ~BR.apply
+      ~BR.bfloat16
+      ~BR.buffers
+      ~BR.children
+      ~BR.compile
+      ~BR.cpu
+      ~BR.cuda
+      ~BR.double
+      ~BR.eval
+      ~BR.extra_repr
+      ~BR.float
+      ~BR.forward
+      ~BR.get_buffer
+      ~BR.get_extra_state
+      ~BR.get_parameter
+      ~BR.get_submodule
+      ~BR.half
+      ~BR.initialize_cells
+      ~BR.ipu
+      ~BR.load_state_dict
+      ~BR.modules
+      ~BR.mtia
+      ~BR.named_buffers
+      ~BR.named_children
+      ~BR.named_modules
+      ~BR.named_parameters
+      ~BR.parameters
+      ~BR.register_backward_hook
+      ~BR.register_buffer
+      ~BR.register_forward_hook
+      ~BR.register_forward_pre_hook
+      ~BR.register_full_backward_hook
+      ~BR.register_full_backward_pre_hook
+      ~BR.register_load_state_dict_post_hook
+      ~BR.register_load_state_dict_pre_hook
+      ~BR.register_module
+      ~BR.register_parameter
+      ~BR.register_state_dict_post_hook
+      ~BR.register_state_dict_pre_hook
+      ~BR.requires_grad_
+      ~BR.set_extra_state
+      ~BR.set_submodule
+      ~BR.share_memory
+      ~BR.state_dict
+      ~BR.to
+      ~BR.to_empty
+      ~BR.train
+      ~BR.type
+      ~BR.xpu
+      ~BR.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~BR.T_destination
+      ~BR.call_super_init
+      ~BR.dump_patches
+      ~BR.input_size
+      ~BR.hidden_size
+      ~BR.bias
+      ~BR.dropout
+      ~BR.batch_first
+      ~BR.training
+   
+   
