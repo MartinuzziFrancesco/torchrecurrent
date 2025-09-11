@@ -1,5 +1,9 @@
+<p align="center">
+    <img width="400px" src="./docs/source/_static/logo.png"/>
+</p>
+
 <div align="center">
-    <h2>torchrecurrent</h2>
+    <h2>TorchRecurrent</h2>
 </div>
 
 <div align="center">

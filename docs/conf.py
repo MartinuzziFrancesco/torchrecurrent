@@ -13,6 +13,8 @@ html_title = "torchrecurrent"
 copyright = "2025, Francesco Martinuzzi"
 author = "Francesco Martinuzzi"
 release = "0.1.3"
+html_logo = "_static/logo.png"
+html_favicon = "_static/favicon.ico"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -48,10 +50,10 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
-    # "logo": {
-    #    "image_light": "your_logo_light.png",
-    #    "image_dark": "your_logo_dark.png",
-    # },
+    "logo": {
+        "image_light": "_static/logo.png",
+        "image_dark": "_static/logo.png",
+    },
     "use_edit_page_button": True,
     "show_nav_level": 2,
 }
