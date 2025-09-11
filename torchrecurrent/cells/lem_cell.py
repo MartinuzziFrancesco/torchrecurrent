@@ -6,6 +6,148 @@ from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
 class LEM(BaseDoubleRecurrentLayer):
+    r"""Multi-layer long expressive memory recurrent neural network.
+
+    [`arXiv <https://arxiv.org/abs/2110.04744>`_]
+
+    Each layer consists of a :class:`LEMCell`, which updates the hidden and
+    cell states according to:
+
+    .. math::
+        \begin{aligned}
+        \Delta t_t &= \Delta t \,\hat{\sigma}\bigl(
+            W_{ih}^{1} x_t + b_{ih}^{1}
+            + W_{hh}^{1} h_{t-1} + b_{hh}^{1}
+        \bigr), \\
+        \overline{\Delta t}_t &= \Delta t \,\hat{\sigma}\bigl(
+            W_{ih}^{2} x_t + b_{ih}^{2}
+            + W_{hh}^{2} h_{t-1} + b_{hh}^{2}
+        \bigr), \\
+        c_t &= (1 - \Delta t_t) \circ c_{t-1}
+            + \Delta t_t \circ \sigma\bigl(
+                W_{ih}^{c} x_t + b_{ih}^{c}
+                + W_{hh}^{c} h_{t-1} + b_{hh}^{c}
+            \bigr), \\
+        h_t &= (1 - \overline{\Delta t}_t) \circ h_{t-1}
+            + \overline{\Delta t}_t \circ \sigma\bigl(
+                W_{ih}^{h} x_t + b_{ih}^{h}
+                + W_{ch} c_t + b_{ch}
+            \bigr)
+        \end{aligned}
+
+    where :math:`h_t` is the hidden state at time `t`, :math:`c_t` is the cell
+    state at time `t`, :math:`\hat{\sigma}` is the sigmoid function scaled to
+    :math:`(0, \Delta t)`, and :math:`\circ` denotes elementwise
+    multiplication.
+
+    In a multilayer LEM, the input :math:`x^{(l)}_t` of the :math:`l`-th layer
+    (:math:`l \ge 2`) is the hidden state :math:`h^{(l-1)}_t` of the previous
+    layer multiplied by dropout :math:`\delta^{(l-1)}_t`, where each
+    :math:`\delta^{(l-1)}_t` is a Bernoulli random variable which is 0 with
+    probability :attr:`dropout`.
+
+    Args:
+        input_size: The number of expected features in the input `x`.
+        hidden_size: The number of features in the hidden/cell states `h` and `c`.
+        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2`` would
+            mean stacking two LEM layers, with the second receiving the outputs of
+            the first. Default: 1
+        dropout: If non-zero, introduces a `Dropout` layer on the outputs of each
+            layer except the last layer, with dropout probability equal to
+            :attr:`dropout`. Default: 0
+        batch_first: If ``True``, then the input and output tensors are provided as
+            `(batch, seq, feature)` instead of `(seq, batch, feature)`. Default: False
+        bias: If ``False``, then the layer does not use input-side bias `b_ih`.
+            Default: True
+        recurrent_bias: If ``False``, then the layer does not use recurrent bias
+            `b_hh`. Default: True
+        cell_bias: If ``False``, then the layer does not use cell bias `b_ch`.
+            Default: True
+        kernel_init: Initializer for `W_{ih}`.
+        recurrent_kernel_init: Initializer for `W_{hh}`.
+        cell_kernel_init: Initializer for `W_{ch}`.
+        bias_init: Initializer for `b_{ih}`.
+        recurrent_bias_init: Initializer for `b_{hh}`.
+        cell_bias_init: Initializer for `b_{ch}`.
+        dt: Integration time step :math:`\Delta t`. Default: 1.0
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
+
+    Inputs: input, (h_0, c_0)
+        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+          :math:`(L, N, H_{in})` when ``batch_first=False`` or
+          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
+          the input sequence. The input can also be a packed variable length
+          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
+          :func:`torch.nn.utils.rnn.pack_sequence` for details.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          hidden state for each element in the input sequence. Defaults to zeros if
+          not provided.
+        - **c_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          cell state for each element in the input sequence. Defaults to zeros if not
+          provided.
+
+        where:
+
+        .. math::
+            \begin{aligned}
+                N ={} & \text{batch size} \\
+                L ={} & \text{sequence length} \\
+                H_{in} ={} & \text{input\_size} \\
+                H_{out} ={} & \text{hidden\_size}
+            \end{aligned}
+
+    Outputs: output, (h_n, c_n)
+        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+          :math:`(L, N, H_{out})` when ``batch_first=False`` or
+          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
+          features `(h_t)` from the last layer of the LEM, for each `t`. If a
+          :class:`torch.nn.utils.rnn.PackedSequence` has been given as the input,
+          the output will also be a packed sequence.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          hidden state for each element in the sequence.
+        - **c_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the final cell
+          state for each element in the sequence.
+
+    Attributes:
+        cells.{k}.weight_ih : the learnable input-hidden weights of the :math:`k`-th
+            layer, of shape `(4*hidden_size, input_size)` for `k = 0`. Otherwise, the
+            shape is `(4*hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : the learnable hidden-hidden weights of the :math:`k`-th
+            layer, of shape `(3*hidden_size, hidden_size)`.
+        cells.{k}.weight_ch : the learnable cell-hidden weights of the :math:`k`-th
+            layer, of shape `(hidden_size, hidden_size)`.
+        cells.{k}.bias_ih : the learnable input-hidden biases of the :math:`k`-th
+            layer, of shape `(4*hidden_size)`. Only present when ``bias=True``.
+        cells.{k}.bias_hh : the learnable hidden-hidden biases of the :math:`k`-th
+            layer, of shape `(3*hidden_size)`. Only present when ``recurrent_bias=True``.
+        cells.{k}.bias_ch : the learnable cell-hidden biases of the :math:`k`-th
+            layer, of shape `(hidden_size)`. Only present when ``cell_bias=True``.
+
+    .. note::
+        All the weights and biases are initialized according to the provided
+        initializers (`kernel_init`, `recurrent_kernel_init`, etc.). The
+        integration step :math:`\Delta t` is scaled by the given parameter `dt`.
+
+    .. note::
+        ``batch_first`` argument is ignored for unbatched inputs.
+
+    .. seealso::
+        :class:`LEMCell`
+
+    Examples::
+
+        >>> rnn = LEM(16, 32, num_layers=2, dropout=0.1, dt=0.5)
+        >>> input = torch.randn(5, 3, 16)   # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 32)      # (num_layers, batch, hidden_size)
+        >>> c0 = torch.zeros(2, 3, 32)      # (num_layers, batch, hidden_size)
+        >>> output, (hn, cn) = rnn(input, (h0, c0))
+    """
+
     def __init__(
         self,
         input_size: int,
@@ -22,87 +164,93 @@ class LEM(BaseDoubleRecurrentLayer):
 class LEMCell(BaseDoubleRecurrentCell):
     r"""A Long Expressive Memory (LEM) recurrent cell.
 
-    Implements the LEM update rule from
-    “Long expressive memory unit” <https://arxiv.org/pdf/2110.04744>_.
+    [`arXiv <https://arxiv.org/pdf/2110.04744>`_]
 
     .. math::
 
         \begin{aligned}
-            \boldsymbol{\Delta t}(t) &= \Delta t \,\hat{\sigma}\bigl(
+        \boldsymbol{\Delta t}(t) &= \Delta t \,\hat{\sigma}\bigl(
             \mathbf{W}_{ih}^{1}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{1}
             + \mathbf{W}_{hh}^{1}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{1}
-            \bigr), \\
-            \overline{\boldsymbol{\Delta t}}(t) &= \Delta t \,\hat{\sigma}\bigl(
+        \bigr), \\
+        \overline{\boldsymbol{\Delta t}}(t) &= \Delta t \,\hat{\sigma}\bigl(
             \mathbf{W}_{ih}^{2}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{2}
             + \mathbf{W}_{hh}^{2}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{2}
-            \bigr), \\
-            \mathbf{c}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{c}(t-1)
+        \bigr), \\
+        \mathbf{c}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{c}(t-1)
             + \boldsymbol{\Delta t}(t)\circ\sigma\bigl(
                 \mathbf{W}_{ih}^{c}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{c}
                 + \mathbf{W}_{hh}^{c}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{c}
             \bigr), \\
-            \mathbf{h}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{h}(t-1)
+        \mathbf{h}(t) &= \bigl(1 - \boldsymbol{\Delta t}(t)\bigr)\circ\mathbf{h}(t-1)
             + \boldsymbol{\Delta t}(t)\circ\sigma\bigl(
                 \mathbf{W}_{ih}^{h}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{h}
                 + \mathbf{W}_{ch}\,\mathbf{c}(t) + \mathbf{b}_{ch}
             \bigr)
         \end{aligned}
 
-    where :math:`\hat{\sigma}` is the sigmoid function and :math:`\circ`
-    denotes element-wise multiplication.
+    where :math:`\hat{\sigma}` is the sigmoid function and
+    :math:`\circ` denotes element-wise multiplication.
 
     Args:
-        input_size (int):  Number of expected features in the input tensor.
-        hidden_size (int): Number of features in the hidden and cell states.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden/cell states ``h`` and ``c``.
+        bias: If ``False``, the layer does not use input-side bias ``b_{ih}``.
             Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+        recurrent_bias: If ``False``, the layer does not use recurrent bias
+            ``b_{hh}``. Default: ``True``.
+        cell_bias: If ``False``, the layer does not use cell bias ``b_{ch}``.
             Default: ``True``.
-        cell_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ch}`.
-            Default: ``True``.
-        kernel_init (Callable):
-                            Initializer for the input-to-hidden weight matrix.
-        recurrent_kernel_init (Callable):
-                            Initializer for the hidden-to-hidden weight matrix.
-        cell_kernel_init (Callable):
-                            Initializer for the cell-to-hidden weight matrix.
-        bias_init (Callable):
-                            Initializer for input biases.
-        recurrent_bias_init (Callable):
-                            Initializer for hidden biases.
-        cell_bias_init (Callable):
-                            Initializer for cell biases.
-        dt (float):        Integration time step Δt. Default: 1.0.
-        device (torch.device, optional): Device on which to place parameters.
-        dtype (torch.dtype, optional):   Data type for parameters.
+        kernel_init: Initializer for ``W_{ih}``.
+        recurrent_kernel_init: Initializer for ``W_{hh}``.
+        cell_kernel_init: Initializer for ``W_{ch}``.
+        bias_init: Initializer for ``b_{ih}``.
+        recurrent_bias_init: Initializer for ``b_{hh}``.
+        cell_bias_init: Initializer for ``b_{ch}``.
+        dt: Integration time step :math:`\Delta t`. Default: ``1.0``.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs:
-        - **inp** (Tensor): shape `(batch, input_size)` or `(input_size,)`.
-        - **state** (Tensor or Tuple[Tensor, Tensor], optional):
-            Previous `(h, c)` states each of shape `(batch, hidden_size)` or
-            `(hidden_size,)`. Defaults to zeros if not provided.
+    Inputs: input, (h_0, c_0)
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the initial hidden state.
+        - **c_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the initial cell state.
 
-    Outputs:
-        - **new_state** (Tensor): Updated hidden state, same shape as `h`.
-        - **new_cstate** (Tensor): Updated cell state, same shape as `c`.
+        If ``(h_0, c_0)`` is not provided, both default to zeros.
 
-    Attributes:
-        weight_ih (Tensor): Input-to-hidden weight matrix, shape
-                                `(4*hidden_size, input_size)`.
-        weight_hh (Tensor): Hidden-to-hidden weight matrix, shape
-                                `(3*hidden_size, hidden_size)`.
-        weight_ch (Tensor): Cell-to-hidden weight matrix, shape
-                                `(hidden_size, hidden_size)`.
-        bias_ih   (Tensor): Input bias, shape `(4*hidden_size,)`.
-        bias_hh   (Tensor): Hidden bias, shape `(3*hidden_size,)`.
-        bias_ch   (Tensor): Cell bias,   shape `(hidden_size,)`.
+    Outputs: (h_1, c_1)
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next hidden state.
+        - **c_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next cell state.
+
+    Variables:
+        weight_ih: The learnable input–hidden weights,
+            of shape ``(4*hidden_size, input_size)``.
+        weight_hh: The learnable hidden–hidden weights,
+            of shape ``(3*hidden_size, hidden_size)``.
+        weight_ch: The learnable cell–hidden weights,
+            of shape ``(hidden_size, hidden_size)``.
+        bias_ih: The learnable input–hidden bias,
+            of shape ``(4*hidden_size)``.
+        bias_hh: The learnable hidden–hidden bias,
+            of shape ``(3*hidden_size)``.
+        bias_ch: The learnable cell–hidden bias,
+            of shape ``(hidden_size)``.
 
     Examples::
+
         >>> cell = LEMCell(16, 32, dt=0.5)
-        >>> x = torch.randn(8, 16)      # batch=8, input_size=16
-        >>> h0 = torch.zeros(8, 32)
-        >>> c0 = torch.zeros(8, 32)
-        >>> h1, c1 = cell(x, (h0, c0))
+        >>> x = torch.randn(5, 3, 16)      # (time_steps, batch, input_size)
+        >>> h, c = torch.zeros(3, 32), torch.zeros(3, 32)
+        >>> out_h = []
+        >>> for t in range(x.size(0)):
+        ...     h, c = cell(x[t], (h, c))
+        ...     out_h.append(h)
+        >>> out_h = torch.stack(out_h, dim=0)  # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -115,7 +263,8 @@ class LEMCell(BaseDoubleRecurrentCell):
         "recurrent_kernel_init",
         "cell_kernel_init",
         "bias_init",
-        "recurrent_bias_init" "cell_bias_init",
+        "recurrent_bias_init",
+        "cell_bias_init",
         "dt",
     ]
 
@@ -144,7 +293,7 @@ class LEMCell(BaseDoubleRecurrentCell):
         dtype: Optional[torch.dtype] = None,
     ):
         super(LEMCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+            input_size, hidden_size, bias, recurrent_bias, dt=dt, device=device, dtype=dtype
         )
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -172,7 +321,7 @@ class LEMCell(BaseDoubleRecurrentCell):
                 self.kernel_init(param)
             elif "weight_hh" in name:
                 self.recurrent_kernel_init(param)
-            elif "weight_ph" in name:
+            elif "weight_ch" in name:
                 self.cell_kernel_init(param)
             elif "bias_ih" in name:
                 self.bias_init(param)

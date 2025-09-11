@@ -6,6 +6,121 @@ from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 
 class BR(BaseSingleRecurrentLayer):
+    r"""Multi-layer bistable recurrent neural network.
+
+    [`DOI <https://doi.org/10.1371/journal.pone.0252676>`_]
+
+    Each layer consists of a :class:`BRCell`, which updates the hidden state
+    according to:
+
+    .. math::
+        \begin{aligned}
+            \mathbf{a}_t &= 1 + \tanh\Bigl(\mathbf{W}_{ih}^a x_t + \mathbf{b}_{ih}^a
+                + \mathbf{w}_{hh}^a \circ h_{t-1} + \mathbf{b}_{hh}^a\Bigr), \\
+            \mathbf{c}_t &= \sigma\Bigl(\mathbf{W}_{ih}^c x_t + \mathbf{b}_{ih}^c
+                + \mathbf{w}_{hh}^c \circ h_{t-1} + \mathbf{b}_{hh}^c\Bigr), \\
+            h_t &= \mathbf{c}_t \circ h_{t-1} + (1 - \mathbf{c}_t) \circ \tanh\Bigl(
+                \mathbf{W}_{ih}^h x_t + \mathbf{b}_{ih}^h + \mathbf{a}_t \circ h_{t-1}
+            \Bigr).
+        \end{aligned}
+
+    where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the input at
+    time `t`, :math:`\sigma` is the logistic sigmoid, and :math:`\circ` denotes
+    elementwise multiplication. The gating dynamics make the model bistable.
+
+    In a multilayer BR, the input :math:`x^{(l)}_t` of the :math:`l`-th layer
+    (:math:`l \ge 2`) is the hidden state :math:`h^{(l-1)}_t` of the previous
+    layer multiplied by dropout :math:`\delta^{(l-1)}_t`, where each
+    :math:`\delta^{(l-1)}_t` is a Bernoulli random variable which is 0 with
+    probability :attr:`dropout`.
+
+    Args:
+        input_size: The number of expected features in the input `x`.
+        hidden_size: The number of features in the hidden state `h`.
+        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2`` would
+            mean stacking two BR layers, with the second receiving the outputs of the
+            first. Default: 1
+        dropout: If non-zero, introduces a `Dropout` layer on the outputs of each
+            layer except the last layer, with dropout probability equal to
+            :attr:`dropout`. Default: 0
+        batch_first: If ``True``, then the input and output tensors are provided as
+            `(batch, seq, feature)` instead of `(seq, batch, feature)`. Default: False
+        bias: If ``False``, then the layer does not use input-side biases. Default: True
+        recurrent_bias: If ``False``, then the layer does not use recurrent biases.
+            Default: True
+        kernel_init: Initializer for input–hidden weights. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for recurrent vectors. Default:
+            :func:`torch.nn.init.normal_`
+        bias_init: Initializer for input-side biases. Default:
+            :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for recurrent biases. Default:
+            :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
+
+    Inputs: input, h_0
+        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+          :math:`(L, N, H_{in})` when ``batch_first=False`` or
+          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
+          the input sequence. The input can also be a packed variable length
+          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
+          :func:`torch.nn.utils.rnn.pack_sequence` for details.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          hidden state for each element in the input sequence. Defaults to zeros if
+          not provided.
+
+        where:
+
+        .. math::
+            \begin{aligned}
+                N ={} & \text{batch size} \\
+                L ={} & \text{sequence length} \\
+                H_{in} ={} & \text{input\_size} \\
+                H_{out} ={} & \text{hidden\_size}
+            \end{aligned}
+
+    Outputs: output, h_n
+        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+          :math:`(L, N, H_{out})` when ``batch_first=False`` or
+          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
+          features `(h_t)` from the last layer of the BR, for each `t`. If a
+          :class:`torch.nn.utils.rnn.PackedSequence` has been given as the input,
+          the output will also be a packed sequence.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          hidden state for each element in the sequence.
+
+    Attributes:
+        cells.{k}.weight_ih : the learnable input-hidden weights of the :math:`k`-th
+            layer, of shape `(3*hidden_size, input_size)` for `k = 0`. Otherwise, the
+            shape is `(3*hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : the learnable hidden recurrence vectors of the
+            :math:`k`-th layer, of shape `(2*hidden_size,)`.
+        cells.{k}.bias_ih : the learnable input-hidden biases of the :math:`k`-th
+            layer, of shape `(3*hidden_size)`. Only present when ``bias=True``.
+        cells.{k}.bias_hh : the learnable recurrent biases of the :math:`k`-th layer,
+            of shape `(2*hidden_size)`. Only present when ``recurrent_bias=True``.
+
+    .. note::
+        All the weights and biases are initialized according to the provided
+        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
+
+    .. note::
+        ``batch_first`` argument is ignored for unbatched inputs.
+
+    .. seealso::
+        :class:`BRCell`
+
+    Examples::
+
+        >>> rnn = BR(10, 20, num_layers=2, dropout=0.1)
+        >>> input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)
+        >>> output, hn = rnn(input, h0)
+    """
+
     def __init__(
         self,
         input_size: int,
@@ -22,20 +137,18 @@ class BR(BaseSingleRecurrentLayer):
 class BRCell(BaseSingleRecurrentCell):
     r"""A Bistable recurrent cell.
 
-    This cell uses two element-wise recurrence vectors and a three-way
-    split of its input projection to compute an additive modulation gate
-    and a carry gate that together produce the next hidden state:
+    [`pub <https://doi.org/10.1371/journal.pone.0252676>`_]
 
     .. math::
 
         \mathbf{a}(t) &= 1 + \tanh\Bigl(\mathbf{W}_{ih}^{a}\,\mathbf{x}(t)
             + \mathbf{b}_{ih}^{a}
             + \mathbf{w}_{hh}^{a} \,\circ\, \mathbf{h}(t-1)
-            + \mathbf{b}_{hh}^{a}\Bigr), \\[6pt]
+            + \mathbf{b}_{hh}^{a}\Bigr), \\
         \mathbf{c}(t) &= \sigma\Bigl(\mathbf{W}_{ih}^{c}\,\mathbf{x}(t)
             + \mathbf{b}_{ih}^{c}
             + \mathbf{w}_{hh}^{c} \,\circ\, \mathbf{h}(t-1)
-            + \mathbf{b}_{hh}^{c}\Bigr), \\[6pt]
+            + \mathbf{b}_{hh}^{c}\Bigr), \\
         \mathbf{h}(t) &= \mathbf{c}(t)\,\circ\,\mathbf{h}(t-1)
             \;+\;\bigl(1 - \mathbf{c}(t)\bigr)\,\circ\,
             \tanh\Bigl(\mathbf{W}_{ih}^{h}\,\mathbf{x}(t)
@@ -43,60 +156,55 @@ class BRCell(BaseSingleRecurrentCell):
             + \mathbf{a}(t)\,\circ\,\mathbf{h}(t-1)\Bigr).
 
     Args:
-        input_size (int): Size of each input vector :math:`\mathbf{x}(t)`.
-        hidden_size (int): Size of the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
+        input_size: The number of expected features in the input ``x``.
+        hidden_size: The number of features in the hidden state ``h``.
+        bias: If ``False``, the layer does not use input-side biases.
             Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
+        recurrent_bias: If ``False``, the layer does not use recurrent biases.
             Default: ``True``.
-        kernel_init (Callable, optional): Initializer for all
-            input-to-hidden weights :math:`\mathbf{W}_{ih}^*`.
-            Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional): Initializer for all
-            hidden-to-hidden vectors :math:`\mathbf{w}_{hh}^*`.
-            Default: ``nn.init.normal_``.
-        bias_init (Callable, optional): Initializer for all
-            input biases :math:`\mathbf{b}_{ih}^*` when `bias=True`.
-            Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for all
-            hidden biases :math:`\mathbf{b}_{hh}^*` when `bias=True`.
-            Default: ``nn.init.zeros_``.
-        device (torch.device, optional): Device of the parameters.
-            Default: CPU.
-        dtype (torch.dtype, optional): Data type of the parameters.
-            Default: PyTorch default float.
+        kernel_init: Initializer for input–hidden weights ``W_ih^*``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        recurrent_kernel_init: Initializer for hidden recurrence vectors
+            ``w_{hh}^*``. Default: :func:`torch.nn.init.normal_`.
+        bias_init: Initializer for input-side biases ``b_{ih}^*`` when
+            ``bias=True``. Default: :func:`torch.nn.init.zeros_`.
+        recurrent_bias_init: Initializer for hidden biases ``b_{hh}^*`` when
+            ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`.
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs: input, hidden
-        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
-        - **hidden** (Tensor, optional): previous hidden state of shape
-            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
-            Defaults to zero if not provided.
+    Inputs: input, h_0
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          Tensor containing input features.
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the initial hidden state.
 
-    Outputs: h’
-        - **h’** (Tensor): next hidden state, same shape as **hidden**.
+        If **h_0** is not provided, it defaults to zero.
 
-    Shape:
-        - input: :math:`(N, H_{\text{in}})` or :math:`(H_{\text{in}})`.
-        - hidden: :math:`(N, H_{\text{out}})` or :math:`(H_{\text{out}})`.
-        - output: :math:`(N, H_{\text{out}})` or :math:`(H_{\text{out}})`.
+    Outputs: h_1
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          Tensor containing the next hidden state.
 
-    Attributes:
-        weight_ih (Tensor): input-to-hidden weights, shape
-            `(3 * hidden_size, input_size)`, split into “a”, “c”, and “h” components.
-        weight_hh (Tensor): hidden recurrence vectors, shape
-            `(2 * hidden_size,)`, split into “a” and “c” components.
-        bias_ih (Tensor): input biases, shape
-            `(3 * hidden_size,)` when `bias=True`.
-        bias_hh (Tensor): hidden biases, shape
-            `(2 * hidden_size,)` when `bias=True`.
+    Variables:
+        weight_ih: The learnable input–hidden weights, of shape
+            ``(3*hidden_size, input_size)`` (split into a/c/h parts).
+        weight_hh: The learnable hidden recurrence vectors, of shape
+            ``(2*hidden_size,)`` (split into a/c parts).
+        bias_ih: The learnable input–hidden biases,
+            of shape ``(3*hidden_size)``.
+        bias_hh: The learnable hidden biases,
+            of shape ``(2*hidden_size)``.
 
     Examples::
+
         >>> cell = BRCell(10, 20)
-        >>> x = torch.randn(5, 10)
-        >>> h0 = torch.zeros(20)
-        >>> hx = h0
+        >>> x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)        # (batch, hidden_size)
+        >>> out = []
         >>> for t in range(x.size(0)):
-        ...     hx = cell(x[t], hx)
+        ...     h = cell(x[t], h)
+        ...     out.append(h)
+        >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [
@@ -173,6 +281,123 @@ class BRCell(BaseSingleRecurrentCell):
 
 
 class NBR(BaseSingleRecurrentLayer):
+    r"""Multi-layer neuromodulated bistable recurrent neural network.
+
+    [`DOI <https://doi.org/10.1371/journal.pone.0252676>`_]
+
+    Each layer consists of an :class:`NBRCell`, which updates the hidden state
+    according to:
+
+    .. math::
+        \begin{aligned}
+            \mathbf{a}_t &= 1 + \tanh(\mathbf{W}_{ih}^a x_t + \mathbf{b}_{ih}^a
+                + \mathbf{W}_{hh}^a \circ h_{t-1} + \mathbf{b}_{hh}^a), \\
+            \mathbf{c}_t &= \sigma(\mathbf{W}_{ih}^c x_t + \mathbf{b}_{ih}^c
+                + \mathbf{W}_{hh}^c \circ h_{t-1} + \mathbf{b}_{hh}^c), \\
+            h_t &= \mathbf{c}_t \circ h_{t-1} + (1 - \mathbf{c}_t) \circ \tanh(
+                \mathbf{W}_{ih}^h x_t + \mathbf{b}_{ih}^h + \mathbf{a}_t \circ h_{t-1}
+            ).
+        \end{aligned}
+
+    where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the input at
+    time `t`, :math:`\sigma` is the logistic sigmoid, and :math:`\circ` denotes
+    elementwise multiplication. The neuromodulatory term :math:`a_t` provides
+    additional stability and gating flexibility compared to the bistable recurrent
+    cell.
+
+    In a multilayer NBR, the input :math:`x^{(l)}_t` of the :math:`l`-th layer
+    (:math:`l \ge 2`) is the hidden state :math:`h^{(l-1)}_t` of the previous
+    layer multiplied by dropout :math:`\delta^{(l-1)}_t`, where each
+    :math:`\delta^{(l-1)}_t` is a Bernoulli random variable which is 0 with
+    probability :attr:`dropout`.
+
+    Args:
+        input_size: The number of expected features in the input `x`.
+        hidden_size: The number of features in the hidden state `h`.
+        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2`` would
+            mean stacking two NBR layers, with the second receiving the outputs of
+            the first. Default: 1
+        dropout: If non-zero, introduces a `Dropout` layer on the outputs of each
+            layer except the last layer, with dropout probability equal to
+            :attr:`dropout`. Default: 0
+        batch_first: If ``True``, then the input and output tensors are provided as
+            `(batch, seq, feature)` instead of `(seq, batch, feature)`. Default: False
+        bias: If ``False``, then the layer does not use input-side biases. Default: True
+        recurrent_bias: If ``False``, then the layer does not use recurrent biases.
+            Default: True
+        kernel_init: Initializer for input–hidden weights. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for hidden–hidden weights. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for input-side biases. Default:
+            :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for recurrent biases. Default:
+            :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
+
+    Inputs: input, h_0
+        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+          :math:`(L, N, H_{in})` when ``batch_first=False`` or
+          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
+          the input sequence. The input can also be a packed variable length
+          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
+          :func:`torch.nn.utils.rnn.pack_sequence` for details.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          hidden state for each element in the input sequence. Defaults to zeros if
+          not provided.
+
+        where:
+
+        .. math::
+            \begin{aligned}
+                N ={} & \text{batch size} \\
+                L ={} & \text{sequence length} \\
+                H_{in} ={} & \text{input\_size} \\
+                H_{out} ={} & \text{hidden\_size}
+            \end{aligned}
+
+    Outputs: output, h_n
+        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+          :math:`(L, N, H_{out})` when ``batch_first=False`` or
+          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
+          features `(h_t)` from the last layer of the NBR, for each `t`. If a
+          :class:`torch.nn.utils.rnn.PackedSequence` has been given as the input,
+          the output will also be a packed sequence.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          hidden state for each element in the sequence.
+
+    Attributes:
+        cells.{k}.weight_ih : the learnable input-hidden weights of the :math:`k`-th
+            layer, of shape `(3*hidden_size, input_size)` for `k = 0`. Otherwise, the
+            shape is `(3*hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : the learnable hidden–hidden weights of the :math:`k`-th
+            layer, of shape `(2*hidden_size, hidden_size)`.
+        cells.{k}.bias_ih : the learnable input-hidden biases of the :math:`k`-th
+            layer, of shape `(3*hidden_size)`. Only present when ``bias=True``.
+        cells.{k}.bias_hh : the learnable recurrent biases of the :math:`k`-th layer,
+            of shape `(2*hidden_size)`. Only present when ``recurrent_bias=True``.
+
+    .. note::
+        All the weights and biases are initialized according to the provided
+        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
+
+    .. note::
+        ``batch_first`` argument is ignored for unbatched inputs.
+
+    .. seealso::
+        :class:`NBRCell`
+
+    Examples::
+
+        >>> rnn = NBR(10, 20, num_layers=2, dropout=0.1)
+        >>> input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)
+        >>> output, hn = rnn(input, h0)
+    """
+
     def __init__(
         self,
         input_size: int,
@@ -187,11 +412,9 @@ class NBR(BaseSingleRecurrentLayer):
 
 
 class NBRCell(BaseSingleRecurrentCell):
-    r"""A Neuromodulated Bistable Recurrent (NBR) cell.
+    r"""A Neuromodulated Bistable Recurrent cell.
 
-    This cell computes three projections of its input and hidden state,
-    uses one to generate an additive modulation gate, one to compute a
-    carry gate, and a third to produce the final candidate, yielding:
+    [`pub <https://doi.org/10.1371/journal.pone.0252676>`_]
 
     .. math::
 
@@ -210,58 +433,55 @@ class NBRCell(BaseSingleRecurrentCell):
             + \mathbf{a}(t)\,\circ\,\mathbf{h}(t-1)\bigr).
 
     Args:
-        input_size (int):  Number of features in the input vector :math:`\mathbf{x}(t)`.
-        hidden_size (int): Number of features in the hidden state :math:`\mathbf{h}(t)`.
-        bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{ih}`.
-            Default: ``True``.
-        recurrent_bias (bool, optional): If ``False``, disables :math:`\mathbf{b}_{hh}`.
-            Default: ``True``.
-        kernel_init (Callable, optional): Initializer for all
-            input‐to‐hidden weights :math:`\mathbf{W}_{ih}^*`.
-            Default: ``nn.init.xavier_uniform_``.
-        recurrent_kernel_init (Callable, optional): Initializer for all
-            hidden‐to‐hidden weights :math:`\mathbf{W}_{hh}^*`.
-            Default: ``nn.init.xavier_uniform_``.
-        bias_init (Callable, optional): Initializer for all
-            input biases :math:`\mathbf{b}_{ih}^*` when `bias=True`.
-            Default: ``nn.init.zeros_``.
-        recurrent_bias_init (Callable, optional): Initializer for all
-            hidden biases :math:`\mathbf{b}_{hh}^*` when `bias=True`.
-            Default: ``nn.init.zeros_``.
-        device (torch.device, optional): Device of the parameters.
-            Default: CPU.
-        dtype (torch.dtype, optional): Data type of the parameters.
-            Default: PyTorch default float.
+        input_size: The number of expected features in the input ``x``
+        hidden_size: The number of features in the hidden state ``h``
+        bias: If ``False``, the layer does not use input-side biases.
+            Default: ``True``
+        recurrent_bias: If ``False``, the layer does not use recurrent biases.
+            Default: ``True``
+        kernel_init: Initializer for input–hidden weights ``W_ih^*``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for hidden–hidden weights ``W_hh^*``.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for input-side biases ``b_{ih}^*`` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for hidden biases ``b_{hh}^*``
+            when ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
 
-    Inputs: input, hidden
-        - **input** (Tensor): shape `(H_in,)` or `(N, H_in)`, where `H_in = input_size`.
-        - **hidden** (Tensor, optional): previous hidden state of shape
-            `(H_out,)` or `(N, H_out)`, where `H_out = hidden_size`.
-            Defaults to zero if not provided.
+    Inputs: input, h_0
+        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:
+          tensor containing input features
+        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the initial hidden state
 
-    Outputs: h’
-        - **h’** (Tensor): next hidden state, same shape as **hidden**.
+        If **h_0** is not provided, it defaults to zero.
 
-    Shape:
-        - input: :math:`(N, H_{\text{in}})` or :math:`(H_{\text{in}})`.
-        - hidden: :math:`(N, H_{\text{out}})` or :math:`(H_{\text{out}})`.
-        - output: :math:`(N, H_{\text{out}})` or :math:`(H_{\text{out}})`.
+    Outputs: h_1
+        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:
+          tensor containing the next hidden state
 
-    Attributes:
-        weight_ih (Tensor): input‐to‐hidden weights of shape
-            `(3 * hidden_size, input_size)`, chunked into “a”, “c”, and “h” parts.
-        weight_hh (Tensor): hidden‐to‐hidden weights of shape
-            `(2 * hidden_size, hidden_size)`, chunked into “a” and “c” parts.
-        bias_ih (Tensor): input biases of shape `(3 * hidden_size,)` if `bias=True`.
-        bias_hh (Tensor): hidden biases of shape `(2 * hidden_size,)` if `bias=True`.
+    Variables:
+        weight_ih: the learnable input–hidden weights,
+            of shape ``(3*hidden_size, input_size)`` (split into a/c/h parts)
+        weight_hh: the learnable hidden–hidden weights,
+            of shape ``(2*hidden_size, hidden_size)`` (split into a/c parts)
+        bias_ih: the learnable input–hidden biases,
+            of shape ``(3*hidden_size)``
+        bias_hh: the learnable hidden–hidden biases,
+            of shape ``(2*hidden_size)``
 
     Examples::
+
         >>> cell = NBRCell(10, 20)
-        >>> x = torch.randn(5, 10)
-        >>> h0 = torch.zeros(20)
-        >>> hx = h0
+        >>> x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)        # (batch, hidden_size)
+        >>> out = []
         >>> for t in range(x.size(0)):
-        ...     hx = cell(x[t], hx)
+        ...     h = cell(x[t], h)
+        ...     out.append(h)
+        >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
     __constants__ = [

@@ -82,6 +82,10 @@
       ~NASCell.weight_hh
       ~NASCell.bias_ih
       ~NASCell.bias_hh
+      ~NASCell.input_size
+      ~NASCell.hidden_size
+      ~NASCell.bias
+      ~NASCell.recurrent_bias
       ~NASCell.training
    
    

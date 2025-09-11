@@ -82,6 +82,10 @@
       ~GatedAntisymmetricRNNCell.weight_hh
       ~GatedAntisymmetricRNNCell.bias_ih
       ~GatedAntisymmetricRNNCell.bias_hh
+      ~GatedAntisymmetricRNNCell.input_size
+      ~GatedAntisymmetricRNNCell.hidden_size
+      ~GatedAntisymmetricRNNCell.bias
+      ~GatedAntisymmetricRNNCell.recurrent_bias
       ~GatedAntisymmetricRNNCell.training
    
    

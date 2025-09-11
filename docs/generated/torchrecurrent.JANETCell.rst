@@ -1,0 +1,91 @@
+﻿torchrecurrent.JANETCell
+========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: JANETCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~JANETCell.__init__
+      ~JANETCell.add_module
+      ~JANETCell.apply
+      ~JANETCell.bfloat16
+      ~JANETCell.buffers
+      ~JANETCell.children
+      ~JANETCell.compile
+      ~JANETCell.cpu
+      ~JANETCell.cuda
+      ~JANETCell.double
+      ~JANETCell.eval
+      ~JANETCell.extra_repr
+      ~JANETCell.float
+      ~JANETCell.forward
+      ~JANETCell.get_buffer
+      ~JANETCell.get_extra_state
+      ~JANETCell.get_parameter
+      ~JANETCell.get_submodule
+      ~JANETCell.half
+      ~JANETCell.init_weights
+      ~JANETCell.ipu
+      ~JANETCell.load_state_dict
+      ~JANETCell.modules
+      ~JANETCell.mtia
+      ~JANETCell.named_buffers
+      ~JANETCell.named_children
+      ~JANETCell.named_modules
+      ~JANETCell.named_parameters
+      ~JANETCell.parameters
+      ~JANETCell.register_backward_hook
+      ~JANETCell.register_buffer
+      ~JANETCell.register_forward_hook
+      ~JANETCell.register_forward_pre_hook
+      ~JANETCell.register_full_backward_hook
+      ~JANETCell.register_full_backward_pre_hook
+      ~JANETCell.register_load_state_dict_post_hook
+      ~JANETCell.register_load_state_dict_pre_hook
+      ~JANETCell.register_module
+      ~JANETCell.register_parameter
+      ~JANETCell.register_state_dict_post_hook
+      ~JANETCell.register_state_dict_pre_hook
+      ~JANETCell.requires_grad_
+      ~JANETCell.set_extra_state
+      ~JANETCell.set_submodule
+      ~JANETCell.share_memory
+      ~JANETCell.state_dict
+      ~JANETCell.to
+      ~JANETCell.to_empty
+      ~JANETCell.train
+      ~JANETCell.type
+      ~JANETCell.uses_double_state
+      ~JANETCell.xpu
+      ~JANETCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~JANETCell.T_destination
+      ~JANETCell.call_super_init
+      ~JANETCell.dump_patches
+      ~JANETCell.weight_ih
+      ~JANETCell.weight_hh
+      ~JANETCell.bias_ih
+      ~JANETCell.bias_hh
+      ~JANETCell.input_size
+      ~JANETCell.hidden_size
+      ~JANETCell.bias
+      ~JANETCell.recurrent_bias
+      ~JANETCell.training
+   
+   

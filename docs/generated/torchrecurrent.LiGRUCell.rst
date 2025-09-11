@@ -82,6 +82,10 @@
       ~LiGRUCell.weight_hh
       ~LiGRUCell.bias_ih
       ~LiGRUCell.bias_hh
+      ~LiGRUCell.input_size
+      ~LiGRUCell.hidden_size
+      ~LiGRUCell.bias
+      ~LiGRUCell.recurrent_bias
       ~LiGRUCell.training
    
    

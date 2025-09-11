@@ -1,0 +1,87 @@
+﻿torchrecurrent.NAS
+==================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: NAS
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~NAS.__init__
+      ~NAS.add_module
+      ~NAS.apply
+      ~NAS.bfloat16
+      ~NAS.buffers
+      ~NAS.children
+      ~NAS.compile
+      ~NAS.cpu
+      ~NAS.cuda
+      ~NAS.double
+      ~NAS.eval
+      ~NAS.extra_repr
+      ~NAS.float
+      ~NAS.forward
+      ~NAS.get_buffer
+      ~NAS.get_extra_state
+      ~NAS.get_parameter
+      ~NAS.get_submodule
+      ~NAS.half
+      ~NAS.initialize_cells
+      ~NAS.ipu
+      ~NAS.load_state_dict
+      ~NAS.modules
+      ~NAS.mtia
+      ~NAS.named_buffers
+      ~NAS.named_children
+      ~NAS.named_modules
+      ~NAS.named_parameters
+      ~NAS.parameters
+      ~NAS.register_backward_hook
+      ~NAS.register_buffer
+      ~NAS.register_forward_hook
+      ~NAS.register_forward_pre_hook
+      ~NAS.register_full_backward_hook
+      ~NAS.register_full_backward_pre_hook
+      ~NAS.register_load_state_dict_post_hook
+      ~NAS.register_load_state_dict_pre_hook
+      ~NAS.register_module
+      ~NAS.register_parameter
+      ~NAS.register_state_dict_post_hook
+      ~NAS.register_state_dict_pre_hook
+      ~NAS.requires_grad_
+      ~NAS.set_extra_state
+      ~NAS.set_submodule
+      ~NAS.share_memory
+      ~NAS.state_dict
+      ~NAS.to
+      ~NAS.to_empty
+      ~NAS.train
+      ~NAS.type
+      ~NAS.xpu
+      ~NAS.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~NAS.T_destination
+      ~NAS.call_super_init
+      ~NAS.dump_patches
+      ~NAS.input_size
+      ~NAS.hidden_size
+      ~NAS.bias
+      ~NAS.dropout
+      ~NAS.batch_first
+      ~NAS.training
+   
+   

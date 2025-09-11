@@ -1,0 +1,93 @@
+﻿torchrecurrent.SCRNCell
+=======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: SCRNCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SCRNCell.__init__
+      ~SCRNCell.add_module
+      ~SCRNCell.apply
+      ~SCRNCell.bfloat16
+      ~SCRNCell.buffers
+      ~SCRNCell.children
+      ~SCRNCell.compile
+      ~SCRNCell.cpu
+      ~SCRNCell.cuda
+      ~SCRNCell.double
+      ~SCRNCell.eval
+      ~SCRNCell.extra_repr
+      ~SCRNCell.float
+      ~SCRNCell.forward
+      ~SCRNCell.get_buffer
+      ~SCRNCell.get_extra_state
+      ~SCRNCell.get_parameter
+      ~SCRNCell.get_submodule
+      ~SCRNCell.half
+      ~SCRNCell.init_weights
+      ~SCRNCell.ipu
+      ~SCRNCell.load_state_dict
+      ~SCRNCell.modules
+      ~SCRNCell.mtia
+      ~SCRNCell.named_buffers
+      ~SCRNCell.named_children
+      ~SCRNCell.named_modules
+      ~SCRNCell.named_parameters
+      ~SCRNCell.parameters
+      ~SCRNCell.register_backward_hook
+      ~SCRNCell.register_buffer
+      ~SCRNCell.register_forward_hook
+      ~SCRNCell.register_forward_pre_hook
+      ~SCRNCell.register_full_backward_hook
+      ~SCRNCell.register_full_backward_pre_hook
+      ~SCRNCell.register_load_state_dict_post_hook
+      ~SCRNCell.register_load_state_dict_pre_hook
+      ~SCRNCell.register_module
+      ~SCRNCell.register_parameter
+      ~SCRNCell.register_state_dict_post_hook
+      ~SCRNCell.register_state_dict_pre_hook
+      ~SCRNCell.requires_grad_
+      ~SCRNCell.set_extra_state
+      ~SCRNCell.set_submodule
+      ~SCRNCell.share_memory
+      ~SCRNCell.state_dict
+      ~SCRNCell.to
+      ~SCRNCell.to_empty
+      ~SCRNCell.train
+      ~SCRNCell.type
+      ~SCRNCell.uses_double_state
+      ~SCRNCell.xpu
+      ~SCRNCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SCRNCell.T_destination
+      ~SCRNCell.call_super_init
+      ~SCRNCell.dump_patches
+      ~SCRNCell.weight_ih
+      ~SCRNCell.weight_hh
+      ~SCRNCell.weight_ch
+      ~SCRNCell.bias_ih
+      ~SCRNCell.bias_hh
+      ~SCRNCell.bias_ch
+      ~SCRNCell.input_size
+      ~SCRNCell.hidden_size
+      ~SCRNCell.bias
+      ~SCRNCell.recurrent_bias
+      ~SCRNCell.training
+   
+   

@@ -1,8 +1,4 @@
-"""
-torchrecurrent
-==============
-Top-level imports for all Cells, Layers and Wrappers, alphabetized.
-"""
+"""Top-level imports for all Cells, Layers and Wrappers, alphabetized."""
 
 # Cells
 from .cells import (

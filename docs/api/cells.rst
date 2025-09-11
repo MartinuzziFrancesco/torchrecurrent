@@ -4,7 +4,7 @@ Recurrent Cells Reference
 This page documents all custom recurrent cells provided in the `torchrecurrent.cells` module.
 
 .. autosummary::
-   :toctree: generated/
+   :toctree: ../generated/
    :nosignatures:
 
    torchrecurrent.AntisymmetricRNNCell

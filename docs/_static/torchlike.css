@@ -1,0 +1,43 @@
+/* docs/_static/torchlike.css */
+
+/* generic rubric chip */
+.rst-content .rubric,
+.bd-article .rubric,
+.article .rubric {
+    display: inline-block;
+    margin: 1rem 0 0.5rem 0;
+    padding: 0.28rem 0.65rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    line-height: 1;
+    border: 1px solid;
+}
+
+/* light */
+:root,
+[data-theme="light"] {
+    --rubric-bg: var(--color-background-secondary, #f5f6f7);
+    --rubric-fg: var(--color-foreground-secondary, #444);
+    --rubric-bd: rgba(0, 0, 0, 0.12);
+}
+:root .rubric,
+[data-theme="light"] .rubric {
+    background: var(--rubric-bg);
+    color: var(--rubric-fg);
+    border-color: var(--rubric-bd);
+}
+
+/* dark */
+[data-theme="dark"] {
+    --rubric-bg: rgba(255, 255, 255, 0.06);
+    --rubric-fg: var(--color-foreground-secondary, #c7c7c7);
+    --rubric-bd: rgba(255, 255, 255, 0.18);
+}
+[data-theme="dark"] .rubric {
+    background: var(--rubric-bg);
+    color: var(--rubric-fg);
+    border-color: var(--rubric-bd);
+}

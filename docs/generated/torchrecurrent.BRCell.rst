@@ -82,7 +82,10 @@
       ~BRCell.weight_hh
       ~BRCell.bias_ih
       ~BRCell.bias_hh
-      ~BRCell.t_ones
+      ~BRCell.input_size
+      ~BRCell.hidden_size
+      ~BRCell.bias
+      ~BRCell.recurrent_bias
       ~BRCell.training
    
    

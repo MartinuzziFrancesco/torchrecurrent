@@ -1,0 +1,93 @@
+﻿torchrecurrent.MultiplicativeLSTMCell
+=====================================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MultiplicativeLSTMCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MultiplicativeLSTMCell.__init__
+      ~MultiplicativeLSTMCell.add_module
+      ~MultiplicativeLSTMCell.apply
+      ~MultiplicativeLSTMCell.bfloat16
+      ~MultiplicativeLSTMCell.buffers
+      ~MultiplicativeLSTMCell.children
+      ~MultiplicativeLSTMCell.compile
+      ~MultiplicativeLSTMCell.cpu
+      ~MultiplicativeLSTMCell.cuda
+      ~MultiplicativeLSTMCell.double
+      ~MultiplicativeLSTMCell.eval
+      ~MultiplicativeLSTMCell.extra_repr
+      ~MultiplicativeLSTMCell.float
+      ~MultiplicativeLSTMCell.forward
+      ~MultiplicativeLSTMCell.get_buffer
+      ~MultiplicativeLSTMCell.get_extra_state
+      ~MultiplicativeLSTMCell.get_parameter
+      ~MultiplicativeLSTMCell.get_submodule
+      ~MultiplicativeLSTMCell.half
+      ~MultiplicativeLSTMCell.init_weights
+      ~MultiplicativeLSTMCell.ipu
+      ~MultiplicativeLSTMCell.load_state_dict
+      ~MultiplicativeLSTMCell.modules
+      ~MultiplicativeLSTMCell.mtia
+      ~MultiplicativeLSTMCell.named_buffers
+      ~MultiplicativeLSTMCell.named_children
+      ~MultiplicativeLSTMCell.named_modules
+      ~MultiplicativeLSTMCell.named_parameters
+      ~MultiplicativeLSTMCell.parameters
+      ~MultiplicativeLSTMCell.register_backward_hook
+      ~MultiplicativeLSTMCell.register_buffer
+      ~MultiplicativeLSTMCell.register_forward_hook
+      ~MultiplicativeLSTMCell.register_forward_pre_hook
+      ~MultiplicativeLSTMCell.register_full_backward_hook
+      ~MultiplicativeLSTMCell.register_full_backward_pre_hook
+      ~MultiplicativeLSTMCell.register_load_state_dict_post_hook
+      ~MultiplicativeLSTMCell.register_load_state_dict_pre_hook
+      ~MultiplicativeLSTMCell.register_module
+      ~MultiplicativeLSTMCell.register_parameter
+      ~MultiplicativeLSTMCell.register_state_dict_post_hook
+      ~MultiplicativeLSTMCell.register_state_dict_pre_hook
+      ~MultiplicativeLSTMCell.requires_grad_
+      ~MultiplicativeLSTMCell.set_extra_state
+      ~MultiplicativeLSTMCell.set_submodule
+      ~MultiplicativeLSTMCell.share_memory
+      ~MultiplicativeLSTMCell.state_dict
+      ~MultiplicativeLSTMCell.to
+      ~MultiplicativeLSTMCell.to_empty
+      ~MultiplicativeLSTMCell.train
+      ~MultiplicativeLSTMCell.type
+      ~MultiplicativeLSTMCell.uses_double_state
+      ~MultiplicativeLSTMCell.xpu
+      ~MultiplicativeLSTMCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MultiplicativeLSTMCell.T_destination
+      ~MultiplicativeLSTMCell.call_super_init
+      ~MultiplicativeLSTMCell.dump_patches
+      ~MultiplicativeLSTMCell.weight_ih
+      ~MultiplicativeLSTMCell.weight_hh
+      ~MultiplicativeLSTMCell.weight_mh
+      ~MultiplicativeLSTMCell.bias_ih
+      ~MultiplicativeLSTMCell.bias_hh
+      ~MultiplicativeLSTMCell.bias_mh
+      ~MultiplicativeLSTMCell.input_size
+      ~MultiplicativeLSTMCell.hidden_size
+      ~MultiplicativeLSTMCell.bias
+      ~MultiplicativeLSTMCell.recurrent_bias
+      ~MultiplicativeLSTMCell.training
+   
+   

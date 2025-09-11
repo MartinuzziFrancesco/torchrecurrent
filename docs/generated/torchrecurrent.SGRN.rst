@@ -1,0 +1,87 @@
+﻿torchrecurrent.SGRN
+===================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: SGRN
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SGRN.__init__
+      ~SGRN.add_module
+      ~SGRN.apply
+      ~SGRN.bfloat16
+      ~SGRN.buffers
+      ~SGRN.children
+      ~SGRN.compile
+      ~SGRN.cpu
+      ~SGRN.cuda
+      ~SGRN.double
+      ~SGRN.eval
+      ~SGRN.extra_repr
+      ~SGRN.float
+      ~SGRN.forward
+      ~SGRN.get_buffer
+      ~SGRN.get_extra_state
+      ~SGRN.get_parameter
+      ~SGRN.get_submodule
+      ~SGRN.half
+      ~SGRN.initialize_cells
+      ~SGRN.ipu
+      ~SGRN.load_state_dict
+      ~SGRN.modules
+      ~SGRN.mtia
+      ~SGRN.named_buffers
+      ~SGRN.named_children
+      ~SGRN.named_modules
+      ~SGRN.named_parameters
+      ~SGRN.parameters
+      ~SGRN.register_backward_hook
+      ~SGRN.register_buffer
+      ~SGRN.register_forward_hook
+      ~SGRN.register_forward_pre_hook
+      ~SGRN.register_full_backward_hook
+      ~SGRN.register_full_backward_pre_hook
+      ~SGRN.register_load_state_dict_post_hook
+      ~SGRN.register_load_state_dict_pre_hook
+      ~SGRN.register_module
+      ~SGRN.register_parameter
+      ~SGRN.register_state_dict_post_hook
+      ~SGRN.register_state_dict_pre_hook
+      ~SGRN.requires_grad_
+      ~SGRN.set_extra_state
+      ~SGRN.set_submodule
+      ~SGRN.share_memory
+      ~SGRN.state_dict
+      ~SGRN.to
+      ~SGRN.to_empty
+      ~SGRN.train
+      ~SGRN.type
+      ~SGRN.xpu
+      ~SGRN.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SGRN.T_destination
+      ~SGRN.call_super_init
+      ~SGRN.dump_patches
+      ~SGRN.input_size
+      ~SGRN.hidden_size
+      ~SGRN.bias
+      ~SGRN.dropout
+      ~SGRN.batch_first
+      ~SGRN.training
+   
+   

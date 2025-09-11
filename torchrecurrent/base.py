@@ -7,6 +7,44 @@ from typing import Optional, Tuple, Union, Dict
 
 
 class BaseRecurrentCell(nn.Module, ABC):
+    r"""Abstract base class for recurrent *cells*.
+
+    Subclasses implement :meth:`uses_double_state` and :meth:`forward`.
+    This base provides common utilities for input/state validation, state
+    initialization, weight/bias registration, and weight initialization hooks.
+
+    Args:
+        input_size (int): Size of each input sample.
+        hidden_size (int): Size of the hidden state.
+        bias (bool, optional): If ``False``, input-side bias tensors are
+            not used. Default: ``True``.
+        recurrent_bias (bool, optional): If ``False``, recurrent-side bias
+            tensors are not used. Default: ``True``.
+        device (torch.device, optional): Device to place parameters on.
+        dtype (torch.dtype, optional): Data type of parameters.
+        **kwargs: Stored as extra args for representation; subclasses may
+            consume these.
+
+    Attributes:
+        input_size (int): As above.
+        hidden_size (int): As above.
+        bias (bool): As above.
+        recurrent_bias (bool): As above.
+
+    Shape:
+        - Input: ``(N, input_size)`` or ``(input_size,)``
+        - State: subclass-defined (single or double state)
+        - Output: subclass-defined
+
+    Notes:
+        - :meth:`init_weights` expects the subclass to define attributes
+            ``kernel_init``, ``recurrent_kernel_init``, ``bias_init``, and
+            (optionally) ``recurrent_bias_init``. Override :meth:`init_weights`
+            if you prefer a different scheme.
+        - :meth:`_register_tensors` and :meth:`_default_register_tensors`
+            are helpers to create parameters/buffers with consistent shapes.
+    """
+
     __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     input_size: int
@@ -52,8 +90,7 @@ class BaseRecurrentCell(nn.Module, ABC):
     def forward(
         self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
     ) -> Union[Tensor, Tuple[Tensor, ...]]:
-        """
-        Run one step of the recurrent cell.
+        """Run one step of the recurrent cell.
 
         Args:
             inp (Tensor):
@@ -75,8 +112,7 @@ class BaseRecurrentCell(nn.Module, ABC):
         )
 
     def _init_state(self, inp: Tensor) -> Union[Tensor, Tuple[Tensor, Tensor]]:
-        """
-        Create the zero‐state for a fresh sequence.
+        """Create the zero‐state for a fresh sequence.
 
         Args:
             inp:  Tensor of shape (batch_size, input_size) or (input_size,)
@@ -100,10 +136,7 @@ class BaseRecurrentCell(nn.Module, ABC):
             )
 
     def _register_tensors(self, specs: Dict[str, Tuple[Tuple[int, ...], bool]]):
-        """
-        Given a dict mapping attribute names to (shape, trainable_flag),
-        create either a Parameter (if trainable_flag=True) or
-        a zero‐buffer otherwise.
+        """Create a Parameter (if trainable_flag=True) or a zero‐buffer otherwise.
 
         Example specs:
             {
@@ -135,12 +168,12 @@ class BaseRecurrentCell(nn.Module, ABC):
         prefix_bih: str = "bias_ih",
         prefix_bhh: str = "bias_hh",
     ):
-        """
-        Shorthand for the common 2-weight + 2-bias pattern:
-            * weight_ih  → shape (ih_mult*H,   I)
-            * weight_hh  → shape (hh_mult*H,   H)
-            * bias_ih    → shape (ih_mult*H,   )
-            * bias_hh    → shape (hh_mult*H,   )
+        """Shorthand for the common 2-weight + 2-bias pattern.
+
+        * weight_ih  → shape (ih_mult*H,   I)
+        * weight_hh  → shape (hh_mult*H,   H)
+        * bias_ih    → shape (ih_mult*H,   )
+        * bias_hh    → shape (hh_mult*H,   )
         """
         specs = {
             prefix_ih: ((ih_mult * hidden_size, input_size), True),
@@ -159,10 +192,28 @@ class BaseRecurrentCell(nn.Module, ABC):
             elif "bias_ih" in name:
                 self.bias_init(param)
             elif "bias_hh" in name:
-                self.bias_init(param)
+                self.recurrent_bias_init(param)
 
 
 class BaseSingleRecurrentCell(BaseRecurrentCell):
+    r"""Base class for single-state recurrent cells (e.g., vanilla RNN).
+
+    The hidden state is a single tensor ``h``. The :meth:`forward` of a
+    subclass must accept an input and optional hidden state and return the
+    next hidden state tensor.
+
+    Shape:
+        - Input: ``(N, input_size)`` or ``(input_size,)``
+        - State (optional): ``(N, hidden_size)`` or ``(hidden_size,)``
+        - Output (new state): same as state
+
+    Notes:
+        - If ``state`` is ``None``, it is initialized to zeros on the same
+          device/dtype as the input.
+        - If a tuple is passed for ``state``, only
+          the first element is used.
+    """
+
     def uses_double_state(self) -> bool:
         return False
 
@@ -185,9 +236,8 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
     def _preprocess_input_and_state(
         self, inp: Tensor, state: Optional[Tensor]
     ) -> Tuple[Tensor, Tensor, bool]:
-        """
-        1) Ensure `inp` is 2D by adding a batch dim if needed.
-        2) Initialize or reshape `state` into a batched hidden tensor.
+        """Ensure `inp` dim is correct, and initialize or reshape `state`.
+
         Returns:
           - inp      : (batch_size, input_size)
           - h        : (batch_size, hidden_size)
@@ -207,8 +257,8 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
     def _check_state(
         self, state: Optional[Union[Tensor, Tuple[Tensor, ...]]]
     ) -> Optional[Tensor]:
-        """
-        If user passed a tuple to a single‐state cell, warn and pick the first element.
+        """If user passed a tuple to a single‐state cell, warn and pick the first element.
+
         Otherwise, return state unmodified.
         """
         if isinstance(state, tuple):
@@ -223,6 +273,19 @@ class BaseSingleRecurrentCell(BaseRecurrentCell):
 
 
 class BaseDoubleRecurrentCell(BaseRecurrentCell):
+    r"""Base class for double-state recurrent cells (e.g., LSTM-style).
+
+    The state is a tuple ``(h, c)`` for hidden and cell states. The
+    :meth:`forward` of a subclass must accept an input and optional
+    ``(h, c)`` and return the updated ``(h, c)`` tuple.
+
+    Shape:
+        - Input: ``(N, input_size)`` or ``(input_size,)``
+        - State (optional): tuple of two tensors, each
+          ``(N, hidden_size)`` or ``(hidden_size,)``
+        - Output (new state): same shapes as state
+    """
+
     def uses_double_state(self) -> bool:
         return True
 
@@ -247,8 +310,8 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
         inp: Tensor,
         states: Optional[Tuple[Optional[Tensor], Optional[Tensor]]] = None,
     ) -> Tuple[Tensor, Tensor, Tensor, bool]:
-        """
-        - Ensures inp is treated as batched
+        """- Ensures inp is treated as batched.
+
         - Initializes or reshapes both h and c to [batch_size, hidden_size]
         - Returns (inp, h, c, was_batched)
         """
@@ -276,8 +339,7 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
     def _check_states(
         self, states: Optional[Union[Tensor, Tuple[Tensor, ...]]]
     ) -> Tuple[Optional[Tensor], Optional[Tensor]]:
-        """
-        Sanity‐check the `states` argument for double‐state cells.
+        """Sanity‐check the `states` argument for double‐state cells.
 
         - If `states` is None, return (None, None).
         - If a single Tensor is passed, warn and treat it as the hidden state (h),
@@ -308,6 +370,32 @@ class BaseDoubleRecurrentCell(BaseRecurrentCell):
 
 
 class BaseRecurrentLayer(nn.Module):
+    r"""Abstract base class for stacked recurrent *layers*.
+
+    Manages common configuration (e.g., number of layers, dropout, batch
+    layout) and provides :meth:`initialize_cells` to build a stack of cell
+    instances for subclasses.
+
+    Args:
+        input_size (int): Size of each input sample.
+        hidden_size (int): Size of the hidden state in each layer.
+        num_layers (int, optional): Number of stacked layers. Default: ``1``.
+        dropout (float, optional): Dropout probability applied to outputs
+            of all but the last layer at each time step. Default: ``0.0``.
+        batch_first (bool, optional): If ``True``, input and output tensors
+            are provided/returned as ``(N, T, C)``. Default: ``False`` (``(T, N, C)``).
+
+    Attributes:
+        cells (nn.ModuleList): Populated by :meth:`initialize_cells` in subclasses.
+        dropout (float): As above.
+        dropout_layer (nn.Dropout or None): Dropout module if ``dropout > 0``.
+
+    Notes:
+        Subclasses should call ``self.initialize_cells(CellClass, **cell_kwargs)``
+        in ``__init__`` to build a stack with the first layer taking
+        ``input_size`` inputs and subsequent layers taking ``hidden_size`` inputs.
+    """
+
     __constants__ = [
         "input_size",
         "hidden_size",
@@ -366,7 +454,33 @@ class BaseRecurrentLayer(nn.Module):
 
 
 class BaseSingleRecurrentLayer(BaseRecurrentLayer):
-    """For RNN‐style cells (one hidden state per layer)."""
+    r"""Recurrent layer wrapper for single-state cells.
+
+    Iterates a stack of single-state cells over the time dimension.
+
+    Shape:
+        - Input:
+            - If ``batch_first=False`` (default): ``(T, N, input_size)``
+            - If ``batch_first=True``: ``(N, T, input_size)``
+        - State (optional): ``(num_layers, N, hidden_size)``
+        - Output:
+            - Sequence: same layout as input but with ``hidden_size`` features
+            - Final state: ``(num_layers, N, hidden_size)``
+
+    Args:
+        inp (Tensor): Input sequence.
+        state (Tensor, optional): Initial hidden state for each layer.
+
+    Returns:
+        Tuple[Tensor, Tensor]: ``(output, h_n)`` where
+        ``output`` is the output features for all timesteps and
+        ``h_n`` is the final hidden state for each layer.
+
+    Notes:
+        - When ``state`` is ``None``, zeros are used.
+        - Dropout (if set) is applied to intermediate layer outputs at each
+          timestep, not to the last layer.
+    """
 
     def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tuple[Tensor, Tensor]:
         if self.batch_first:
@@ -405,7 +519,32 @@ class BaseSingleRecurrentLayer(BaseRecurrentLayer):
 
 
 class BaseDoubleRecurrentLayer(BaseRecurrentLayer):
-    """For LSTM‐style cells (hidden *and* cell state per layer)."""
+    r"""Recurrent layer wrapper for double-state cells.
+
+    Iterates a stack of double-state cells (e.g., LSTM-style) over time.
+
+    Shape:
+        - Input:
+            - If ``batch_first=False`` (default): ``(T, N, input_size)``
+            - If ``batch_first=True``: ``(N, T, input_size)``
+        - State (optional): tuple ``(h_0, c_0)``, each
+          ``(num_layers, N, hidden_size)``
+        - Output:
+            - Sequence: same layout as input but with ``hidden_size`` features
+            - Final state: tuple ``(h_n, c_n)`` with same shapes as ``(h_0, c_0)``
+
+    Args:
+        inp (Tensor): Input sequence.
+        state (Tuple[Tensor, Tensor], optional): Initial ``(h_0, c_0)``.
+
+    Returns:
+        Tuple[Tensor, Tuple[Tensor, Tensor]]: ``(output, (h_n, c_n))``.
+
+    Notes:
+        - When ``state`` is ``None``, zeros are used for both ``h`` and ``c``.
+        - Dropout (if set) is applied to intermediate layer outputs at each
+          timestep, not to the last layer.
+    """
 
     def forward(
         self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
