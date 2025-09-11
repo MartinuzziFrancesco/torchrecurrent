@@ -1,0 +1,721 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>torchrecurrent.cells.wmclstm_cell &#8212; torchrecurrent</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchrecurrent/cells/wmclstm_cell';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">torchrecurrent</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Manual
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Manual
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.cells.wmclstm_cell</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for torchrecurrent.cells.wmclstm_cell</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDoubleRecurrentLayer</span><span class="p">,</span> <span class="n">BaseDoubleRecurrentCell</span>
+
+
+<div class="viewcode-block" id="WMCLSTM">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.WMCLSTM.html#torchrecurrent.WMCLSTM">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WMCLSTM</span><span class="p">(</span><span class="n">BaseDoubleRecurrentLayer</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer LSTM with working-memory connections (WMCLSTM).</span>
+
+<span class="sd">    [`arXiv &lt;https://arxiv.org/abs/2109.00020&gt;`_]</span>
+
+<span class="sd">    Each layer consists of a :class:`WMCLSTMCell`, an LSTM variant where the</span>
+<span class="sd">    input, forget, and output gates receive additional connections from the</span>
+<span class="sd">    cell state. The updates are:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \begin{aligned}</span>
+<span class="sd">            i(t) &amp;= \sigma\bigl(W_{ih}^i x(t) + b_{ih}^i</span>
+<span class="sd">                + W_{hh}^i h(t-1) + b_{hh}^i</span>
+<span class="sd">                + W_{mh}^i c(t-1) + b_{mh}^i \bigr), \\</span>
+<span class="sd">            f(t) &amp;= \sigma\bigl(W_{ih}^f x(t) + b_{ih}^f</span>
+<span class="sd">                + W_{hh}^f h(t-1) + b_{hh}^f</span>
+<span class="sd">                + W_{mh}^f c(t-1) + b_{mh}^f \bigr), \\</span>
+<span class="sd">            c(t) &amp;= f(t) \circ c(t-1)</span>
+<span class="sd">                + i(t) \circ \sigma_c(W_{ih}^c x(t) + b_{ih}^c), \\</span>
+<span class="sd">            o(t) &amp;= \sigma\bigl(W_{ih}^o x(t) + b_{ih}^o</span>
+<span class="sd">                + W_{hh}^o h(t-1) + b_{hh}^o</span>
+<span class="sd">                + W_{mh}^o c(t) + b_{mh}^o \bigr), \\</span>
+<span class="sd">            h(t) &amp;= o(t) \circ \sigma_h(c(t)),</span>
+<span class="sd">        \end{aligned}</span>
+
+<span class="sd">    where :math:`\sigma` is the sigmoid, :math:`\sigma_c` / :math:`\sigma_h`</span>
+<span class="sd">    are cell/output activations (usually :func:`torch.tanh`), and</span>
+<span class="sd">    :math:`\circ` is the elementwise product.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_size: Number of expected features in the input `x`.</span>
+<span class="sd">        hidden_size: Number of features in the hidden and cell states.</span>
+<span class="sd">        num_layers: Number of stacked recurrent layers. Default: 1</span>
+<span class="sd">        dropout: If non-zero, adds dropout after each layer (except last).</span>
+<span class="sd">            Default: 0</span>
+<span class="sd">        batch_first: If ``True``, inputs and outputs are</span>
+<span class="sd">            `(batch, seq, feature)` instead of `(seq, batch, feature)`.</span>
+<span class="sd">            Default: False</span>
+<span class="sd">        bias: If ``False``, disables input biases `b_{ih}`. Default: True</span>
+<span class="sd">        recurrent_bias: If ``False``, disables recurrent biases `b_{hh}`. Default: True</span>
+<span class="sd">        memory_bias: If ``False``, disables memory biases `b_{mh}`. Default: True</span>
+<span class="sd">        kernel_init: Initializer for `W_{ih}`.</span>
+<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        recurrent_kernel_init: Initializer for `W_{hh}`.</span>
+<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        memory_kernel_init: Initializer for `W_{mh}`.</span>
+<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        bias_init: Initializer for `b_{ih}`.</span>
+<span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
+<span class="sd">        recurrent_bias_init: Initializer for `b_{hh}`.</span>
+<span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
+<span class="sd">        memory_bias_init: Initializer for `b_{mh}`.</span>
+<span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
+<span class="sd">        device: Desired device of parameters.</span>
+<span class="sd">        dtype: Desired floating point type of parameters.</span>
+
+<span class="sd">    Inputs: input, (h_0, c_0)</span>
+<span class="sd">        - **input**: tensor of shape `(L, H_in)` for unbatched input,</span>
+<span class="sd">          `(L, N, H_in)` when ``batch_first=False``, or `(N, L, H_in)` when</span>
+<span class="sd">          ``batch_first=True``.</span>
+<span class="sd">        - **h_0**: tensor of shape `(num_layers, H_out)` (unbatched) or</span>
+<span class="sd">          `(num_layers, N, H_out)` containing initial hidden state. Defaults to</span>
+<span class="sd">          zeros if not provided.</span>
+<span class="sd">        - **c_0**: tensor of same shape as `h_0`, containing initial cell state.</span>
+<span class="sd">          Defaults to zeros if not provided.</span>
+
+<span class="sd">        Where:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            \begin{aligned}</span>
+<span class="sd">                N &amp;= \text{batch size} \\</span>
+<span class="sd">                L &amp;= \text{sequence length} \\</span>
+<span class="sd">                H_{in} &amp;= \text{input size} \\</span>
+<span class="sd">                H_{out} &amp;= \text{hidden size}</span>
+<span class="sd">            \end{aligned}</span>
+
+<span class="sd">    Outputs: output, (h_n, c_n)</span>
+<span class="sd">        - **output**: tensor of shape `(L, H_out)` for unbatched input,</span>
+<span class="sd">          `(L, N, H_out)` when ``batch_first=False``, or `(N, L, H_out)` when</span>
+<span class="sd">          ``batch_first=True`` containing hidden states from the last layer at</span>
+<span class="sd">          each timestep.</span>
+<span class="sd">        - **h_n**: final hidden state for each layer,</span>
+<span class="sd">          shape `(num_layers, H_out)` (unbatched) or `(num_layers, N, H_out)`.</span>
+<span class="sd">        - **c_n**: final cell state for each layer, same shape as `h_n`.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        cells.{k}.weight_ih : input–hidden weights of the :math:`k`-th layer,</span>
+<span class="sd">            shape `(4*hidden_size, input_size)` for `k=0`, otherwise</span>
+<span class="sd">            `(4*hidden_size, hidden_size)`.</span>
+<span class="sd">        cells.{k}.weight_hh : hidden–hidden weights of the :math:`k`-th layer,</span>
+<span class="sd">            shape `(4*hidden_size, hidden_size)` (i, f, o gates).</span>
+<span class="sd">        cells.{k}.weight_mh : memory–hidden weights of the :math:`k`-th layer,</span>
+<span class="sd">            shape `(3*hidden_size, hidden_size)` (i, f depend on `c(t-1)`, o on `c(t)`).</span>
+<span class="sd">        cells.{k}.bias_ih : input biases of the :math:`k`-th layer,</span>
+<span class="sd">            shape `(4*hidden_size,)` if ``bias=True``.</span>
+<span class="sd">        cells.{k}.bias_hh : hidden biases of the :math:`k`-th layer,</span>
+<span class="sd">            shape `(4*hidden_size,)` if ``recurrent_bias=True``.</span>
+<span class="sd">        cells.{k}.bias_mh : memory biases of the :math:`k`-th layer,</span>
+<span class="sd">            shape `(3*hidden_size,)` if ``memory_bias=True``.</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        :class:`WMCLSTMCell`</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">        &gt;&gt;&gt; rnn = WMCLSTM(8, 16, num_layers=2)</span>
+<span class="sd">        &gt;&gt;&gt; x = torch.randn(5, 3, 8)    # (seq_len, batch, input_size)</span>
+<span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 16)</span>
+<span class="sd">        &gt;&gt;&gt; c0 = torch.zeros(2, 3, 16)</span>
+<span class="sd">        &gt;&gt;&gt; out, (hn, cn) = rnn(x, (h0, c0))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="WMCLSTM.__init__">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.WMCLSTM.html#torchrecurrent.WMCLSTM.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">batch_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WMCLSTM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">batch_first</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_cells</span><span class="p">(</span><span class="n">WMCLSTMCell</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="WMCLSTMCell">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.WMCLSTMCell.html#torchrecurrent.WMCLSTMCell">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">WMCLSTMCell</span><span class="p">(</span><span class="n">BaseDoubleRecurrentCell</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A Long Short-Term Memory (LSTM) cell with working-memory connections.</span>
+
+<span class="sd">    [`arXiv &lt;https://arxiv.org/abs/2109.00020&gt;`_].</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \begin{aligned}</span>
+<span class="sd">            \mathbf{i}(t) &amp;= \sigma\Bigl(</span>
+<span class="sd">                \mathbf{W}_{ih}^{i}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{i}</span>
+<span class="sd">                + \mathbf{W}_{hh}^{i}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{i}</span>
+<span class="sd">                + \mathbf{W}_{mh}^{i}\,\mathbf{c}(t-1) + \mathbf{b}_{mh}^{i}</span>
+<span class="sd">            \Bigr), \\</span>
+<span class="sd">            \mathbf{f}(t) &amp;= \sigma\Bigl(</span>
+<span class="sd">                \mathbf{W}_{ih}^{f}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{f}</span>
+<span class="sd">                + \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{f}</span>
+<span class="sd">                + \mathbf{W}_{mh}^{f}\,\mathbf{c}(t-1) + \mathbf{b}_{mh}^{f}</span>
+<span class="sd">            \Bigr), \\</span>
+<span class="sd">            \mathbf{c}(t) &amp;= \mathbf{f}(t)\circ\mathbf{c}(t-1)</span>
+<span class="sd">                + \mathbf{i}(t)\circ\sigma_c\Bigl(</span>
+<span class="sd">                    \mathbf{W}_{ih}^{c}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{c}</span>
+<span class="sd">                \Bigr), \\</span>
+<span class="sd">            \mathbf{o}(t) &amp;= \sigma\Bigl(</span>
+<span class="sd">                \mathbf{W}_{ih}^{o}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{o}</span>
+<span class="sd">                + \mathbf{W}_{hh}^{o}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{o}</span>
+<span class="sd">                + \mathbf{W}_{mh}^{o}\,\mathbf{c}(t) + \mathbf{b}_{mh}^{o}</span>
+<span class="sd">            \Bigr), \\</span>
+<span class="sd">            \mathbf{h}(t) &amp;= \mathbf{o}(t)\circ\sigma_h\bigl(\mathbf{c}(t)\bigr),</span>
+<span class="sd">        \end{aligned}</span>
+
+<span class="sd">    where :math:`\sigma` is the sigmoid, :math:`\sigma_c` and :math:`\sigma_h`</span>
+<span class="sd">    are cell/output activations (typically :func:`torch.tanh`), and</span>
+<span class="sd">    :math:`\circ` is element‐wise (Hadamard) multiplication.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_size: The number of expected features in the input ``x``.</span>
+<span class="sd">        hidden_size: The number of features in the hidden and cell states.</span>
+<span class="sd">        bias: If ``False``, the layer does not use input biases</span>
+<span class="sd">            ``b_{ih}``. Default: ``True``.</span>
+<span class="sd">        recurrent_bias: If ``False``, the layer does not use recurrent</span>
+<span class="sd">            biases ``b_{hh}``. Default: ``True``.</span>
+<span class="sd">        memory_bias: If ``False``, the layer does not use memory biases</span>
+<span class="sd">            ``b_{mh}``. Default: ``True``.</span>
+<span class="sd">        kernel_init: Initializer for</span>
+<span class="sd">            ``W_{ih}^{\{i,f,c,o\}}``. Default:</span>
+<span class="sd">            :func:`torch.nn.init.xavier_uniform_`.</span>
+<span class="sd">        recurrent_kernel_init: Initializer for</span>
+<span class="sd">            ``W_{hh}^{\{i,f,o\}}``. Default:</span>
+<span class="sd">            :func:`torch.nn.init.xavier_uniform_`.</span>
+<span class="sd">        memory_kernel_init: Initializer for</span>
+<span class="sd">            ``W_{mh}^{\{i,f,o\}}``. Default:</span>
+<span class="sd">            :func:`torch.nn.init.xavier_uniform_`.</span>
+<span class="sd">        bias_init: Initializer for</span>
+<span class="sd">            ``b_{ih}^{\{i,f,c,o\}}``. Default:</span>
+<span class="sd">            :func:`torch.nn.init.zeros_`.</span>
+<span class="sd">        recurrent_bias_init: Initializer for</span>
+<span class="sd">            ``b_{hh}^{\{i,f,o\}}``. Default:</span>
+<span class="sd">            :func:`torch.nn.init.zeros_`.</span>
+<span class="sd">        memory_bias_init: Initializer for</span>
+<span class="sd">            ``b_{mh}^{\{i,f,o\}}``. Default:</span>
+<span class="sd">            :func:`torch.nn.init.zeros_`.</span>
+<span class="sd">        device: The desired device of parameters.</span>
+<span class="sd">        dtype: The desired floating point type of parameters.</span>
+
+<span class="sd">    Inputs: input, (h, c)</span>
+<span class="sd">        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:</span>
+<span class="sd">          Tensor containing input features.</span>
+<span class="sd">        - **h** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
+<span class="sd">          Previous hidden state.</span>
+<span class="sd">        - **c** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
+<span class="sd">          Previous cell state.</span>
+
+<span class="sd">        If **(h, c)** is not provided, both default to zeros.</span>
+
+<span class="sd">    Outputs: (h_1, c_1)</span>
+<span class="sd">        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
+<span class="sd">          Next hidden state.</span>
+<span class="sd">        - **c_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
+<span class="sd">          Next cell state.</span>
+
+<span class="sd">    Variables:</span>
+<span class="sd">        weight_ih: The learnable input–hidden weights,</span>
+<span class="sd">            of shape ``(4*hidden_size, input_size)``.</span>
+<span class="sd">        weight_hh: The learnable hidden–hidden weights,</span>
+<span class="sd">            of shape ``(4*hidden_size, hidden_size)`` (for i, f, o gates).</span>
+<span class="sd">        weight_mh: The learnable memory–hidden weights,</span>
+<span class="sd">            of shape ``(3*hidden_size, hidden_size)``</span>
+<span class="sd">            (i, f use :math:`c(t-1)`, o uses :math:`c(t)`).</span>
+<span class="sd">        bias_ih: The learnable input biases,</span>
+<span class="sd">            of shape ``(4*hidden_size,)``.</span>
+<span class="sd">        bias_hh: The learnable hidden biases,</span>
+<span class="sd">            of shape ``(4*hidden_size,)``.</span>
+<span class="sd">        bias_mh: The learnable memory biases,</span>
+<span class="sd">            of shape ``(3*hidden_size,)``.</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">        &gt;&gt;&gt; cell = WMCLSTMCell(8, 16)</span>
+<span class="sd">        &gt;&gt;&gt; x = torch.randn(12, 4, 8)     # (time_steps, batch, input_size)</span>
+<span class="sd">        &gt;&gt;&gt; h = torch.zeros(4, 16)        # (batch, hidden_size)</span>
+<span class="sd">        &gt;&gt;&gt; c = torch.zeros(4, 16)        # (batch, hidden_size)</span>
+<span class="sd">        &gt;&gt;&gt; outs = []</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(x.size(0)):</span>
+<span class="sd">        ...     h, c = cell(x[t], (h, c))</span>
+<span class="sd">        ...     outs.append(h)</span>
+<span class="sd">        &gt;&gt;&gt; outs = torch.stack(outs, dim=0)  # (time_steps, batch, hidden_size)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;input_size&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bias&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;memory_bias&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;kernel_init&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;recurrent_kernel_init&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;memory_kernel_init&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bias_init&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;recurrent_bias_init&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;memory_bias_init&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">weight_mh</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">bias_ih</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">bias_hh</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">bias_mh</span><span class="p">:</span> <span class="n">Tensor</span>
+
+<div class="viewcode-block" id="WMCLSTMCell.__init__">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.WMCLSTMCell.html#torchrecurrent.WMCLSTMCell.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">memory_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">recurrent_kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">memory_kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">recurrent_bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">memory_bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">WMCLSTMCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">recurrent_bias</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_init</span> <span class="o">=</span> <span class="n">kernel_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_kernel_init</span> <span class="o">=</span> <span class="n">recurrent_kernel_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory_kernel_init</span> <span class="o">=</span> <span class="n">memory_kernel_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span> <span class="o">=</span> <span class="n">bias_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias_init</span> <span class="o">=</span> <span class="n">recurrent_bias_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">memory_bias_init</span> <span class="o">=</span> <span class="n">memory_bias_init</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_register_tensors</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;weight_ih&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">4</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">input_size</span><span class="p">),</span> <span class="kc">True</span><span class="p">),</span>
+                <span class="s2">&quot;weight_hh&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">4</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">),</span> <span class="kc">True</span><span class="p">),</span>
+                <span class="s2">&quot;weight_mh&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">),</span> <span class="kc">True</span><span class="p">),</span>
+                <span class="s2">&quot;bias_ih&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">4</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">,),</span> <span class="n">bias</span><span class="p">),</span>
+                <span class="s2">&quot;bias_hh&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">4</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">,),</span> <span class="n">recurrent_bias</span><span class="p">),</span>
+                <span class="s2">&quot;bias_mh&quot;</span><span class="p">:</span> <span class="p">((</span><span class="mi">3</span> <span class="o">*</span> <span class="n">hidden_size</span><span class="p">,),</span> <span class="n">memory_bias</span><span class="p">),</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_weights</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">init_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">named_parameters</span><span class="p">():</span>
+            <span class="k">if</span> <span class="s2">&quot;weight_ih&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">kernel_init</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;weight_hh&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_kernel_init</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;weight_mh&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">memory_kernel_init</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;bias_ih&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;bias_hh&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias_init</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="s2">&quot;bias_mh&quot;</span> <span class="ow">in</span> <span class="n">name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">memory_bias_init</span><span class="p">(</span><span class="n">param</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
+        <span class="n">state</span><span class="p">,</span> <span class="n">c_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_states</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_states</span><span class="p">((</span><span class="n">state</span><span class="p">,</span> <span class="n">c_state</span><span class="p">))</span>
+        <span class="n">inp</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">c_state</span><span class="p">,</span> <span class="n">is_batched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_states</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">c_state</span><span class="p">))</span>
+
+        <span class="n">gates</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span>
+            <span class="o">+</span> <span class="n">state</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
+        <span class="p">)</span>
+        <span class="n">weight_mh_1</span><span class="p">,</span> <span class="n">weight_mh_2</span><span class="p">,</span> <span class="n">weight_mh_3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_mh</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">bias_mh_1</span><span class="p">,</span> <span class="n">bias_mh_2</span><span class="p">,</span> <span class="n">bias_mh_3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_mh</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">input_gate</span><span class="p">,</span> <span class="n">forget_gate</span><span class="p">,</span> <span class="n">cell_gate</span><span class="p">,</span> <span class="n">output_gate</span> <span class="o">=</span> <span class="n">gates</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">new_input_gate</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span>
+            <span class="n">input_gate</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">c_state</span> <span class="o">@</span> <span class="n">weight_mh_1</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="n">bias_mh_1</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">new_forget_gate</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span>
+            <span class="n">forget_gate</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">c_state</span> <span class="o">@</span> <span class="n">weight_mh_2</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="n">bias_mh_2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="n">new_cell_gate</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">cell_gate</span><span class="p">)</span>
+        <span class="n">new_cstate</span> <span class="o">=</span> <span class="n">new_forget_gate</span> <span class="o">*</span> <span class="n">c_state</span> <span class="o">+</span> <span class="n">new_input_gate</span> <span class="o">*</span> <span class="n">new_cell_gate</span>
+        <span class="n">memory_gate</span> <span class="o">=</span> <span class="n">new_cstate</span> <span class="o">@</span> <span class="n">weight_mh_3</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="n">bias_mh_3</span>
+        <span class="n">new_output_gate</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">output_gate</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">memory_gate</span><span class="p">))</span>
+        <span class="n">new_state</span> <span class="o">=</span> <span class="n">new_output_gate</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">new_cstate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_batched</span><span class="p">:</span>
+            <span class="n">new_state</span> <span class="o">=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">new_cstate</span> <span class="o">=</span> <span class="n">new_cstate</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">new_cstate</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Francesco Martinuzzi.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

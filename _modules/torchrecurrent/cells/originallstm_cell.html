@@ -1,0 +1,658 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>torchrecurrent.cells.originallstm_cell &#8212; torchrecurrent</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../../../_static/documentation_options.js?v=360bc84d"></script>
+    <script src="../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchrecurrent/cells/originallstm_cell';</script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../../../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">torchrecurrent</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Manual
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+        
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar hide-on-wide">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../api/index.html">
+    API Manual
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../../../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.cells.originallstm_cell</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <h1>Source code for torchrecurrent.cells.originallstm_cell</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseDoubleRecurrentLayer</span><span class="p">,</span> <span class="n">BaseDoubleRecurrentCell</span>
+
+
+<div class="viewcode-block" id="OriginalLSTM">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.OriginalLSTM.html#torchrecurrent.OriginalLSTM">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OriginalLSTM</span><span class="p">(</span><span class="n">BaseDoubleRecurrentLayer</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer original long short-term memory (LSTM) network.</span>
+
+<span class="sd">    [`pub &lt;https://ieeexplore.ieee.org/abstract/document/6795963&gt;`_]</span>
+
+<span class="sd">    Each layer consists of an :class:`OriginalLSTMCell`, which updates the hidden</span>
+<span class="sd">    and cell states according to:</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        \begin{aligned}</span>
+<span class="sd">        g(t) &amp;= W_{ih} x(t) + b_{ih} + W_{hh} h(t-1) + b_{hh}, \\</span>
+<span class="sd">        i(t) &amp;= \sigma(g_i(t)), \\</span>
+<span class="sd">        \tilde{c}(t) &amp;= \tanh(g_c(t)), \\</span>
+<span class="sd">        o(t) &amp;= \sigma(g_o(t)), \\</span>
+<span class="sd">        c(t) &amp;= c(t-1) + i(t) \odot \tilde{c}(t), \\</span>
+<span class="sd">        h(t) &amp;= o(t) \odot \tanh(c(t)),</span>
+<span class="sd">        \end{aligned}</span>
+
+<span class="sd">    where :math:`\sigma` is the sigmoid function and :math:`\odot` denotes</span>
+<span class="sd">    elementwise multiplication.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_size: The number of expected features in the input `x`.</span>
+<span class="sd">        hidden_size: The number of features in the hidden and cell states.</span>
+<span class="sd">        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2``</span>
+<span class="sd">            would mean stacking two LSTM layers, with the second receiving the</span>
+<span class="sd">            outputs of the first. Default: 1</span>
+<span class="sd">        dropout: If non-zero, introduces a `Dropout` layer on the outputs of</span>
+<span class="sd">            each layer except the last layer, with dropout probability equal</span>
+<span class="sd">            to :attr:`dropout`. Default: 0</span>
+<span class="sd">        batch_first: If ``True``, then the input and output tensors are provided</span>
+<span class="sd">            as `(batch, seq, feature)` instead of `(seq, batch, feature)`.</span>
+<span class="sd">            Default: False</span>
+<span class="sd">        bias: If ``False``, then the layer does not use input-side bias</span>
+<span class="sd">            `b_{ih}`. Default: True</span>
+<span class="sd">        recurrent_bias: If ``False``, then the layer does not use recurrent</span>
+<span class="sd">            bias `b_{hh}`. Default: True</span>
+<span class="sd">        kernel_init: Initializer for `W_{ih}`. Default:</span>
+<span class="sd">            :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        recurrent_kernel_init: Initializer for `W_{hh}`. Default:</span>
+<span class="sd">            :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        bias_init: Initializer for `b_{ih}`. Default:</span>
+<span class="sd">            :func:`torch.nn.init.zeros_`</span>
+<span class="sd">        recurrent_bias_init: Initializer for `b_{hh}`. Default:</span>
+<span class="sd">            :func:`torch.nn.init.zeros_`</span>
+<span class="sd">        device: The desired device of parameters.</span>
+<span class="sd">        dtype: The desired floating point type of parameters.</span>
+
+<span class="sd">    Inputs: input, (h_0, c_0)</span>
+<span class="sd">        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,</span>
+<span class="sd">          :math:`(L, N, H_{in})` when ``batch_first=False`` or</span>
+<span class="sd">          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the</span>
+<span class="sd">          features of the input sequence. The input can also be a packed</span>
+<span class="sd">          variable length sequence. See</span>
+<span class="sd">          :func:`torch.nn.utils.rnn.pack_padded_sequence` or</span>
+<span class="sd">          :func:`torch.nn.utils.rnn.pack_sequence` for details.</span>
+<span class="sd">        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
+<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">          the initial hidden state. Defaults to zeros if not provided.</span>
+<span class="sd">        - **c_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
+<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">          the initial cell state. Defaults to zeros if not provided.</span>
+
+<span class="sd">        where:</span>
+
+<span class="sd">        .. math::</span>
+<span class="sd">            \begin{aligned}</span>
+<span class="sd">                N ={} &amp; \text{batch size} \\</span>
+<span class="sd">                L ={} &amp; \text{sequence length} \\</span>
+<span class="sd">                H_{in} ={} &amp; \text{input\_size} \\</span>
+<span class="sd">                H_{out} ={} &amp; \text{hidden\_size}</span>
+<span class="sd">            \end{aligned}</span>
+
+<span class="sd">    Outputs: output, (h_n, c_n)</span>
+<span class="sd">        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,</span>
+<span class="sd">          :math:`(L, N, H_{out})` when ``batch_first=False`` or</span>
+<span class="sd">          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the</span>
+<span class="sd">          output features `(h_t)` from the last layer of the LSTM, for each `t`.</span>
+<span class="sd">          If a :class:`torch.nn.utils.rnn.PackedSequence` has been given as</span>
+<span class="sd">          the input, the output will also be a packed sequence.</span>
+<span class="sd">        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
+<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">          the final hidden state for each element in the sequence.</span>
+<span class="sd">        - **c_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
+<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">          the final cell state for each element in the sequence.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        cells.{k}.weight_ih : the learnable input-hidden weights of the</span>
+<span class="sd">            :math:`k`-th layer, of shape `(3*hidden_size, input_size)` for</span>
+<span class="sd">            `k = 0`. Otherwise, the shape is `(3*hidden_size, hidden_size)`.</span>
+<span class="sd">        cells.{k}.weight_hh : the learnable hidden-hidden weights of the</span>
+<span class="sd">            :math:`k`-th layer, of shape `(3*hidden_size, hidden_size)`.</span>
+<span class="sd">        cells.{k}.bias_ih : the learnable input-hidden biases of the</span>
+<span class="sd">            :math:`k`-th layer, of shape `(3*hidden_size)`. Only present when</span>
+<span class="sd">            ``bias=True``.</span>
+<span class="sd">        cells.{k}.bias_hh : the learnable hidden-hidden biases of the</span>
+<span class="sd">            :math:`k`-th layer, of shape `(3*hidden_size)`. Only present when</span>
+<span class="sd">            ``recurrent_bias=True``.</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        All the weights and biases are initialized according to the provided</span>
+<span class="sd">        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).</span>
+
+<span class="sd">    .. note::</span>
+<span class="sd">        ``batch_first`` argument is ignored for unbatched inputs.</span>
+
+<span class="sd">    .. seealso::</span>
+<span class="sd">        :class:`OriginalLSTMCell`</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">        &gt;&gt;&gt; rnn = OriginalLSTM(10, 20, num_layers=2)</span>
+<span class="sd">        &gt;&gt;&gt; input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)</span>
+<span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 20)</span>
+<span class="sd">        &gt;&gt;&gt; c0 = torch.zeros(2, 3, 20)</span>
+<span class="sd">        &gt;&gt;&gt; output, (hn, cn) = rnn(input, (h0, c0))</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="OriginalLSTM.__init__">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.OriginalLSTM.html#torchrecurrent.OriginalLSTM.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">num_layers</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+        <span class="n">dropout</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
+        <span class="n">batch_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OriginalLSTM</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">batch_first</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_cells</span><span class="p">(</span><span class="n">OriginalLSTMCell</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="OriginalLSTMCell">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.OriginalLSTMCell.html#torchrecurrent.OriginalLSTMCell">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">OriginalLSTMCell</span><span class="p">(</span><span class="n">BaseDoubleRecurrentCell</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Original formulation of the LSTM cell (no forget gate).</span>
+
+<span class="sd">    [`pub &lt;https://ieeexplore.ieee.org/abstract/document/6795963&gt;`_]</span>
+
+<span class="sd">    .. math::</span>
+
+<span class="sd">        \begin{aligned}</span>
+<span class="sd">        \mathbf{g}(t) &amp;= \mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}</span>
+<span class="sd">            + \mathbf{W}_{hh}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}, \\</span>
+<span class="sd">            \mathbf{i}(t) &amp;= \sigma\bigl(g_i(t)\bigr), \\</span>
+<span class="sd">            \tilde{\mathbf{c}}(t) &amp;= \tanh\bigl(g_c(t)\bigr), \\</span>
+<span class="sd">            \mathbf{o}(t) &amp;= \sigma\bigl(g_o(t)\bigr), \\</span>
+<span class="sd">            \mathbf{c}(t) &amp;= \mathbf{c}(t-1)</span>
+<span class="sd">            + \mathbf{i}(t)\,\odot\,\tilde{\mathbf{c}}(t), \\</span>
+<span class="sd">            \mathbf{h}(t) &amp;= \mathbf{o}(t)\,\odot\,\tanh\bigl(\mathbf{c}(t)\bigr),</span>
+<span class="sd">        \end{aligned}</span>
+
+<span class="sd">    where :math:`\odot` denotes element-wise multiplication.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        input_size: The number of expected features in the input ``x``</span>
+<span class="sd">        hidden_size: The number of features in the hidden and cell states</span>
+<span class="sd">        bias: If ``False``, the layer does not use input-side bias ``b_{ih}``.</span>
+<span class="sd">            Default: ``True``</span>
+<span class="sd">        recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_{hh}``.</span>
+<span class="sd">            Default: ``True``</span>
+<span class="sd">        kernel_init: Initializer for ``W_{ih}``.</span>
+<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        recurrent_kernel_init: Initializer for ``W_{hh}``.</span>
+<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        bias_init: Initializer for ``b_{ih}`` when ``bias=True``.</span>
+<span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
+<span class="sd">        recurrent_bias_init: Initializer for ``b_{hh}`` when ``recurrent_bias=True``.</span>
+<span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
+<span class="sd">        device: The desired device of parameters.</span>
+<span class="sd">        dtype: The desired floating point type of parameters.</span>
+
+<span class="sd">    Inputs: input, (h_0, c_0)</span>
+<span class="sd">        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:</span>
+<span class="sd">          tensor containing input features</span>
+<span class="sd">        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
+<span class="sd">          initial hidden state</span>
+<span class="sd">        - **c_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
+<span class="sd">          initial cell state</span>
+
+<span class="sd">        If **(h_0, c_0)** is not provided, both default to zero.</span>
+
+<span class="sd">    Outputs: (h_1, c_1)</span>
+<span class="sd">        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
+<span class="sd">          next hidden state</span>
+<span class="sd">        - **c_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
+<span class="sd">          next cell state</span>
+
+<span class="sd">    Variables:</span>
+<span class="sd">        weight_ih: the learnable input–hidden weights,</span>
+<span class="sd">            of shape ``(3*hidden_size, input_size)``</span>
+<span class="sd">        weight_hh: the learnable hidden–hidden weights,</span>
+<span class="sd">            of shape ``(3*hidden_size, hidden_size)``</span>
+<span class="sd">        bias_ih: the learnable input–hidden biases,</span>
+<span class="sd">            of shape ``(3*hidden_size)``</span>
+<span class="sd">        bias_hh: the learnable hidden–hidden biases,</span>
+<span class="sd">            of shape ``(3*hidden_size)``</span>
+
+<span class="sd">    Examples::</span>
+
+<span class="sd">        &gt;&gt;&gt; cell = OriginalLSTMCell(10, 20)</span>
+<span class="sd">        &gt;&gt;&gt; x = torch.randn(5, 3, 10)   # (time_steps, batch, input_size)</span>
+<span class="sd">        &gt;&gt;&gt; h = torch.zeros(3, 20)</span>
+<span class="sd">        &gt;&gt;&gt; c = torch.zeros(3, 20)</span>
+<span class="sd">        &gt;&gt;&gt; out_h = []</span>
+<span class="sd">        &gt;&gt;&gt; for t in range(x.size(0)):</span>
+<span class="sd">        ...     h, c = cell(x[t], (h, c))</span>
+<span class="sd">        ...     out_h.append(h)</span>
+<span class="sd">        &gt;&gt;&gt; out_h = torch.stack(out_h, dim=0)  # (time_steps, batch, hidden_size)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">&quot;input_size&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bias&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;kernel_init&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;recurrent_kernel_init&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;bias_init&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;recurrent_bias_init&quot;</span><span class="p">,</span>
+    <span class="p">]</span>
+
+    <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">bias_ih</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">bias_hh</span><span class="p">:</span> <span class="n">Tensor</span>
+
+<div class="viewcode-block" id="OriginalLSTMCell.__init__">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.OriginalLSTMCell.html#torchrecurrent.OriginalLSTMCell.__init__">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">input_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">recurrent_kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">recurrent_bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">OriginalLSTMCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">recurrent_bias</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_init</span> <span class="o">=</span> <span class="n">kernel_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_kernel_init</span> <span class="o">=</span> <span class="n">recurrent_kernel_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span> <span class="o">=</span> <span class="n">bias_init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias_init</span> <span class="o">=</span> <span class="n">recurrent_bias_init</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="p">,</span>
+            <span class="n">hidden_size</span><span class="p">,</span>
+            <span class="n">ih_mult</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">hh_mult</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
+            <span class="n">recurrent_bias</span><span class="o">=</span><span class="n">recurrent_bias</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_weights</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tensor</span><span class="p">]:</span>
+        <span class="n">state</span><span class="p">,</span> <span class="n">c_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_states</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_states</span><span class="p">((</span><span class="n">state</span><span class="p">,</span> <span class="n">c_state</span><span class="p">))</span>
+        <span class="n">inp</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">c_state</span><span class="p">,</span> <span class="n">is_batched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_states</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="p">(</span><span class="n">state</span><span class="p">,</span> <span class="n">c_state</span><span class="p">))</span>
+
+        <span class="n">gates</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span>
+            <span class="o">+</span> <span class="n">state</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
+            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
+        <span class="p">)</span>
+        <span class="n">input_gate</span><span class="p">,</span> <span class="n">cell_gate</span><span class="p">,</span> <span class="n">output_gate</span> <span class="o">=</span> <span class="n">gates</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">new_cstate</span> <span class="o">=</span> <span class="n">c_state</span> <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">input_gate</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">cell_gate</span><span class="p">)</span>
+        <span class="n">new_state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">output_gate</span><span class="p">)</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">new_cstate</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">is_batched</span><span class="p">:</span>
+            <span class="n">new_state</span> <span class="o">=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">new_cstate</span> <span class="o">=</span> <span class="n">new_cstate</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">new_state</span><span class="p">,</span> <span class="n">new_cstate</span></div>
+
+</pre></div>
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Francesco Martinuzzi.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

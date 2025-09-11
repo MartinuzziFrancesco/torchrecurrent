@@ -77,6 +77,11 @@
       ~SGRN.T_destination
       ~SGRN.call_super_init
       ~SGRN.dump_patches
+      ~SGRN.input_size
+      ~SGRN.hidden_size
+      ~SGRN.bias
+      ~SGRN.dropout
+      ~SGRN.batch_first
       ~SGRN.training
    
    

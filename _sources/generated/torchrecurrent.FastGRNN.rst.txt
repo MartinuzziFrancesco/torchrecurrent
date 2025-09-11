@@ -1,0 +1,87 @@
+﻿torchrecurrent.FastGRNN
+=======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: FastGRNN
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~FastGRNN.__init__
+      ~FastGRNN.add_module
+      ~FastGRNN.apply
+      ~FastGRNN.bfloat16
+      ~FastGRNN.buffers
+      ~FastGRNN.children
+      ~FastGRNN.compile
+      ~FastGRNN.cpu
+      ~FastGRNN.cuda
+      ~FastGRNN.double
+      ~FastGRNN.eval
+      ~FastGRNN.extra_repr
+      ~FastGRNN.float
+      ~FastGRNN.forward
+      ~FastGRNN.get_buffer
+      ~FastGRNN.get_extra_state
+      ~FastGRNN.get_parameter
+      ~FastGRNN.get_submodule
+      ~FastGRNN.half
+      ~FastGRNN.initialize_cells
+      ~FastGRNN.ipu
+      ~FastGRNN.load_state_dict
+      ~FastGRNN.modules
+      ~FastGRNN.mtia
+      ~FastGRNN.named_buffers
+      ~FastGRNN.named_children
+      ~FastGRNN.named_modules
+      ~FastGRNN.named_parameters
+      ~FastGRNN.parameters
+      ~FastGRNN.register_backward_hook
+      ~FastGRNN.register_buffer
+      ~FastGRNN.register_forward_hook
+      ~FastGRNN.register_forward_pre_hook
+      ~FastGRNN.register_full_backward_hook
+      ~FastGRNN.register_full_backward_pre_hook
+      ~FastGRNN.register_load_state_dict_post_hook
+      ~FastGRNN.register_load_state_dict_pre_hook
+      ~FastGRNN.register_module
+      ~FastGRNN.register_parameter
+      ~FastGRNN.register_state_dict_post_hook
+      ~FastGRNN.register_state_dict_pre_hook
+      ~FastGRNN.requires_grad_
+      ~FastGRNN.set_extra_state
+      ~FastGRNN.set_submodule
+      ~FastGRNN.share_memory
+      ~FastGRNN.state_dict
+      ~FastGRNN.to
+      ~FastGRNN.to_empty
+      ~FastGRNN.train
+      ~FastGRNN.type
+      ~FastGRNN.xpu
+      ~FastGRNN.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~FastGRNN.T_destination
+      ~FastGRNN.call_super_init
+      ~FastGRNN.dump_patches
+      ~FastGRNN.input_size
+      ~FastGRNN.hidden_size
+      ~FastGRNN.bias
+      ~FastGRNN.dropout
+      ~FastGRNN.batch_first
+      ~FastGRNN.training
+   
+   

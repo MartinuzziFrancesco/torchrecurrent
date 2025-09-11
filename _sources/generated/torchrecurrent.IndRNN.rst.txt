@@ -1,0 +1,87 @@
+﻿torchrecurrent.IndRNN
+=====================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: IndRNN
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~IndRNN.__init__
+      ~IndRNN.add_module
+      ~IndRNN.apply
+      ~IndRNN.bfloat16
+      ~IndRNN.buffers
+      ~IndRNN.children
+      ~IndRNN.compile
+      ~IndRNN.cpu
+      ~IndRNN.cuda
+      ~IndRNN.double
+      ~IndRNN.eval
+      ~IndRNN.extra_repr
+      ~IndRNN.float
+      ~IndRNN.forward
+      ~IndRNN.get_buffer
+      ~IndRNN.get_extra_state
+      ~IndRNN.get_parameter
+      ~IndRNN.get_submodule
+      ~IndRNN.half
+      ~IndRNN.initialize_cells
+      ~IndRNN.ipu
+      ~IndRNN.load_state_dict
+      ~IndRNN.modules
+      ~IndRNN.mtia
+      ~IndRNN.named_buffers
+      ~IndRNN.named_children
+      ~IndRNN.named_modules
+      ~IndRNN.named_parameters
+      ~IndRNN.parameters
+      ~IndRNN.register_backward_hook
+      ~IndRNN.register_buffer
+      ~IndRNN.register_forward_hook
+      ~IndRNN.register_forward_pre_hook
+      ~IndRNN.register_full_backward_hook
+      ~IndRNN.register_full_backward_pre_hook
+      ~IndRNN.register_load_state_dict_post_hook
+      ~IndRNN.register_load_state_dict_pre_hook
+      ~IndRNN.register_module
+      ~IndRNN.register_parameter
+      ~IndRNN.register_state_dict_post_hook
+      ~IndRNN.register_state_dict_pre_hook
+      ~IndRNN.requires_grad_
+      ~IndRNN.set_extra_state
+      ~IndRNN.set_submodule
+      ~IndRNN.share_memory
+      ~IndRNN.state_dict
+      ~IndRNN.to
+      ~IndRNN.to_empty
+      ~IndRNN.train
+      ~IndRNN.type
+      ~IndRNN.xpu
+      ~IndRNN.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~IndRNN.T_destination
+      ~IndRNN.call_super_init
+      ~IndRNN.dump_patches
+      ~IndRNN.input_size
+      ~IndRNN.hidden_size
+      ~IndRNN.bias
+      ~IndRNN.dropout
+      ~IndRNN.batch_first
+      ~IndRNN.training
+   
+   

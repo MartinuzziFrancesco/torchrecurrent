@@ -77,6 +77,11 @@
       ~SCRN.T_destination
       ~SCRN.call_super_init
       ~SCRN.dump_patches
+      ~SCRN.input_size
+      ~SCRN.hidden_size
+      ~SCRN.bias
+      ~SCRN.dropout
+      ~SCRN.batch_first
       ~SCRN.training
    
    

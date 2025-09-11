@@ -1,63 +1,246 @@
 
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../">
-<head>
-  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>torchrecurrent.GatedAntisymmetricRNNCell &mdash; torchrecurrent 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
-      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
 
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>torchrecurrent.GatedAntisymmetricRNNCell &#8212; torchrecurrent</title>
   
-      <script src="../_static/jquery.js?v=5d32c60e"></script>
-      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=01f34227"></script>
-      <script src="../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
-    <script src="../_static/js/theme.js"></script>
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+    <script src="../_static/documentation_options.js?v=360bc84d"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.GatedAntisymmetricRNNCell';</script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="torchrecurrent.NBRCell" href="torchrecurrent.NBRCell.html" />
-    <link rel="prev" title="torchrecurrent.AntisymmetricRNNCell" href="torchrecurrent.AntisymmetricRNNCell.html" /> 
-</head>
+    <link rel="prev" title="torchrecurrent.AntisymmetricRNNCell" href="torchrecurrent.AntisymmetricRNNCell.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
 
-<body class="wy-body-for-nav"> 
-  <div class="wy-grid-for-nav">
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
 
-          
-          
-          <a href="../index.html" class="icon icon-home">
-            torchrecurrent
-          </a>
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
 </div>
-        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="../cells.html">Recurrent Cells Reference</a><ul class="current">
+
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+  
+    <p class="title logo__title">torchrecurrent</p>
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Manual
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Manual
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../api/cells.html">Recurrent Cells Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.AntisymmetricRNNCell.html">torchrecurrent.AntisymmetricRNNCell</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">torchrecurrent.GatedAntisymmetricRNNCell</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_ih"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.weight_ih</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_hh"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.weight_hh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_ih"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.bias_ih</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_hh"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.bias_hh</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.__init__"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.__init__()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.GatedAntisymmetricRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NBRCell.html">torchrecurrent.NBRCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.BRCell.html">torchrecurrent.BRCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.CFNCell.html">torchrecurrent.CFNCell</a></li>
@@ -86,43 +269,109 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UnICORNNCell.html">torchrecurrent.UnICORNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.WMCLSTMCell.html">torchrecurrent.WMCLSTMCell</a></li>
 </ul>
-</li>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/layers.html">Recurrent Layers Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.AntisymmetricRNN.html">torchrecurrent.AntisymmetricRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.GatedAntisymmetricRNN.html">torchrecurrent.GatedAntisymmetricRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NBR.html">torchrecurrent.NBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.BR.html">torchrecurrent.BR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.CFN.html">torchrecurrent.CFN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.coRNN.html">torchrecurrent.coRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastRNN.html">torchrecurrent.FastRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastGRNN.html">torchrecurrent.FastGRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ATR.html">torchrecurrent.ATR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IndRNN.html">torchrecurrent.IndRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.JANET.html">torchrecurrent.JANET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LEM.html">torchrecurrent.LEM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRU.html">torchrecurrent.LightRU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRU.html">torchrecurrent.LiGRU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGU.html">torchrecurrent.MGU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTM.html">torchrecurrent.MultiplicativeLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT1.html">torchrecurrent.MUT1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2.html">torchrecurrent.MUT2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT3.html">torchrecurrent.MUT3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NAS.html">torchrecurrent.NAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.OriginalLSTM.html">torchrecurrent.OriginalLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.PeepholeLSTM.html">torchrecurrent.PeepholeLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.RAN.html">torchrecurrent.RAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SCRN.html">torchrecurrent.SCRN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGRN.html">torchrecurrent.SGRN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.STAR.html">torchrecurrent.STAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UGRNN.html">torchrecurrent.UGRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UnICORNN.html">torchrecurrent.UnICORNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.WMCLSTM.html">torchrecurrent.WMCLSTM</a></li>
 </ul>
-
-        </div>
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">torchrecurrent</a>
-      </nav>
-
-      <div class="wy-nav-content">
-        <div class="rst-content">
-          <div role="navigation" aria-label="Page navigation">
-  <ul class="wy-breadcrumbs">
-      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
-          <li class="breadcrumb-item"><a href="../cells.html">Recurrent Cells Reference</a></li>
-      <li class="breadcrumb-item active">torchrecurrent.GatedAntisymmetricRNNCell</li>
-      <li class="wy-breadcrumbs-aside">
-            <a href="../_sources/generated/torchrecurrent.GatedAntisymmetricRNNCell.rst.txt" rel="nofollow"> View page source</a>
-      </li>
-  </ul>
-  <hr/>
+</details></li>
+</ul>
 </div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
-             
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api/index.html" class="nav-link">API Manual</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../api/cells.html" class="nav-link">Recurrent Cells Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.GatedAntisymmetricRNNCell</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
   <section id="torchrecurrent-gatedantisymmetricrnncell">
-<h1>torchrecurrent.GatedAntisymmetricRNNCell<a class="headerlink" href="#torchrecurrent-gatedantisymmetricrnncell" title="Link to this heading"></a></h1>
+<h1>torchrecurrent.GatedAntisymmetricRNNCell<a class="headerlink" href="#torchrecurrent-gatedantisymmetricrnncell" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">GatedAntisymmetricRNNCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell" title="Link to this definition"></a></dt>
-<dd><p>A gated Antisymmetric RNN cell.</p>
-<p>Implements the gated update from
-“AntisymmetricRNN: A Dynamical System View on Recurrent Neural Networks”
-&lt;<a class="reference external" href="https://arxiv.org/abs/1902.09689">https://arxiv.org/abs/1902.09689</a>&gt;_.</p>
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">GatedAntisymmetricRNNCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/antisymmetricrnn_cell.html#GatedAntisymmetricRNNCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell" title="Link to this definition">#</a></dt>
+<dd><p>A gated antisymmetric recurrent neural network (RNN) cell.</p>
+<p>[<a class="reference external" href="https://arxiv.org/abs/1902.09689">arXiv</a>]</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
     \mathbf{z}(t) &amp;= \sigma\Bigl(
@@ -130,7 +379,7 @@
     \,\mathbf{h}(t-1) + \mathbf{b}_{hh}
     + \mathbf{W}_{ih}^z\,\mathbf{x}(t)
     + \mathbf{b}_{ih}^z \Bigr), \\
-    \mathbf{h}(t) &amp;= \mathbf{h}(t-1)
+        \mathbf{h}(t) &amp;= \mathbf{h}(t-1)
     + \epsilon \,\mathbf{z}(t)\,\circ\,
     \tanh\Bigl(
         (\mathbf{W}_{hh} - \mathbf{W}_{hh}^\top - \gamma\,\mathbf{I})
@@ -138,134 +387,82 @@
         + \mathbf{W}_{ih}^x\,\mathbf{x}(t)
         + \mathbf{b}_{ih}^h \Bigr)
 \end{aligned}\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\epsilon\)</span> controls the integration step size,
-<span class="math notranslate nohighlight">\(\gamma\)</span> is a stability damping, and <span class="math notranslate nohighlight">\(\circ\)</span> is element-wise product.</p>
+<p>where <span class="math notranslate nohighlight">\(\epsilon\)</span> controls the integration step size, <span class="math notranslate nohighlight">\(\gamma\)</span>
+is a stability damping, and <span class="math notranslate nohighlight">\(\circ\)</span> is element-wise product.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_size</strong> (<em>int</em>) – Number of expected features in the input <cite>inp</cite>.</p></li>
-<li><p><strong>hidden_size</strong> (<em>int</em>) – Number of features in the hidden state.</p></li>
-<li><p><strong>bias</strong> (<em>bool</em>) – If False, no bias is used used. Default: True.</p></li>
-<li><p><strong>recurrent_bias</strong> (<em>bool</em>) – If False, no recurrent bias is used. Default: True.</p></li>
-<li><p><strong>nonlinearity</strong> (<em>Callable</em>) – Activation to apply (default: <cite>torch.tanh</cite>).</p></li>
-<li><p><strong>kernel_init</strong> (<em>Callable</em>) – Initializer for input‐to‐hidden weights
-(default: <cite>nn.init.xavier_uniform_</cite>).</p></li>
-<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>) – Initializer for hidden‐to‐hidden weights
-(default: <cite>nn.init.normal_</cite>).</p></li>
-<li><p><strong>bias_init</strong> (<em>Callable</em>) – Initializer for input biases
-(default: <cite>nn.init.zeros_</cite>).</p></li>
-<li><p><strong>epsilon</strong> (<em>float</em>) – Step‐size multiplier for state update.
-Default: 1.0.</p></li>
-<li><p><strong>gamma</strong> (<em>float</em>) – Damping term for antisymmetric part.
-Default: 0.0.</p></li>
-<li><p><strong>device</strong> (<em>torch.device</em><em>, </em><em>optional</em>) – Device on which to place parameters.</p></li>
-<li><p><strong>dtype</strong> (<em>torch.dtype</em><em>, </em><em>optional</em>) – Data type of parameters.</p></li>
+<li><p><strong>input_size</strong> – The number of expected features in the input <cite>x</cite></p></li>
+<li><p><strong>hidden_size</strong> – The number of features in the hidden state <cite>h</cite></p></li>
+<li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the layer does not use input-side biases.
+Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the layer does not use recurrent bias.
+Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
+<li><p><strong>nonlinearity</strong> – Elementwise nonlinearity applied to the
+candidate pre-activation. Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.tanh()</span></code></p></li>
+<li><p><strong>kernel_init</strong> – Initializer for <cite>weight_ih</cite>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
+<li><p><strong>recurrent_kernel_init</strong> – Initializer for <cite>weight_hh</cite>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.normal_()</span></code></p></li>
+<li><p><strong>bias_init</strong> – Initializer for input-side biases.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
+<li><p><strong>epsilon</strong> – Step-size multiplier <span class="math notranslate nohighlight">\(\epsilon\)</span>.
+Default: <code class="docutils literal notranslate"><span class="pre">1.0</span></code></p></li>
+<li><p><strong>gamma</strong> – Damping coefficient <span class="math notranslate nohighlight">\(\gamma\)</span> used in the
+antisymmetric transform. Default: <code class="docutils literal notranslate"><span class="pre">0.0</span></code></p></li>
+<li><p><strong>device</strong> – The desired device of parameters.</p></li>
+<li><p><strong>dtype</strong> – The desired floating point type of parameters.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="simple">
-<dt>Inputs:</dt><dd><ul class="simple">
-<li><dl class="simple">
-<dt><strong>inp</strong> (Tensor): Input at current time step, of shape</dt><dd><p><cite>(batch, input_size)</cite> or <cite>(input_size,)</cite>.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt><strong>state</strong> (Tensor or Tuple[Tensor], optional): Previous hidden state,</dt><dd><p>of shape <cite>(batch, hidden_size)</cite> or <cite>(hidden_size,)</cite>. Defaults to zeros.</p>
-</dd>
-</dl>
-</li>
-</ul>
-</dd>
-<dt>Outputs:</dt><dd><ul class="simple">
-<li><p><strong>new_state</strong> (Tensor): Updated hidden state, same shape as <cite>state</cite>.</p></li>
-</ul>
-</dd>
-</dl>
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.weight_ih">
-<span class="sig-name descname"><span class="pre">weight_ih</span></span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_ih" title="Link to this definition"></a></dt>
-<dd><p>Input‐to‐hidden weights, shape <cite>(2*hidden_size, input_size)</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.weight_hh">
-<span class="sig-name descname"><span class="pre">weight_hh</span></span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_hh" title="Link to this definition"></a></dt>
-<dd><p>Hidden‐to‐hidden weights, shape <cite>(hidden_size, hidden_size)</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.bias_ih">
-<span class="sig-name descname"><span class="pre">bias_ih</span></span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_ih" title="Link to this definition"></a></dt>
-<dd><p>Input bias, shape <cite>(2*hidden_size,)</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.bias_hh">
-<span class="sig-name descname"><span class="pre">bias_hh</span></span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_hh" title="Link to this definition"></a></dt>
-<dd><p>Hidden bias, shape <cite>(hidden_size,)</cite>.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Type<span class="colon">:</span></dt>
-<dd class="field-odd"><p>Tensor</p>
-</dd>
-</dl>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This cell splits the input projection into a gate and a candidate,
-then applies an antisymmetric recurrent transformation plus gating
-to ensure stable, expressive dynamics.</p>
-</div>
 <dl>
-<dt>Examples::</dt><dd><div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">GatedAntisymmetricRNNCell</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>    <span class="c1"># batch=4, input_size=8</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>  <span class="c1"># batch=4, hidden_size=16</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h1</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">h0</span><span class="p">)</span>         <span class="c1"># new hidden state</span>
+<dt>Inputs: input, h_0</dt><dd><ul class="simple">
+<li><p><strong>input</strong> of shape <cite>(batch, input_size)</cite> or <cite>(input_size,)</cite>:
+tensor containing input features</p></li>
+<li><p><strong>h_0</strong> of shape <cite>(batch, hidden_size)</cite> or <cite>(hidden_size,)</cite>:
+tensor containing the initial hidden state</p></li>
+</ul>
+<p>If <strong>h_0</strong> is not provided, it defaults to zero.</p>
+</dd>
+<dt>Outputs: h_1</dt><dd><ul class="simple">
+<li><p><strong>h_1</strong> of shape <cite>(batch, hidden_size)</cite> or <cite>(hidden_size,)</cite>:
+tensor containing the next hidden state</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weight_ih</strong> – the learnable input–hidden weights,
+of shape <cite>(2*hidden_size, input_size)</cite> (gate and candidate)</p></li>
+<li><p><strong>weight_hh</strong> – the learnable hidden–hidden weights,
+of shape <cite>(hidden_size, hidden_size)</cite></p></li>
+<li><p><strong>bias_ih</strong> – the learnable input–hidden bias,
+of shape <cite>(2*hidden_size)</cite></p></li>
+<li><p><strong>bias_hh</strong> – the learnable hidden–hidden bias,
+of shape <cite>(hidden_size)</cite></p></li>
+</ul>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">GatedAntisymmetricRNNCell</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">epsilon</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">gamma</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>     <span class="c1"># (time_steps, batch, input_size)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>       <span class="c1"># (batch, hidden_size)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="n">h</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="n">h</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>  <span class="c1"># (time_steps, batch, hidden_size)</span>
 </pre></div>
 </div>
-</dd>
-</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchrecurrent.GatedAntisymmetricRNNCell.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epsilon=1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma=0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/antisymmetricrnn_cell.html#GatedAntisymmetricRNNCell.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.GatedAntisymmetricRNNCell.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>input_size</strong> (<em>int</em>)</p></li>
-<li><p><strong>hidden_size</strong> (<em>int</em>)</p></li>
-<li><p><strong>bias</strong> (<em>bool</em>)</p></li>
-<li><p><strong>recurrent_bias</strong> (<em>bool</em>)</p></li>
-<li><p><strong>kernel_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>recurrent_kernel_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>bias_init</strong> (<em>Callable</em>)</p></li>
-<li><p><strong>epsilon</strong> (<em>float</em>)</p></li>
-<li><p><strong>gamma</strong> (<em>float</em>)</p></li>
-<li><p><strong>device</strong> (<em>device</em><em> | </em><em>None</em>)</p></li>
-<li><p><strong>dtype</strong> (<em>dtype</em><em> | </em><em>None</em>)</p></li>
-</ul>
-</dd>
-</dl>
 </dd></dl>
 
 <p class="rubric">Methods</p>
-<table class="autosummary longtable docutils align-default">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.__init__" title="torchrecurrent.GatedAntisymmetricRNNCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
 <td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
@@ -428,8 +625,9 @@ to ensure stable, expressive dynamics.</p>
 </tr>
 </tbody>
 </table>
+</div>
 <p class="rubric">Attributes</p>
-<table class="autosummary longtable docutils align-default">
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">T_destination</span></code></p></td>
 <td><p></p></td>
@@ -440,16 +638,16 @@ to ensure stable, expressive dynamics.</p>
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_patches</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_ih" title="torchrecurrent.GatedAntisymmetricRNNCell.weight_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.weight_hh" title="torchrecurrent.GatedAntisymmetricRNNCell.weight_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_ih" title="torchrecurrent.GatedAntisymmetricRNNCell.bias_ih"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></a></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.GatedAntisymmetricRNNCell.bias_hh" title="torchrecurrent.GatedAntisymmetricRNNCell.bias_hh"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></a></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></p></td>
 <td><p></p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
@@ -469,39 +667,145 @@ to ensure stable, expressive dynamics.</p>
 </tr>
 </tbody>
 </table>
+</div>
 </dd></dl>
 
 </section>
 
 
-           </div>
-          </div>
-          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="torchrecurrent.AntisymmetricRNNCell.html" class="btn btn-neutral float-left" title="torchrecurrent.AntisymmetricRNNCell" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="torchrecurrent.NBRCell.html" class="btn btn-neutral float-right" title="torchrecurrent.NBRCell" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>&#169; Copyright 2025, Francesco Martinuzzi.</p>
-  </div>
-
-  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    provided by <a href="https://readthedocs.org">Read the Docs</a>.
-   
-
-</footer>
-        </div>
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="torchrecurrent.AntisymmetricRNNCell.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">torchrecurrent.AntisymmetricRNNCell</p>
       </div>
-    </section>
-  </div>
-  <script>
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script> 
+    </a>
+    <a class="right-next"
+       href="torchrecurrent.NBRCell.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">torchrecurrent.NBRCell</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
 
-</body>
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.GatedAntisymmetricRNNCell"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.GatedAntisymmetricRNNCell.__init__"><code class="docutils literal notranslate"><span class="pre">GatedAntisymmetricRNNCell.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/MartinuzziFrancesco/torchrecurrent/edit/main/docs/generated/torchrecurrent.GatedAntisymmetricRNNCell.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/generated/torchrecurrent.GatedAntisymmetricRNNCell.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Francesco Martinuzzi.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
 </html>

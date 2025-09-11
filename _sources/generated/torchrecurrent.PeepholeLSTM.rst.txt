@@ -1,0 +1,87 @@
+﻿torchrecurrent.PeepholeLSTM
+===========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: PeepholeLSTM
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~PeepholeLSTM.__init__
+      ~PeepholeLSTM.add_module
+      ~PeepholeLSTM.apply
+      ~PeepholeLSTM.bfloat16
+      ~PeepholeLSTM.buffers
+      ~PeepholeLSTM.children
+      ~PeepholeLSTM.compile
+      ~PeepholeLSTM.cpu
+      ~PeepholeLSTM.cuda
+      ~PeepholeLSTM.double
+      ~PeepholeLSTM.eval
+      ~PeepholeLSTM.extra_repr
+      ~PeepholeLSTM.float
+      ~PeepholeLSTM.forward
+      ~PeepholeLSTM.get_buffer
+      ~PeepholeLSTM.get_extra_state
+      ~PeepholeLSTM.get_parameter
+      ~PeepholeLSTM.get_submodule
+      ~PeepholeLSTM.half
+      ~PeepholeLSTM.initialize_cells
+      ~PeepholeLSTM.ipu
+      ~PeepholeLSTM.load_state_dict
+      ~PeepholeLSTM.modules
+      ~PeepholeLSTM.mtia
+      ~PeepholeLSTM.named_buffers
+      ~PeepholeLSTM.named_children
+      ~PeepholeLSTM.named_modules
+      ~PeepholeLSTM.named_parameters
+      ~PeepholeLSTM.parameters
+      ~PeepholeLSTM.register_backward_hook
+      ~PeepholeLSTM.register_buffer
+      ~PeepholeLSTM.register_forward_hook
+      ~PeepholeLSTM.register_forward_pre_hook
+      ~PeepholeLSTM.register_full_backward_hook
+      ~PeepholeLSTM.register_full_backward_pre_hook
+      ~PeepholeLSTM.register_load_state_dict_post_hook
+      ~PeepholeLSTM.register_load_state_dict_pre_hook
+      ~PeepholeLSTM.register_module
+      ~PeepholeLSTM.register_parameter
+      ~PeepholeLSTM.register_state_dict_post_hook
+      ~PeepholeLSTM.register_state_dict_pre_hook
+      ~PeepholeLSTM.requires_grad_
+      ~PeepholeLSTM.set_extra_state
+      ~PeepholeLSTM.set_submodule
+      ~PeepholeLSTM.share_memory
+      ~PeepholeLSTM.state_dict
+      ~PeepholeLSTM.to
+      ~PeepholeLSTM.to_empty
+      ~PeepholeLSTM.train
+      ~PeepholeLSTM.type
+      ~PeepholeLSTM.xpu
+      ~PeepholeLSTM.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~PeepholeLSTM.T_destination
+      ~PeepholeLSTM.call_super_init
+      ~PeepholeLSTM.dump_patches
+      ~PeepholeLSTM.input_size
+      ~PeepholeLSTM.hidden_size
+      ~PeepholeLSTM.bias
+      ~PeepholeLSTM.dropout
+      ~PeepholeLSTM.batch_first
+      ~PeepholeLSTM.training
+   
+   
