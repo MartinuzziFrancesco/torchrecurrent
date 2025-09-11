@@ -1,5 +1,4 @@
-"""Collection of RNNCell implementations.
-"""
+"""Collection of RNNCell implementations."""
 
 from .antisymmetricrnn_cell import (
     AntisymmetricRNNCell,

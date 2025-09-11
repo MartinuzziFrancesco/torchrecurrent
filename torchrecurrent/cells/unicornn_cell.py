@@ -6,6 +6,106 @@ from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
 class UnICORNN(BaseDoubleRecurrentLayer):
+    r"""Multi-layer Undamped Independent Controlled Oscillatory RNN (UnICORNN).
+
+    [`arXiv <https://arxiv.org/abs/2103.05487>`_]
+
+    Each layer consists of a :class:`UnICORNNCell`, which maintains two coupled
+    state vectors, the hidden state :math:`h(t)` and the control state
+    :math:`z(t)`, updated as:
+
+    .. math::
+        \begin{aligned}
+            h(t) &= h(t-1) + \Delta t \, \hat{\sigma}(w_{ch}) \circ z(t), \\
+            z(t) &= z(t-1) - \Delta t \, \hat{\sigma}(w_{ch}) \circ
+                \Bigl[\sigma(W_{hh} h(t-1) + W_{ih} x(t) + b_{ih})
+                + \alpha h(t-1)\Bigr],
+        \end{aligned}
+
+    where :math:`\Delta t` is the integration step ``dt``,
+    :math:`\alpha` is a leakage constant, :math:`\sigma` is the sigmoid, and
+    :math:`\circ` is the elementwise product.
+
+    Args:
+        input_size: Number of expected features in the input `x`.
+        hidden_size: Number of features in the hidden state `h` (and control `z`).
+        num_layers: Number of stacked recurrent layers. Default: 1
+        dropout: If non-zero, adds dropout after each layer (except the last).
+            Default: 0
+        batch_first: If ``True``, inputs and outputs are in
+            `(batch, seq, feature)` format instead of `(seq, batch, feature)`.
+            Default: False
+        bias: If ``False``, disables input bias `b_{ih}`. Default: True
+        recurrent_bias: If ``False``, disables hidden bias `b_{hh}`. Default: True
+        kernel_init: Initializer for `W_{ih}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `W_{hh}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        control_kernel_init: Initializer for `w_{ch}`.
+            Default: :func:`torch.nn.init.normal_`
+        bias_init: Initializer for `b_{ih}` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for `b_{hh}` when ``recurrent_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        dt: Integration step :math:`\Delta t`. Default: 1.0
+        alpha: Leakage coefficient :math:`\alpha`. Default: 0.0
+        device: Desired device of parameters.
+        dtype: Desired floating point type of parameters.
+
+    Inputs: input, (h_0, z_0)
+        - **input**: tensor of shape `(L, H_in)` for unbatched input,
+          `(L, N, H_in)` when ``batch_first=False``, or `(N, L, H_in)` when
+          ``batch_first=True`` containing input sequence features.
+        - **h_0**: tensor of shape `(num_layers, H_out)` for unbatched input or
+          `(num_layers, N, H_out)` containing the initial hidden state. Defaults
+          to zeros if not provided.
+        - **z_0**: tensor of the same shape as `h_0`, containing the initial
+          control state. Defaults to zeros if not provided.
+
+        Where:
+
+        .. math::
+            \begin{aligned}
+                N &= \text{batch size} \\
+                L &= \text{sequence length} \\
+                H_{in} &= \text{input size} \\
+                H_{out} &= \text{hidden size}
+            \end{aligned}
+
+    Outputs: output, (h_n, z_n)
+        - **output**: tensor of shape `(L, H_out)` for unbatched input,
+          `(L, N, H_out)` when ``batch_first=False``, or `(N, L, H_out)` when
+          ``batch_first=True`` containing the hidden states from the last layer
+          at each timestep.
+        - **h_n**: final hidden state for each layer,
+          shape `(num_layers, H_out)` (unbatched) or `(num_layers, N, H_out)`.
+        - **z_n**: final control state for each layer, same shape as `h_n`.
+
+    Attributes:
+        cells.{k}.weight_ih : input–hidden weights of the :math:`k`-th layer,
+            shape `(hidden_size, input_size)` for `k=0`,
+            otherwise `(hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : hidden–hidden weights of the :math:`k`-th layer,
+            shape `(hidden_size, hidden_size)`.
+        cells.{k}.weight_ch : control weights of the :math:`k`-th layer,
+            shape `(hidden_size,)`.
+        cells.{k}.bias_ih : input bias of the :math:`k`-th layer,
+            shape `(hidden_size,)` if ``bias=True``.
+        cells.{k}.bias_hh : hidden bias of the :math:`k`-th layer,
+            shape `(hidden_size,)` if ``recurrent_bias=True``.
+
+    .. seealso::
+        :class:`UnICORNNCell`
+
+    Examples::
+
+        >>> rnn = UnICORNN(10, 20, num_layers=2, dt=0.5, alpha=0.1)
+        >>> x = torch.randn(5, 3, 10)    # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 20)
+        >>> z0 = torch.zeros(2, 3, 20)
+        >>> out, (hn, zn) = rnn(x, (h0, z0))
+    """
+
     def __init__(
         self,
         input_size: int,

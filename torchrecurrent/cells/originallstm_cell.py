@@ -6,6 +6,124 @@ from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
 class OriginalLSTM(BaseDoubleRecurrentLayer):
+    r"""Multi-layer original long short-term memory (LSTM) network.
+
+    [`pub <https://ieeexplore.ieee.org/abstract/document/6795963>`_]
+
+    Each layer consists of an :class:`OriginalLSTMCell`, which updates the hidden
+    and cell states according to:
+
+    .. math::
+        \begin{aligned}
+        g(t) &= W_{ih} x(t) + b_{ih} + W_{hh} h(t-1) + b_{hh}, \\
+        i(t) &= \sigma(g_i(t)), \\
+        \tilde{c}(t) &= \tanh(g_c(t)), \\
+        o(t) &= \sigma(g_o(t)), \\
+        c(t) &= c(t-1) + i(t) \odot \tilde{c}(t), \\
+        h(t) &= o(t) \odot \tanh(c(t)),
+        \end{aligned}
+
+    where :math:`\sigma` is the sigmoid function and :math:`\odot` denotes
+    elementwise multiplication.
+
+    Args:
+        input_size: The number of expected features in the input `x`.
+        hidden_size: The number of features in the hidden and cell states.
+        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2``
+            would mean stacking two LSTM layers, with the second receiving the
+            outputs of the first. Default: 1
+        dropout: If non-zero, introduces a `Dropout` layer on the outputs of
+            each layer except the last layer, with dropout probability equal
+            to :attr:`dropout`. Default: 0
+        batch_first: If ``True``, then the input and output tensors are provided
+            as `(batch, seq, feature)` instead of `(seq, batch, feature)`.
+            Default: False
+        bias: If ``False``, then the layer does not use input-side bias
+            `b_{ih}`. Default: True
+        recurrent_bias: If ``False``, then the layer does not use recurrent
+            bias `b_{hh}`. Default: True
+        kernel_init: Initializer for `W_{ih}`. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `W_{hh}`. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for `b_{ih}`. Default:
+            :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for `b_{hh}`. Default:
+            :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
+
+    Inputs: input, (h_0, c_0)
+        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+          :math:`(L, N, H_{in})` when ``batch_first=False`` or
+          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the
+          features of the input sequence. The input can also be a packed
+          variable length sequence. See
+          :func:`torch.nn.utils.rnn.pack_padded_sequence` or
+          :func:`torch.nn.utils.rnn.pack_sequence` for details.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the initial hidden state. Defaults to zeros if not provided.
+        - **c_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the initial cell state. Defaults to zeros if not provided.
+
+        where:
+
+        .. math::
+            \begin{aligned}
+                N ={} & \text{batch size} \\
+                L ={} & \text{sequence length} \\
+                H_{in} ={} & \text{input\_size} \\
+                H_{out} ={} & \text{hidden\_size}
+            \end{aligned}
+
+    Outputs: output, (h_n, c_n)
+        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+          :math:`(L, N, H_{out})` when ``batch_first=False`` or
+          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the
+          output features `(h_t)` from the last layer of the LSTM, for each `t`.
+          If a :class:`torch.nn.utils.rnn.PackedSequence` has been given as
+          the input, the output will also be a packed sequence.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the final hidden state for each element in the sequence.
+        - **c_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the final cell state for each element in the sequence.
+
+    Attributes:
+        cells.{k}.weight_ih : the learnable input-hidden weights of the
+            :math:`k`-th layer, of shape `(3*hidden_size, input_size)` for
+            `k = 0`. Otherwise, the shape is `(3*hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : the learnable hidden-hidden weights of the
+            :math:`k`-th layer, of shape `(3*hidden_size, hidden_size)`.
+        cells.{k}.bias_ih : the learnable input-hidden biases of the
+            :math:`k`-th layer, of shape `(3*hidden_size)`. Only present when
+            ``bias=True``.
+        cells.{k}.bias_hh : the learnable hidden-hidden biases of the
+            :math:`k`-th layer, of shape `(3*hidden_size)`. Only present when
+            ``recurrent_bias=True``.
+
+    .. note::
+        All the weights and biases are initialized according to the provided
+        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
+
+    .. note::
+        ``batch_first`` argument is ignored for unbatched inputs.
+
+    .. seealso::
+        :class:`OriginalLSTMCell`
+
+    Examples::
+
+        >>> rnn = OriginalLSTM(10, 20, num_layers=2)
+        >>> input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 20)
+        >>> c0 = torch.zeros(2, 3, 20)
+        >>> output, (hn, cn) = rnn(input, (h0, c0))
+    """
+
     def __init__(
         self,
         input_size: int,

@@ -6,6 +6,124 @@ from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
 
 
 class CFN(BaseSingleRecurrentLayer):
+    r"""Multi-layer chaos free recurrent neural network.
+
+    [`arXiv <https://arxiv.org/abs/1612.06212>`_]
+
+    Each layer consists of a :class:`CFNCell`, which updates the hidden state
+    according to:
+
+    .. math::
+        \begin{aligned}
+            \boldsymbol{\theta}_t &= \sigma(
+                \mathbf{W}_{ih}^{\theta} x_t + \mathbf{b}_{ih}^{\theta}
+                + \mathbf{W}_{hh}^{\theta} h_{t-1} + \mathbf{b}_{hh}^{\theta}), \\
+            \boldsymbol{\eta}_t &= \sigma(
+                \mathbf{W}_{ih}^{\eta} x_t + \mathbf{b}_{ih}^{\eta}
+                + \mathbf{W}_{hh}^{\eta} h_{t-1} + \mathbf{b}_{hh}^{\eta}), \\
+            h_t &= \boldsymbol{\theta}_t \circ \tanh(h_{t-1})
+                + \boldsymbol{\eta}_t \circ \tanh(
+                    \mathbf{W}_{ih}^{h} x_t + \mathbf{b}_{ih}^{h}).
+        \end{aligned}
+
+    where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the input at
+    time `t`, :math:`\sigma` is the logistic sigmoid, and :math:`\circ` denotes
+    elementwise multiplication. The gating formulation is designed to mitigate
+    chaotic dynamics, hence the name "chaos free network".
+
+    In a multilayer CFN, the input :math:`x^{(l)}_t` of the :math:`l`-th layer
+    (:math:`l \ge 2`) is the hidden state :math:`h^{(l-1)}_t` of the previous
+    layer multiplied by dropout :math:`\delta^{(l-1)}_t`, where each
+    :math:`\delta^{(l-1)}_t` is a Bernoulli random variable which is 0 with
+    probability :attr:`dropout`.
+
+    Args:
+        input_size: The number of expected features in the input `x`.
+        hidden_size: The number of features in the hidden state `h`.
+        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2`` would
+            mean stacking two CFN layers, with the second receiving the outputs of
+            the first. Default: 1
+        dropout: If non-zero, introduces a `Dropout` layer on the outputs of each
+            layer except the last layer, with dropout probability equal to
+            :attr:`dropout`. Default: 0
+        batch_first: If ``True``, then the input and output tensors are provided as
+            `(batch, seq, feature)` instead of `(seq, batch, feature)`. Default: False
+        bias: If ``False``, then the layer does not use input-side biases. Default: True
+        recurrent_bias: If ``False``, then the layer does not use recurrent biases.
+            Default: True
+        kernel_init: Initializer for input–hidden weights. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for hidden–hidden weights. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for input-side biases. Default:
+            :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for recurrent biases. Default:
+            :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
+
+    Inputs: input, h_0
+        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+          :math:`(L, N, H_{in})` when ``batch_first=False`` or
+          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
+          the input sequence. The input can also be a packed variable length
+          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
+          :func:`torch.nn.utils.rnn.pack_sequence` for details.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          hidden state for each element in the input sequence. Defaults to zeros if
+          not provided.
+
+        where:
+
+        .. math::
+            \begin{aligned}
+                N ={} & \text{batch size} \\
+                L ={} & \text{sequence length} \\
+                H_{in} ={} & \text{input\_size} \\
+                H_{out} ={} & \text{hidden\_size}
+            \end{aligned}
+
+    Outputs: output, h_n
+        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+          :math:`(L, N, H_{out})` when ``batch_first=False`` or
+          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
+          features `(h_t)` from the last layer of the CFN, for each `t`. If a
+          :class:`torch.nn.utils.rnn.PackedSequence` has been given as the input,
+          the output will also be a packed sequence.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          hidden state for each element in the sequence.
+
+    Attributes:
+        cells.{k}.weight_ih : the learnable input-hidden weights of the :math:`k`-th
+            layer, of shape `(3*hidden_size, input_size)` for `k = 0`. Otherwise, the
+            shape is `(3*hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : the learnable hidden–hidden weights of the :math:`k`-th
+            layer, of shape `(2*hidden_size, hidden_size)`.
+        cells.{k}.bias_ih : the learnable input-hidden biases of the :math:`k`-th
+            layer, of shape `(3*hidden_size)`. Only present when ``bias=True``.
+        cells.{k}.bias_hh : the learnable recurrent biases of the :math:`k`-th layer,
+            of shape `(2*hidden_size)`. Only present when ``recurrent_bias=True``.
+
+    .. note::
+        All the weights and biases are initialized according to the provided
+        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
+
+    .. note::
+        ``batch_first`` argument is ignored for unbatched inputs.
+
+    .. seealso::
+        :class:`CFNCell`
+
+    Examples::
+
+        >>> rnn = CFN(10, 20, num_layers=2, dropout=0.1)
+        >>> input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)
+        >>> output, hn = rnn(input, h0)
+    """
+
     def __init__(
         self,
         input_size: int,

@@ -6,6 +6,144 @@ from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
 class coRNN(BaseDoubleRecurrentLayer):
+    r"""Multi-layer coupled oscillatory recurrent neural network.
+
+    [`arXiv <https://arxiv.org/abs/2010.00951>`_]
+
+    Each layer consists of a :class:`coRNNCell`, which updates the hidden and
+    cell states according to:
+
+    .. math::
+        \begin{aligned}
+            c_t &= c_{t-1} + \Delta t \,\tanh(
+                W_{ih} x_t + b_{ih}
+                + W_{hh} h_{t-1} + b_{hh}
+                + W_{ch} c_{t-1} + b_{ch})
+                - \Delta t \,\gamma \, h_{t-1}
+                - \Delta t \,\epsilon \, c_{t-1}, \\
+            h_t &= h_{t-1} + \Delta t \, c_t
+        \end{aligned}
+
+    where :math:`h_t` is the hidden state at time `t`, :math:`c_t` is the cell
+    state at time `t`, :math:`\Delta t` (``dt``) is the integration step size,
+    :math:`\gamma` damps the hidden state, and :math:`\epsilon` damps the cell
+    state.
+
+    In a multilayer coRNN, the input :math:`x^{(l)}_t` of the :math:`l`-th layer
+    (:math:`l \ge 2`) is the hidden state :math:`h^{(l-1)}_t` of the previous
+    layer multiplied by dropout :math:`\delta^{(l-1)}_t`, where each
+    :math:`\delta^{(l-1)}_t` is a Bernoulli random variable which is 0 with
+    probability :attr:`dropout`.
+
+    Args:
+        input_size: The number of expected features in the input `x`.
+        hidden_size: The number of features in the states `h` and `c`.
+        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2`` would
+            mean stacking two coRNN layers, with the second receiving the outputs of
+            the first. Default: 1
+        dropout: If non-zero, introduces a `Dropout` layer on the outputs of each
+            layer except the last layer, with dropout probability equal to
+            :attr:`dropout`. Default: 0
+        batch_first: If ``True``, then the input and output tensors are provided as
+            `(batch, seq, feature)` instead of `(seq, batch, feature)`. Default: False
+        bias: If ``False``, then the layer does not use input-side bias `b_ih`.
+            Default: True
+        recurrent_bias: If ``False``, then the layer does not use recurrent bias
+            `b_hh`. Default: True
+        cell_bias: If ``False``, then the layer does not use cell bias `b_ch`.
+            Default: True
+        dt: Integration step size :math:`\Delta t`. Default: 1.0
+        gamma: Damping coefficient on the hidden-state term. Default: 0.0
+        epsilon: Damping coefficient on the cell-state term. Default: 0.0
+        kernel_init: Initializer for `W_ih`. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `W_{hh}`. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        cell_kernel_init: Initializer for `W_{ch}`. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for `b_{ih}`. Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for `b_{hh}`. Default:
+            :func:`torch.nn.init.zeros_`
+        cell_bias_init: Initializer for `b_{ch}`. Default:
+            :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
+
+    Inputs: input, (h_0, c_0)
+        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+          :math:`(L, N, H_{in})` when ``batch_first=False`` or
+          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
+          the input sequence. The input can also be a packed variable length
+          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
+          :func:`torch.nn.utils.rnn.pack_sequence` for details.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          hidden state for each element in the input sequence. Defaults to zeros if
+          not provided.
+        - **c_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          cell state for each element in the input sequence. Defaults to zeros if not
+          provided.
+
+        where:
+
+        .. math::
+            \begin{aligned}
+                N ={} & \text{batch size} \\
+                L ={} & \text{sequence length} \\
+                H_{in} ={} & \text{input\_size} \\
+                H_{out} ={} & \text{hidden\_size}
+            \end{aligned}
+
+    Outputs: output, (h_n, c_n)
+        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+          :math:`(L, N, H_{out})` when ``batch_first=False`` or
+          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
+          features `(h_t)` from the last layer of the coRNN, for each `t`. If a
+          :class:`torch.nn.utils.rnn.PackedSequence` has been given as the input,
+          the output will also be a packed sequence.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          hidden state for each element in the sequence.
+        - **c_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
+          input or :math:`(\text{num_layers}, N, H_{out})` containing the final cell
+          state for each element in the sequence.
+
+    Attributes:
+        cells.{k}.weight_ih : the learnable input-hidden weights of the :math:`k`-th
+            layer, of shape `(hidden_size, input_size)` for `k = 0`. Otherwise, the
+            shape is `(hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : the learnable hidden-hidden weights of the :math:`k`-th
+            layer, of shape `(hidden_size, hidden_size)`.
+        cells.{k}.weight_ch : the learnable cell-hidden weights of the :math:`k`-th
+            layer, of shape `(hidden_size, hidden_size)`.
+        cells.{k}.bias_ih : the learnable input-hidden bias of the :math:`k`-th layer,
+            of shape `(hidden_size)`. Only present when ``bias=True``.
+        cells.{k}.bias_hh : the learnable hidden-hidden bias of the :math:`k`-th
+            layer, of shape `(hidden_size)`. Only present when ``recurrent_bias=True``.
+        cells.{k}.bias_ch : the learnable cell-hidden bias of the :math:`k`-th layer,
+            of shape `(hidden_size)`. Only present when ``cell_bias=True``.
+
+    .. note::
+        All the weights and biases are initialized according to the provided
+        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
+
+    .. note::
+        ``batch_first`` argument is ignored for unbatched inputs.
+
+    .. seealso::
+        :class:`coRNNCell`
+
+    Examples::
+
+        >>> rnn = coRNN(10, 20, num_layers=2, dropout=0.1, dt=0.5,
+        ...             gamma=0.1, epsilon=0.05)
+        >>> input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)
+        >>> c0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)
+        >>> output, (hn, cn) = rnn(input, (h0, c0))
+    """
+
     def __init__(
         self,
         input_size: int,

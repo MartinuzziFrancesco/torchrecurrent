@@ -6,6 +6,117 @@ from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
 class WMCLSTM(BaseDoubleRecurrentLayer):
+    r"""Multi-layer LSTM with working-memory connections (WMCLSTM).
+
+    [`arXiv <https://arxiv.org/abs/2109.00020>`_]
+
+    Each layer consists of a :class:`WMCLSTMCell`, an LSTM variant where the
+    input, forget, and output gates receive additional connections from the
+    cell state. The updates are:
+
+    .. math::
+        \begin{aligned}
+            i(t) &= \sigma\bigl(W_{ih}^i x(t) + b_{ih}^i
+                + W_{hh}^i h(t-1) + b_{hh}^i
+                + W_{mh}^i c(t-1) + b_{mh}^i \bigr), \\
+            f(t) &= \sigma\bigl(W_{ih}^f x(t) + b_{ih}^f
+                + W_{hh}^f h(t-1) + b_{hh}^f
+                + W_{mh}^f c(t-1) + b_{mh}^f \bigr), \\
+            c(t) &= f(t) \circ c(t-1)
+                + i(t) \circ \sigma_c(W_{ih}^c x(t) + b_{ih}^c), \\
+            o(t) &= \sigma\bigl(W_{ih}^o x(t) + b_{ih}^o
+                + W_{hh}^o h(t-1) + b_{hh}^o
+                + W_{mh}^o c(t) + b_{mh}^o \bigr), \\
+            h(t) &= o(t) \circ \sigma_h(c(t)),
+        \end{aligned}
+
+    where :math:`\sigma` is the sigmoid, :math:`\sigma_c` / :math:`\sigma_h`
+    are cell/output activations (usually :func:`torch.tanh`), and
+    :math:`\circ` is the elementwise product.
+
+    Args:
+        input_size: Number of expected features in the input `x`.
+        hidden_size: Number of features in the hidden and cell states.
+        num_layers: Number of stacked recurrent layers. Default: 1
+        dropout: If non-zero, adds dropout after each layer (except last).
+            Default: 0
+        batch_first: If ``True``, inputs and outputs are
+            `(batch, seq, feature)` instead of `(seq, batch, feature)`.
+            Default: False
+        bias: If ``False``, disables input biases `b_{ih}`. Default: True
+        recurrent_bias: If ``False``, disables recurrent biases `b_{hh}`. Default: True
+        memory_bias: If ``False``, disables memory biases `b_{mh}`. Default: True
+        kernel_init: Initializer for `W_{ih}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `W_{hh}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        memory_kernel_init: Initializer for `W_{mh}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for `b_{ih}`.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for `b_{hh}`.
+            Default: :func:`torch.nn.init.zeros_`
+        memory_bias_init: Initializer for `b_{mh}`.
+            Default: :func:`torch.nn.init.zeros_`
+        device: Desired device of parameters.
+        dtype: Desired floating point type of parameters.
+
+    Inputs: input, (h_0, c_0)
+        - **input**: tensor of shape `(L, H_in)` for unbatched input,
+          `(L, N, H_in)` when ``batch_first=False``, or `(N, L, H_in)` when
+          ``batch_first=True``.
+        - **h_0**: tensor of shape `(num_layers, H_out)` (unbatched) or
+          `(num_layers, N, H_out)` containing initial hidden state. Defaults to
+          zeros if not provided.
+        - **c_0**: tensor of same shape as `h_0`, containing initial cell state.
+          Defaults to zeros if not provided.
+
+        Where:
+
+        .. math::
+            \begin{aligned}
+                N &= \text{batch size} \\
+                L &= \text{sequence length} \\
+                H_{in} &= \text{input size} \\
+                H_{out} &= \text{hidden size}
+            \end{aligned}
+
+    Outputs: output, (h_n, c_n)
+        - **output**: tensor of shape `(L, H_out)` for unbatched input,
+          `(L, N, H_out)` when ``batch_first=False``, or `(N, L, H_out)` when
+          ``batch_first=True`` containing hidden states from the last layer at
+          each timestep.
+        - **h_n**: final hidden state for each layer,
+          shape `(num_layers, H_out)` (unbatched) or `(num_layers, N, H_out)`.
+        - **c_n**: final cell state for each layer, same shape as `h_n`.
+
+    Attributes:
+        cells.{k}.weight_ih : input–hidden weights of the :math:`k`-th layer,
+            shape `(4*hidden_size, input_size)` for `k=0`, otherwise
+            `(4*hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : hidden–hidden weights of the :math:`k`-th layer,
+            shape `(4*hidden_size, hidden_size)` (i, f, o gates).
+        cells.{k}.weight_mh : memory–hidden weights of the :math:`k`-th layer,
+            shape `(3*hidden_size, hidden_size)` (i, f depend on `c(t-1)`, o on `c(t)`).
+        cells.{k}.bias_ih : input biases of the :math:`k`-th layer,
+            shape `(4*hidden_size,)` if ``bias=True``.
+        cells.{k}.bias_hh : hidden biases of the :math:`k`-th layer,
+            shape `(4*hidden_size,)` if ``recurrent_bias=True``.
+        cells.{k}.bias_mh : memory biases of the :math:`k`-th layer,
+            shape `(3*hidden_size,)` if ``memory_bias=True``.
+
+    .. seealso::
+        :class:`WMCLSTMCell`
+
+    Examples::
+
+        >>> rnn = WMCLSTM(8, 16, num_layers=2)
+        >>> x = torch.randn(5, 3, 8)    # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 16)
+        >>> c0 = torch.zeros(2, 3, 16)
+        >>> out, (hn, cn) = rnn(x, (h0, c0))
+    """
+
     def __init__(
         self,
         input_size: int,

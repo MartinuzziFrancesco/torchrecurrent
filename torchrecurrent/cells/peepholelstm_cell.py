@@ -6,6 +6,132 @@ from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
 class PeepholeLSTM(BaseDoubleRecurrentLayer):
+    r"""Multi-layer peephole long short-term memory (LSTM) network.
+
+    [`JMLR <https://www.jmlr.org/papers/volume3/gers02a/gers02a.pdf>`_]
+
+    Each layer consists of a :class:`PeepholeLSTMCell`, which augments the
+    standard LSTM by adding learnable peephole connections from the cell
+    state into the gates:
+
+    .. math::
+        \begin{aligned}
+        z(t) &= \tanh\!\left(W_{ih}^z x(t) + b_{ih}^z
+                 + W_{hh}^z h(t-1) + b_{hh}^z \right), \\
+        i(t) &= \sigma\!\left(W_{ih}^i x(t) + b_{ih}^i
+                 + W_{hh}^i h(t-1) + b_{hh}^i
+                 + p^i \circ c(t-1)\right), \\
+        f(t) &= \sigma\!\left(W_{ih}^f x(t) + b_{ih}^f
+                 + W_{hh}^f h(t-1) + b_{hh}^f
+                 + p^f \circ c(t-1)\right), \\
+        c(t) &= f(t) \circ c(t-1) + i(t) \circ z(t), \\
+        o(t) &= \sigma\!\left(W_{ih}^o x(t) + b_{ih}^o
+                 + W_{hh}^o h(t-1) + b_{hh}^o
+                 + p^o \circ c(t)\right), \\
+        h(t) &= o(t) \circ \tanh(c(t)),
+        \end{aligned}
+
+    where :math:`\sigma` is the sigmoid function and :math:`\circ` denotes
+    elementwise multiplication.
+
+    Args:
+        input_size: The number of expected features in the input `x`.
+        hidden_size: The number of features in the hidden and cell states.
+        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2``
+            stacks two peephole LSTM layers, with the second receiving the
+            outputs of the first. Default: 1
+        dropout: If non-zero, introduces a `Dropout` layer on the outputs of
+            each layer except the last, with dropout probability equal to
+            :attr:`dropout`. Default: 0
+        batch_first: If ``True``, input and output tensors are provided as
+            `(batch, seq, feature)` instead of `(seq, batch, feature)`.
+            Default: False
+        bias: If ``False``, the layer does not use input-side bias `b_{ih}`.
+            Default: True
+        recurrent_bias: If ``False``, the layer does not use recurrent bias
+            `b_{hh}`. Default: True
+        nonlinearity: Activation for the cell candidate `z`.
+            Default: :func:`torch.tanh`
+        gate_nonlinearity: Activation for the gates.
+            Default: :func:`torch.sigmoid`
+        kernel_init: Initializer for `W_{ih}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `W_{hh}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        peephole_kernel_init: Initializer for peephole weights `p`.
+            Default: :func:`torch.nn.init.normal_`
+        bias_init: Initializer for `b_{ih}` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for `b_{hh}` when ``recurrent_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
+
+    Inputs: input, (h_0, c_0)
+        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+          :math:`(L, N, H_{in})` when ``batch_first=False`` or
+          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the
+          features of the input sequence.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the initial hidden state. Defaults to zeros if not provided.
+        - **c_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the initial cell state. Defaults to zeros if not provided.
+
+        where:
+
+        .. math::
+            \begin{aligned}
+                N ={} & \text{batch size} \\
+                L ={} & \text{sequence length} \\
+                H_{in} ={} & \text{input\_size} \\
+                H_{out} ={} & \text{hidden\_size}
+            \end{aligned}
+
+    Outputs: output, (h_n, c_n)
+        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+          :math:`(L, N, H_{out})` when ``batch_first=False`` or
+          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the
+          output features from the last layer, for each timestep.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the final hidden state for each element in the sequence.
+        - **c_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the final cell state for each element in the sequence.
+
+    Attributes:
+        cells.{k}.weight_ih : the learnable input–hidden weights of the
+            :math:`k`-th layer, of shape `(4*hidden_size, input_size)` for
+            `k=0`. Otherwise, the shape is `(4*hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : the learnable hidden–hidden weights of the
+            :math:`k`-th layer, of shape `(4*hidden_size, hidden_size)`.
+        cells.{k}.weight_ph : the learnable peephole weights of the
+            :math:`k`-th layer, of shape `(3*hidden_size,)`.
+        cells.{k}.bias_ih : the learnable input–hidden biases of the
+            :math:`k`-th layer, of shape `(4*hidden_size)`. Only present when
+            ``bias=True``.
+        cells.{k}.bias_hh : the learnable hidden–hidden biases of the
+            :math:`k`-th layer, of shape `(4*hidden_size)`. Only present when
+            ``recurrent_bias=True``.
+
+    .. note::
+        All weights and biases are initialized according to the provided
+        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
+
+    .. seealso::
+        :class:`PeepholeLSTMCell`
+
+    Examples::
+
+        >>> rnn = PeepholeLSTM(10, 20, num_layers=2)
+        >>> x = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 20)
+        >>> c0 = torch.zeros(2, 3, 20)
+        >>> output, (hn, cn) = rnn(x, (h0, c0))
+    """
+
     def __init__(
         self,
         input_size: int,

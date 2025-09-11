@@ -6,6 +6,128 @@ from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
 
 
 class SCRN(BaseDoubleRecurrentLayer):
+    r"""Multi-layer Structurally Constrained Recurrent Network (SCRN).
+
+    [`arXiv <https://arxiv.org/pdf/1412.7753>`_]
+
+    Each layer consists of a :class:`SCRNCell`, which augments the recurrent
+    dynamics with a slowly changing context state:
+
+    .. math::
+        \begin{aligned}
+        s(t) &= (1 - \alpha) \bigl(W_{ih}^s x(t) + b_{ih}^s \bigr)
+             + \alpha s(t-1), \\
+        h(t) &= \sigma\bigl(
+            W_{ch}^h s(t) + b_{ch}^h
+          + W_{ih}^h x(t) + b_{ih}^h
+          + W_{hh}^h h(t-1) + b_{hh}^h
+        \bigr).
+        \end{aligned}
+
+    Here, :math:`\alpha` is a learned interpolation parameter for the
+    context state.
+
+    Args:
+        input_size: The number of expected features in the input `x`.
+        hidden_size: The number of features in the hidden and context states.
+        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2``
+            stacks two SCRN layers, with the second receiving the outputs
+            of the first. Default: 1
+        dropout: If non-zero, introduces a `Dropout` layer on the outputs of
+            each layer except the last, with dropout probability equal to
+            :attr:`dropout`. Default: 0
+        batch_first: If ``True``, input and output tensors are provided as
+            `(batch, seq, feature)` instead of `(seq, batch, feature)`.
+            Default: False
+        bias: If ``False``, the layer does not use input-side bias `b_{ih}`.
+            Default: True
+        recurrent_bias: If ``False``, the layer does not use recurrent bias
+            `b_{hh}`. Default: True
+        context_bias: If ``False``, the layer does not use context bias
+            `b_{ch}`. Default: True
+        kernel_init: Initializer for `W_{ih}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `W_{hh}`.
+            Default: :func:`torch.nn.init.xavier_uniform_`
+        context_kernel_init: Initializer for `W_{ch}`.
+            Default: :func:`torch.nn.init.normal_`
+        bias_init: Initializer for `b_{ih}` when ``bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for `b_{hh}` when ``recurrent_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        context_bias_init: Initializer for `b_{ch}` when ``context_bias=True``.
+            Default: :func:`torch.nn.init.zeros_`
+        alpha: Initial value for the context interpolation parameter.
+            Default: 0.5
+        device: The desired device of parameters.
+        dtype: The desired floating point type of parameters.
+
+    Inputs: input, (h_0, s_0)
+        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+          :math:`(L, N, H_{in})` when ``batch_first=False`` or
+          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the
+          features of the input sequence.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})`
+          containing the initial hidden state. Defaults to zeros if not provided.
+        - **s_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})`
+          containing the initial context state. Defaults to zeros if not provided.
+
+        where:
+
+        .. math::
+            \begin{aligned}
+                N &= \text{batch size} \\
+                L &= \text{sequence length} \\
+                H_{in} &= \text{input\_size} \\
+                H_{out} &= \text{hidden\_size}
+            \end{aligned}
+
+    Outputs: output, (h_n, s_n)
+        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+          :math:`(L, N, H_{out})` when ``batch_first=False`` or
+          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the
+          output features from the last layer, for each timestep.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the final hidden state for each element in the sequence.
+        - **s_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
+          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          the final context state for each element in the sequence.
+
+    Attributes:
+        cells.{k}.weight_ih : the learnable input–hidden weights of the
+            :math:`k`-th layer, of shape `(2*hidden_size, input_size)` for
+            `k=0`, otherwise `(2*hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : the learnable hidden–hidden weights of the
+            :math:`k`-th layer, of shape `(2*hidden_size, hidden_size)`.
+        cells.{k}.weight_ch : the learnable context–hidden weights of the
+            :math:`k`-th layer, of shape `(2*hidden_size, hidden_size)`.
+        cells.{k}.bias_ih : the learnable input–hidden biases of the
+            :math:`k`-th layer, of shape `(2*hidden_size)`. Only present when
+            ``bias=True``.
+        cells.{k}.bias_hh : the learnable hidden–hidden biases of the
+            :math:`k`-th layer, of shape `(2*hidden_size)`. Only present when
+            ``recurrent_bias=True``.
+        cells.{k}.bias_ch : the learnable context–hidden biases of the
+            :math:`k`-th layer, of shape `(2*hidden_size)`. Only present when
+            ``context_bias=True``.
+        cells.{k}.alpha : learnable scalar context interpolation parameter
+            for the :math:`k`-th layer.
+
+    .. seealso::
+        :class:`SCRNCell`
+
+    Examples::
+
+        >>> rnn = SCRN(10, 20, num_layers=2, alpha=0.5)
+        >>> x = torch.randn(5, 3, 10)    # (seq_len, batch, input_size)
+        >>> h0 = torch.zeros(2, 3, 20)
+        >>> s0 = torch.zeros(2, 3, 20)
+        >>> output, (hn, sn) = rnn(x, (h0, s0))
+    """
+
     def __init__(
         self,
         input_size: int,
