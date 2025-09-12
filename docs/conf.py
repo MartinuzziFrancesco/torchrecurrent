@@ -3,16 +3,20 @@
 # For the full list of built-in configuration values, see the documentation:
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
-# -- Project information -----------------------------------------------------
-# https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
+# -- Path setup -----------------------------------------------------
+
 import os
 import sys
+
+sys.path.insert(0, os.path.abspath(".."))
+
+# -- Project information -----------------------------------------------------
 
 project = "torchrecurrent"
 html_title = "torchrecurrent"
 copyright = "2025, Francesco Martinuzzi"
 author = "Francesco Martinuzzi"
-release = "0.1.6"
+release = "0.1.7"
 html_logo = "_static/logo.png"
 html_favicon = "_static/favicon.ico"
 
@@ -40,8 +44,6 @@ napoleon_custom_sections = [
     ("Variables", "params_style"),
 ]
 
-sys.path.insert(0, os.path.abspath(".."))
-
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
@@ -56,8 +58,14 @@ html_theme_options = {
     },
     "use_edit_page_button": True,
     "show_nav_level": 2,
+    "github_url": "https://github.com/MartinuzziFrancesco/torchrecurrent",
+    "header_links_before_dropdown": 10,
+    "external_links": [
+        {"name": "GitHub", "url": "https://github.com/MartinuzziFrancesco/torchrecurrent"}
+    ],
 }
 
+html_show_sourcelink = False
 html_context = {
     "github_user": "MartinuzziFrancesco",
     "github_repo": "torchrecurrent",
