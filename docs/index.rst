@@ -1,9 +1,9 @@
-torchrecurrent
+TorchRecurrent
 ==============
 
-Welcome to the **torchrecurrent** documentation!
+Welcome to the **TorchRecurrent** documentation!
 
-**torchrecurrent** provides a large collection of recurrent neural network (RNN)
+**TorchRecurrent** provides a large collection of recurrent neural network (RNN)
 cells and layers, all implemented in PyTorch with a consistent API and extended
 customization options.
 
@@ -63,4 +63,5 @@ Or using the layer abstraction:
    :hidden:
    :maxdepth: 2
 
+   models
    api/index
