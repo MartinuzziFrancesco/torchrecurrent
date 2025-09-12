@@ -51,8 +51,8 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 html_theme = "pydata_sphinx_theme"
 html_theme_options = {
     "logo": {
-        "image_light": "_static/logo.png",
-        "image_dark": "_static/logo.png",
+        "image_light": "_static/logo-long2.png",
+        "image_dark": "_static/logo-long2.png",
     },
     "use_edit_page_button": True,
     "show_nav_level": 2,

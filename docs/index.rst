@@ -63,4 +63,5 @@ Or using the layer abstraction:
    :hidden:
    :maxdepth: 2
 
+   models
    api/index
