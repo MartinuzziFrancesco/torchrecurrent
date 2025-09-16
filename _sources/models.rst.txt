@@ -26,9 +26,6 @@ references and official implementations where available.
    * - :doc:`BR <generated/torchrecurrent.BR>`
      - `PLOS ONE 2021 <https://doi.org/10.1371/journal.pone.0252676>`__
      - `nvecoven/BRC <https://github.com/nvecoven/BRC>`__
-   * - :doc:`BRC <generated/torchrecurrent.BR>`
-     - `PLOS ONE 2021 <https://doi.org/10.1371/journal.pone.0252676>`__
-     - `nvecoven/BRC <https://github.com/nvecoven/BRC>`__
    * - :doc:`CFN <generated/torchrecurrent.CFN>`
      - `ICLR 2017 <https://arxiv.org/abs/1612.06212>`__
      - –
@@ -77,6 +74,9 @@ references and official implementations where available.
    * - :doc:`NAS <generated/torchrecurrent.NAS>`
      - `arXiv 2016 <https://arxiv.org/abs/1611.01578>`__
      - `tensorflow_addons/rnn <https://github.com/tensorflow/addons/blob/v0.20.0/tensorflow_addons/rnn/nas_cell.py#L29-L236>`__
+   * - :doc:`NBR <generated/torchrecurrent.NBR>`
+     - `PLOS ONE 2021 <https://doi.org/10.1371/journal.pone.0252676>`__
+     - `nvecoven/BRC <https://github.com/nvecoven/BRC>`__
    * - :doc:`OriginalLSTM <generated/torchrecurrent.OriginalLSTM>`
      - `Neural Computation 1997 <https://ieeexplore.ieee.org/abstract/document/6795963>`__
      - –
