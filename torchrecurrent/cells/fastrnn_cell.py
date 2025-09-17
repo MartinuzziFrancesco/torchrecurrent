@@ -313,7 +313,9 @@ class FastRNNCell(BaseSingleRecurrentCell):
             + state @ self.weight_hh.t()
             + self.bias_hh
         )
-        new_state = self.alpha * candidate_state + self.beta * state
+        alpha = torch.sigmoid(self.alpha)
+        beta = torch.sigmoid(self.beta)
+        new_state = alpha * candidate_state + beta * state
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -604,7 +606,9 @@ class FastGRNNCell(BaseSingleRecurrentCell):
         partial_gate = inp @ self.weight_ih.t() + state @ self.weight_hh.t()
         gate = self.nonlinearity(partial_gate + bias_ih_1 + bias_hh_1)
         candidate_state = torch.tanh(partial_gate + bias_ih_2 + bias_hh_2)
-        new_state = (self.zeta * (1.0 - gate) + self.nu) * candidate_state + gate * state
+        zeta = torch.sigmoid(self.zeta)
+        nu = torch.sigmoid(self.nu)
+        new_state = (zeta * (1.0 - gate) + nu) * candidate_state + gate * state
 
         if not is_batched:
             new_state = new_state.squeeze(0)
