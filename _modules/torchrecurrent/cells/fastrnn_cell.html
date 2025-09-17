@@ -37,7 +37,7 @@
   <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../../../_static/documentation_options.js?v=ca7ad2ea"></script>
+    <script src="../../../_static/documentation_options.js?v=22607128"></script>
     <script src="../../../_static/doctools.js?v=9bcbadda"></script>
     <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchrecurrent/cells/fastrnn_cell';</script>
@@ -369,7 +369,7 @@
 <span class="sd">    .. math::</span>
 <span class="sd">        \begin{aligned}</span>
 <span class="sd">            \tilde{h}_t &amp;= \phi(W_{ih} x_t + b_{ih} + W_{hh} h_{t-1} + b_{hh}), \\</span>
-<span class="sd">            h_t &amp;= \alpha \tilde{h}_t + \beta h_{t-1},</span>
+<span class="sd">            h_t &amp;= \sigma(\alpha) \tilde{h}_t + \sigma(\beta) h_{t-1},</span>
 <span class="sd">        \end{aligned}</span>
 
 <span class="sd">    where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the input</span>
@@ -515,8 +515,8 @@
 <span class="sd">            + \mathbf{W}_{hh}\,\mathbf{h}(t-1)</span>
 <span class="sd">            + \mathbf{b}_{hh}</span>
 <span class="sd">        \bigr), \\[6pt]</span>
-<span class="sd">        \mathbf{h}(t) &amp;= \alpha\,\tilde{\mathbf{h}}(t)</span>
-<span class="sd">                        + \beta\,\mathbf{h}(t-1),</span>
+<span class="sd">        \mathbf{h}(t) &amp;= \sigma(\alpha)\,\tilde{\mathbf{h}}(t)</span>
+<span class="sd">                        + \sigma(\beta)\,\mathbf{h}(t-1),</span>
 
 <span class="sd">    where :math:`\phi` is a pointwise nonlinearity (e.g., tanh), and</span>
 <span class="sd">    :math:`\alpha` / :math:`\beta` are learnable scalars.</span>
@@ -675,7 +675,9 @@
             <span class="o">+</span> <span class="n">state</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
             <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
         <span class="p">)</span>
-        <span class="n">new_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">candidate_state</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">beta</span> <span class="o">*</span> <span class="n">state</span>
+        <span class="n">alpha</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">beta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="p">)</span>
+        <span class="n">new_state</span> <span class="o">=</span> <span class="n">alpha</span> <span class="o">*</span> <span class="n">candidate_state</span> <span class="o">+</span> <span class="n">beta</span> <span class="o">*</span> <span class="n">state</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_batched</span><span class="p">:</span>
             <span class="n">new_state</span> <span class="o">=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
@@ -701,7 +703,7 @@
 <span class="sd">                + W_{hh} h(t-1) + b_{hh}^z), \\</span>
 <span class="sd">            \tilde{h}(t) &amp;= \tanh(W_{ih} x(t) + b_{ih}^h</span>
 <span class="sd">                + W_{hh} h(t-1) + b_{hh}^h), \\</span>
-<span class="sd">            h(t) &amp;= \bigl[\zeta (1 - z(t)) + \nu\bigr] \circ \tilde{h}(t)</span>
+<span class="sd">            h(t) &amp;= \bigl[\sigma(\zeta) (1 - z(t)) + \sigma(\nu)\bigr] \circ \tilde{h}(t)</span>
 <span class="sd">                + z(t) \circ h(t-1),</span>
 <span class="sd">        \end{aligned}</span>
 
@@ -808,22 +810,14 @@
 <span class="sd">    [`arXiv &lt;https://arxiv.org/abs/1901.02358&gt;`_]</span>
 
 <span class="sd">        .. math::</span>
-
-<span class="sd">            \mathbf{z}(t) &amp;= \sigma\Bigl(</span>
-<span class="sd">                \mathbf{W}_{ih}\,\mathbf{x}(t)</span>
-<span class="sd">                + \mathbf{b}_{ih}^{z}</span>
-<span class="sd">                + \mathbf{W}_{hh}\,\mathbf{h}(t-1)</span>
-<span class="sd">                + \mathbf{b}_{hh}^{z}</span>
-<span class="sd">            \Bigr), \\[6pt]</span>
-<span class="sd">            \tilde{\mathbf{h}}(t) &amp;= \tanh\Bigl(</span>
-<span class="sd">                \mathbf{W}_{ih}\,\mathbf{x}(t)</span>
-<span class="sd">                + \mathbf{b}_{ih}^{h}</span>
-<span class="sd">                + \mathbf{W}_{hh}\,\mathbf{h}(t-1)</span>
-<span class="sd">                + \mathbf{b}_{hh}^{h}</span>
-<span class="sd">            \Bigr), \\[6pt]</span>
-<span class="sd">            \mathbf{h}(t) &amp;= \Bigl[\zeta\,\bigl(1 - \mathbf{z}(t)\bigr) + \nu\Bigr]</span>
-<span class="sd">                \circ \tilde{\mathbf{h}}(t)</span>
-<span class="sd">                \;+\;\mathbf{z}(t)\,\circ\,\mathbf{h}(t-1),</span>
+<span class="sd">            \begin{aligned}</span>
+<span class="sd">                z(t) &amp;= \sigma(W_{ih} x(t) + b_{ih}^z</span>
+<span class="sd">                    + W_{hh} h(t-1) + b_{hh}^z), \\</span>
+<span class="sd">                \tilde{h}(t) &amp;= \tanh(W_{ih} x(t) + b_{ih}^h</span>
+<span class="sd">                    + W_{hh} h(t-1) + b_{hh}^h), \\</span>
+<span class="sd">                h(t) &amp;= \bigl[\sigma(\zeta) (1 - z(t)) + \sigma(\nu)\bigr] \circ \tilde{h}(t)</span>
+<span class="sd">                    + z(t) \circ h(t-1),</span>
+<span class="sd">            \end{aligned}</span>
 
 <span class="sd">        where :math:`\circ` denotes element‐wise product.</span>
 
@@ -978,7 +972,9 @@
         <span class="n">partial_gate</span> <span class="o">=</span> <span class="n">inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="n">state</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
         <span class="n">gate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonlinearity</span><span class="p">(</span><span class="n">partial_gate</span> <span class="o">+</span> <span class="n">bias_ih_1</span> <span class="o">+</span> <span class="n">bias_hh_1</span><span class="p">)</span>
         <span class="n">candidate_state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">partial_gate</span> <span class="o">+</span> <span class="n">bias_ih_2</span> <span class="o">+</span> <span class="n">bias_hh_2</span><span class="p">)</span>
-        <span class="n">new_state</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zeta</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">gate</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">candidate_state</span> <span class="o">+</span> <span class="n">gate</span> <span class="o">*</span> <span class="n">state</span>
+        <span class="n">zeta</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">zeta</span><span class="p">)</span>
+        <span class="n">nu</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">nu</span><span class="p">)</span>
+        <span class="n">new_state</span> <span class="o">=</span> <span class="p">(</span><span class="n">zeta</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">gate</span><span class="p">)</span> <span class="o">+</span> <span class="n">nu</span><span class="p">)</span> <span class="o">*</span> <span class="n">candidate_state</span> <span class="o">+</span> <span class="n">gate</span> <span class="o">*</span> <span class="n">state</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_batched</span><span class="p">:</span>
             <span class="n">new_state</span> <span class="o">=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>

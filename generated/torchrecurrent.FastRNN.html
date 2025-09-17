@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ca7ad2ea"></script>
+    <script src="../_static/documentation_options.js?v=22607128"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -444,7 +444,7 @@ state according to:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
     \tilde{h}_t &amp;= \phi(W_{ih} x_t + b_{ih} + W_{hh} h_{t-1} + b_{hh}), \\
-    h_t &amp;= \alpha \tilde{h}_t + \beta h_{t-1},
+    h_t &amp;= \sigma(\alpha) \tilde{h}_t + \sigma(\beta) h_{t-1},
 \end{aligned}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(h_t\)</span> is the hidden state at time <cite>t</cite>, <span class="math notranslate nohighlight">\(x_t\)</span> is the input
 at time <cite>t</cite>, <span class="math notranslate nohighlight">\(\phi\)</span> is a pointwise nonlinearity (e.g., <span class="math notranslate nohighlight">\(\tanh\)</span>),

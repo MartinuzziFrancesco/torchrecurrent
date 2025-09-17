@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ca7ad2ea"></script>
+    <script src="../_static/documentation_options.js?v=22607128"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -446,8 +446,8 @@
     + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
     + \mathbf{b}_{hh}
 \bigr), \\[6pt]
-\mathbf{h}(t) &amp;= \alpha\,\tilde{\mathbf{h}}(t)
-                + \beta\,\mathbf{h}(t-1),\end{split}\]</div>
+\mathbf{h}(t) &amp;= \sigma(\alpha)\,\tilde{\mathbf{h}}(t)
+                + \sigma(\beta)\,\mathbf{h}(t-1),\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\phi\)</span> is a pointwise nonlinearity (e.g., tanh), and
 <span class="math notranslate nohighlight">\(\alpha\)</span> / <span class="math notranslate nohighlight">\(\beta\)</span> are learnable scalars.</p>
 <dl class="field-list simple">

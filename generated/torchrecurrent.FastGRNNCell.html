@@ -38,7 +38,7 @@
   <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
-    <script src="../_static/documentation_options.js?v=ca7ad2ea"></script>
+    <script src="../_static/documentation_options.js?v=22607128"></script>
     <script src="../_static/doctools.js?v=9bcbadda"></script>
     <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
     <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
@@ -441,21 +441,14 @@
 <p>[<a class="reference external" href="https://arxiv.org/abs/1901.02358">arXiv</a>]</p>
 <blockquote>
 <div><div class="math notranslate nohighlight">
-\[\begin{split}\mathbf{z}(t) &amp;= \sigma\Bigl(
-    \mathbf{W}_{ih}\,\mathbf{x}(t)
-    + \mathbf{b}_{ih}^{z}
-    + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
-    + \mathbf{b}_{hh}^{z}
-\Bigr), \\[6pt]
-\tilde{\mathbf{h}}(t) &amp;= \tanh\Bigl(
-    \mathbf{W}_{ih}\,\mathbf{x}(t)
-    + \mathbf{b}_{ih}^{h}
-    + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
-    + \mathbf{b}_{hh}^{h}
-\Bigr), \\[6pt]
-\mathbf{h}(t) &amp;= \Bigl[\zeta\,\bigl(1 - \mathbf{z}(t)\bigr) + \nu\Bigr]
-    \circ \tilde{\mathbf{h}}(t)
-    \;+\;\mathbf{z}(t)\,\circ\,\mathbf{h}(t-1),\end{split}\]</div>
+\[\begin{split}\begin{aligned}
+    z(t) &amp;= \sigma(W_{ih} x(t) + b_{ih}^z
+        + W_{hh} h(t-1) + b_{hh}^z), \\
+    \tilde{h}(t) &amp;= \tanh(W_{ih} x(t) + b_{ih}^h
+        + W_{hh} h(t-1) + b_{hh}^h), \\
+    h(t) &amp;= \bigl[\sigma(\zeta) (1 - z(t)) + \sigma(\nu)\bigr] \circ \tilde{h}(t)
+        + z(t) \circ h(t-1),
+\end{aligned}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\circ\)</span> denotes element‐wise product.</p>
 </div></blockquote>
 <dl class="field-list simple">
