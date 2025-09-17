@@ -16,7 +16,7 @@ project = "torchrecurrent"
 html_title = "torchrecurrent"
 copyright = "2025, Francesco Martinuzzi"
 author = "Francesco Martinuzzi"
-release = "0.1.7"
+release = "0.1.8"
 html_logo = "_static/logo.png"
 html_favicon = "_static/favicon.ico"
 

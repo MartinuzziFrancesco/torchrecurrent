@@ -16,7 +16,7 @@ class FastRNN(BaseSingleRecurrentLayer):
     .. math::
         \begin{aligned}
             \tilde{h}_t &= \phi(W_{ih} x_t + b_{ih} + W_{hh} h_{t-1} + b_{hh}), \\
-            h_t &= \alpha \tilde{h}_t + \beta h_{t-1},
+            h_t &= \sigma(\alpha) \tilde{h}_t + \sigma(\beta) h_{t-1},
         \end{aligned}
 
     where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the input
@@ -156,8 +156,8 @@ class FastRNNCell(BaseSingleRecurrentCell):
             + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
             + \mathbf{b}_{hh}
         \bigr), \\[6pt]
-        \mathbf{h}(t) &= \alpha\,\tilde{\mathbf{h}}(t)
-                        + \beta\,\mathbf{h}(t-1),
+        \mathbf{h}(t) &= \sigma(\alpha)\,\tilde{\mathbf{h}}(t)
+                        + \sigma(\beta)\,\mathbf{h}(t-1),
 
     where :math:`\phi` is a pointwise nonlinearity (e.g., tanh), and
     :math:`\alpha` / :math:`\beta` are learnable scalars.
@@ -313,7 +313,9 @@ class FastRNNCell(BaseSingleRecurrentCell):
             + state @ self.weight_hh.t()
             + self.bias_hh
         )
-        new_state = self.alpha * candidate_state + self.beta * state
+        alpha = torch.sigmoid(self.alpha)
+        beta = torch.sigmoid(self.beta)
+        new_state = alpha * candidate_state + beta * state
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -336,7 +338,7 @@ class FastGRNN(BaseSingleRecurrentLayer):
                 + W_{hh} h(t-1) + b_{hh}^z), \\
             \tilde{h}(t) &= \tanh(W_{ih} x(t) + b_{ih}^h
                 + W_{hh} h(t-1) + b_{hh}^h), \\
-            h(t) &= \bigl[\zeta (1 - z(t)) + \nu\bigr] \circ \tilde{h}(t)
+            h(t) &= \bigl[\sigma(\zeta) (1 - z(t)) + \sigma(\nu)\bigr] \circ \tilde{h}(t)
                 + z(t) \circ h(t-1),
         \end{aligned}
 
@@ -437,22 +439,14 @@ class FastGRNNCell(BaseSingleRecurrentCell):
     [`arXiv <https://arxiv.org/abs/1901.02358>`_]
 
         .. math::
-
-            \mathbf{z}(t) &= \sigma\Bigl(
-                \mathbf{W}_{ih}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}^{z}
-                + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
-                + \mathbf{b}_{hh}^{z}
-            \Bigr), \\[6pt]
-            \tilde{\mathbf{h}}(t) &= \tanh\Bigl(
-                \mathbf{W}_{ih}\,\mathbf{x}(t)
-                + \mathbf{b}_{ih}^{h}
-                + \mathbf{W}_{hh}\,\mathbf{h}(t-1)
-                + \mathbf{b}_{hh}^{h}
-            \Bigr), \\[6pt]
-            \mathbf{h}(t) &= \Bigl[\zeta\,\bigl(1 - \mathbf{z}(t)\bigr) + \nu\Bigr]
-                \circ \tilde{\mathbf{h}}(t)
-                \;+\;\mathbf{z}(t)\,\circ\,\mathbf{h}(t-1),
+            \begin{aligned}
+                z(t) &= \sigma(W_{ih} x(t) + b_{ih}^z
+                    + W_{hh} h(t-1) + b_{hh}^z), \\
+                \tilde{h}(t) &= \tanh(W_{ih} x(t) + b_{ih}^h
+                    + W_{hh} h(t-1) + b_{hh}^h), \\
+                h(t) &= \bigl[\sigma(\zeta) (1 - z(t)) + \sigma(\nu)\bigr] \circ \tilde{h}(t)
+                    + z(t) \circ h(t-1),
+            \end{aligned}
 
         where :math:`\circ` denotes element‐wise product.
 
@@ -604,7 +598,9 @@ class FastGRNNCell(BaseSingleRecurrentCell):
         partial_gate = inp @ self.weight_ih.t() + state @ self.weight_hh.t()
         gate = self.nonlinearity(partial_gate + bias_ih_1 + bias_hh_1)
         candidate_state = torch.tanh(partial_gate + bias_ih_2 + bias_hh_2)
-        new_state = (self.zeta * (1.0 - gate) + self.nu) * candidate_state + gate * state
+        zeta = torch.sigmoid(self.zeta)
+        nu = torch.sigmoid(self.nu)
+        new_state = (zeta * (1.0 - gate) + nu) * candidate_state + gate * state
 
         if not is_batched:
             new_state = new_state.squeeze(0)
