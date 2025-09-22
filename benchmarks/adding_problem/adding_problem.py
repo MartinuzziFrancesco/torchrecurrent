@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.utils.data import TensorDataset, DataLoader
+from torchrecurrent.benchmarks import adding_problem
 from torch import Tensor
 import argparse
 import matplotlib.pyplot as plt
@@ -19,46 +19,6 @@ class RecurrentModel(nn.Module):
         output, _ = self.rnn(inp)
         last = output[:, -1, :]
         return self.fc(last)
-
-
-def generate_adding_problem_data(
-    sequence_length: int,
-    n_samples: int,
-    return_dataloader: bool = True,
-    batch_size: int = 64,
-    shuffle=True,
-):
-    """Generate data for the adding problem benchmark.
-
-    Parameters:
-    - sequence_length (int): Length of each input sequence.
-    - n_samples (int): Number of samples to generate.
-
-    Returns:
-    - inputs (torch.Tensor): Tensor of shape (n_samples, sequence_length, 2).
-                             Each input has two features per time step:
-                             - A random number between 0 and 1.
-                             - A mask indicator (0 or 1).
-    - targets (torch.Tensor): Tensor of shape (n_samples, 1), containing the sum
-                              of the two masked numbers in each sequence.
-    """
-    random_sequence = torch.rand(n_samples, sequence_length, 1)
-    mask_sequence = torch.zeros(n_samples, sequence_length, 1)
-    targets = torch.zeros(n_samples, 1)
-
-    for i in range(n_samples):
-        idx = torch.randperm(sequence_length)[:2]
-        mask_sequence[i, idx, 0] = 1
-        targets[i] = random_sequence[i, idx, 0].sum()
-
-    inputs = torch.cat((random_sequence, mask_sequence), dim=2)
-    if return_dataloader:
-        dataset = TensorDataset(inputs, targets)
-        data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
-
-        return data_loader
-    else:
-        return inputs, targets
 
 
 def train(args, model, device, train_loader, optimizer, criterion, train_losses, epoch):
@@ -239,14 +199,14 @@ def main():
 
     print(f"Using device: {device}")
 
-    train_loader = generate_adding_problem_data(
+    train_loader = adding_problem(
         sequence_length=args.sequence_length,
         n_samples=args.train_samples,
         batch_size=args.batch_size,
         shuffle=True,
     )
 
-    test_loader = generate_adding_problem_data(
+    test_loader = adding_problem(
         sequence_length=args.sequence_length,
         n_samples=args.test_samples,
         batch_size=args.test_batch_size,
