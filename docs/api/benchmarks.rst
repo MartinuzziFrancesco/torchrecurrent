@@ -8,3 +8,4 @@ This page documents all the benchmarks included in the `torchrecurrent.benchmark
    :nosignatures:
 
    torchrecurrent.benchmarks.adding_problem
+   torchrecurrent.benchmarks.copy_memory
