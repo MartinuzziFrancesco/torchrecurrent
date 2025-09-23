@@ -8,3 +8,4 @@ The following sections provide the full API reference for recurrent cells and la
 
    cells
    layers
+   benchmarks
