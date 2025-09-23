@@ -12,6 +12,7 @@
 [![codecov](https://codecov.io/gh/MartinuzziFrancesco/torchrecurrent/graph/badge.svg?token=AW36UWD1OM)](https://codecov.io/gh/MartinuzziFrancesco/torchrecurrent)
 [![Build](https://github.com/MartinuzziFrancesco/torchrecurrent/actions/workflows/ci.yml/badge.svg)](https://github.com/MartinuzziFrancesco/torchrecurrent/actions/workflows/ci.yml)
 [![Docs](https://img.shields.io/badge/Docs-gh--pages-blue?logo=github)](https://MartinuzziFrancesco.github.io/torchrecurrent/)
+[![!python-versions](https://img.shields.io/pypi/pyversions/torchrecurrent)](https://www.python.org/)
 [![code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 
 </div>
