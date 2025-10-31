@@ -25,6 +25,13 @@ If you already have PyTorch installed:
 .. code-block:: bash
 
    pip install torchrecurrent
+   
+Or, on conda-forge:
+
+.. code-block:: bash
+
+   conda install -c conda-forge torchrecurrent
+
 
 Quick Example
 -------------
