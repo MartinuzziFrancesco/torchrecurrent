@@ -14,6 +14,7 @@
 [![Docs](https://img.shields.io/badge/Docs-gh--pages-blue?logo=github)](https://MartinuzziFrancesco.github.io/torchrecurrent/)
 [![!python-versions](https://img.shields.io/pypi/pyversions/torchrecurrent)](https://www.python.org/)
 [![code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![arXiv](https://img.shields.io/badge/arXiv-2510.21252-00b300.svg)](https://arxiv.org/abs/2510.21252)
 
 </div>
 
@@ -28,8 +29,11 @@ more customization options.
 pip install torchrecurrent
 ```
 
-Coming soon to conda-forge as well!
+or on conda-forge
 
+```shell
+conda install -c conda-forge torchrecurrent
+```
 ## Features
 
 - 🔄 **30+ recurrent cells** (e.g. `LSTMCell`, `GRUCell`, and many specialized variants).
@@ -58,6 +62,22 @@ out, hidden = rnn(inp)
 print(out.shape)  # (time_steps, batch, hidden_size)
 ```
 
+## Citation
+
+If you use TorchRecurrent in your work, please consider citing
+
+```bibtex
+@misc{martinuzzi2025unified,
+  doi = {10.48550/ARXIV.2510.21252},
+  url = {https://arxiv.org/abs/2510.21252},
+  author = {Martinuzzi,  Francesco},
+  keywords = {Machine Learning (cs.LG),  Software Engineering (cs.SE),  FOS: Computer and information sciences,  FOS: Computer and information sciences},
+  title = {Unified Implementations of Recurrent Neural Networks in Multiple Deep Learning Frameworks},
+  publisher = {arXiv},
+  year = {2025},
+  copyright = {Creative Commons Attribution 4.0 International}
+}
+```
 
 ## See also
 
