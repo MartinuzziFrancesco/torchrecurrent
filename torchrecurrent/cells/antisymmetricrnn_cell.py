@@ -1,11 +1,11 @@
+from typing import Optional
 import torch
-from torch import Tensor
 import torch.nn as nn
-from typing import Callable, Optional, Union, Tuple
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from torch import Tensor
+from ..base import SingleStateCellBase, SingleStateRecurrentLayerBase
 
 
-class AntisymmetricRNN(BaseSingleRecurrentLayer):
+class AntisymmetricRNN(SingleStateRecurrentLayerBase):
     r"""Multi-layer antisymmetric recurrent neural network.
 
     [`arXiv <https://arxiv.org/abs/1902.09689>`_]
@@ -138,7 +138,7 @@ class AntisymmetricRNN(BaseSingleRecurrentLayer):
         self.initialize_cells(AntisymmetricRNNCell, **kwargs)
 
 
-class AntisymmetricRNNCell(BaseSingleRecurrentCell):
+class AntisymmetricRNNCell(SingleStateCellBase):
     r"""An antisymmetric recurrent neural network cell.
 
     [`arXiv <https://arxiv.org/abs/1902.09689>`_]
@@ -213,19 +213,7 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0)       # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "nonlinearity",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-        "epsilon",
-        "gamma",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias", "epsilon", "gamma"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -238,60 +226,64 @@ class AntisymmetricRNNCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        nonlinearity: Callable = torch.tanh,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.normal_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        nonlinearity="tanh",
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.normal_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         epsilon: float = 1.0,
         gamma: float = 0.0,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(AntisymmetricRNNCell, self).__init__(
-            input_size,
-            hidden_size,
-            bias,
-            recurrent_bias,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
             device=device,
             dtype=dtype,
-            epsilon=epsilon,
-            gamma=gamma,
         )
-        self.nonlinearity = nonlinearity
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-        self.epsilon = epsilon
-        self.gamma = gamma
 
-        self._default_register_tensors(
-            input_size, hidden_size, bias=bias, recurrent_bias=recurrent_bias
+        self.epsilon = float(epsilon)
+        self.gamma = float(gamma)
+        self.act = resolve_activation(nonlinearity)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
         )
-        self.init_weights()
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors()
+        self.reset_parameters()
+
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
 
         recurrent_matrix = _compute_asym(self.weight_hh, self.gamma)
-        pre_act = (
-            inp @ self.weight_ih.t()
-            + self.bias_ih
-            + state @ recurrent_matrix.t()
-            + self.bias_hh
-        )
-        new_state = state + self.epsilon * self.nonlinearity(pre_act)
+        pre_act = b_inp @ self.weight_ih.t() + self.bias_ih + b_state @ recurrent_matrix.t() + self.bias_hh
+        h_new = b_state + self.epsilon * self.act(pre_act)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
-
-        return new_state
+            h_new = h_new.squeeze(0)
+        return h_new
 
 
 class GatedAntisymmetricRNN(BaseSingleRecurrentLayer):
@@ -587,8 +579,7 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         return new_state
 
 
-def _compute_asym(weight_hh: Tensor, gamma: float) -> Tensor:
-    if weight_hh.dim() != 2 or weight_hh.size(0) != weight_hh.size(1):
-        raise ValueError(f"weight_hh must be square, got shape {weight_hh.shape}")
-    id_mat = torch.eye(weight_hh.size(0), dtype=weight_hh.dtype, device=weight_hh.device)
-    return weight_hh - weight_hh.t() - gamma * id_mat
+def _compute_asym(W_hh: Tensor, gamma: float) -> Tensor:
+    n = W_hh.size(0)
+    I = torch.eye(n, device=W_hh.device, dtype=W_hh.dtype)
+    return W_hh - W_hh.transpose(0, 1) - gamma * I
