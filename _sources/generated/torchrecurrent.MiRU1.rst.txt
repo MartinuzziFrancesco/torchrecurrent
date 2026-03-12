@@ -1,0 +1,87 @@
+﻿torchrecurrent.MiRU1
+====================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MiRU1
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MiRU1.__init__
+      ~MiRU1.add_module
+      ~MiRU1.apply
+      ~MiRU1.bfloat16
+      ~MiRU1.buffers
+      ~MiRU1.children
+      ~MiRU1.compile
+      ~MiRU1.cpu
+      ~MiRU1.cuda
+      ~MiRU1.double
+      ~MiRU1.eval
+      ~MiRU1.extra_repr
+      ~MiRU1.float
+      ~MiRU1.forward
+      ~MiRU1.get_buffer
+      ~MiRU1.get_extra_state
+      ~MiRU1.get_parameter
+      ~MiRU1.get_submodule
+      ~MiRU1.half
+      ~MiRU1.initialize_cells
+      ~MiRU1.ipu
+      ~MiRU1.load_state_dict
+      ~MiRU1.modules
+      ~MiRU1.mtia
+      ~MiRU1.named_buffers
+      ~MiRU1.named_children
+      ~MiRU1.named_modules
+      ~MiRU1.named_parameters
+      ~MiRU1.parameters
+      ~MiRU1.register_backward_hook
+      ~MiRU1.register_buffer
+      ~MiRU1.register_forward_hook
+      ~MiRU1.register_forward_pre_hook
+      ~MiRU1.register_full_backward_hook
+      ~MiRU1.register_full_backward_pre_hook
+      ~MiRU1.register_load_state_dict_post_hook
+      ~MiRU1.register_load_state_dict_pre_hook
+      ~MiRU1.register_module
+      ~MiRU1.register_parameter
+      ~MiRU1.register_state_dict_post_hook
+      ~MiRU1.register_state_dict_pre_hook
+      ~MiRU1.requires_grad_
+      ~MiRU1.set_extra_state
+      ~MiRU1.set_submodule
+      ~MiRU1.share_memory
+      ~MiRU1.state_dict
+      ~MiRU1.to
+      ~MiRU1.to_empty
+      ~MiRU1.train
+      ~MiRU1.type
+      ~MiRU1.xpu
+      ~MiRU1.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MiRU1.T_destination
+      ~MiRU1.call_super_init
+      ~MiRU1.dump_patches
+      ~MiRU1.input_size
+      ~MiRU1.hidden_size
+      ~MiRU1.bias
+      ~MiRU1.dropout
+      ~MiRU1.batch_first
+      ~MiRU1.training
+   
+   

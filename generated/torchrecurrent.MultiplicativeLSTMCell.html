@@ -39,15 +39,15 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=1e825a29"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.MultiplicativeLSTMCell';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="torchrecurrent.MUT1Cell" href="torchrecurrent.MUT1Cell.html" />
-    <link rel="prev" title="torchrecurrent.MGUCell" href="torchrecurrent.MGUCell.html" />
+    <link rel="prev" title="torchrecurrent.MiRU2Cell" href="torchrecurrent.MiRU2Cell.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -321,6 +321,8 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRUCell.html">torchrecurrent.LightRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRUCell.html">torchrecurrent.LiGRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGUCell.html">torchrecurrent.MGUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1Cell.html">torchrecurrent.MiRU1Cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2Cell.html">torchrecurrent.MiRU2Cell</a></li>
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.MultiplicativeLSTMCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT1Cell.html">torchrecurrent.MUT1Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2Cell.html">torchrecurrent.MUT2Cell</a></li>
@@ -353,6 +355,8 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRU.html">torchrecurrent.LightRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRU.html">torchrecurrent.LiGRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGU.html">torchrecurrent.MGU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1.html">torchrecurrent.MiRU1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2.html">torchrecurrent.MiRU2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTM.html">torchrecurrent.MultiplicativeLSTM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT1.html">torchrecurrent.MUT1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2.html">torchrecurrent.MUT2</a></li>
@@ -441,7 +445,7 @@
 <h1>torchrecurrent.MultiplicativeLSTMCell<a class="headerlink" href="#torchrecurrent-multiplicativelstmcell" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchrecurrent.MultiplicativeLSTMCell">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">MultiplicativeLSTMCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/multiplicativelstm_cell.html#MultiplicativeLSTMCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MultiplicativeLSTMCell" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">MultiplicativeLSTMCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/multiplicativelstm_cell.html#MultiplicativeLSTMCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MultiplicativeLSTMCell" title="Link to this definition">#</a></dt>
 <dd><p>A multiplicative LSTM cell.</p>
 <p>[<a class="reference external" href="https://arxiv.org/abs/1609.07959">arXiv</a>]</p>
 <div class="math notranslate nohighlight">
@@ -548,7 +552,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(4*hidden_
 </div>
 <dl class="py method">
 <dt class="sig sig-object py" id="torchrecurrent.MultiplicativeLSTMCell.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_bias=True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init=&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_kernel_init=&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_bias_init=&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device=None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype=None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/multiplicativelstm_cell.html#MultiplicativeLSTMCell.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MultiplicativeLSTMCell.__init__" title="Link to this definition">#</a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multiplicative_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/multiplicativelstm_cell.html#MultiplicativeLSTMCell.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MultiplicativeLSTMCell.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
@@ -780,12 +784,12 @@ of shape <code class="docutils literal notranslate"><span class="pre">(4*hidden_
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="torchrecurrent.MGUCell.html"
+       href="torchrecurrent.MiRU2Cell.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">torchrecurrent.MGUCell</p>
+        <p class="prev-next-title">torchrecurrent.MiRU2Cell</p>
       </div>
     </a>
     <a class="right-next"
@@ -873,7 +877,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(4*hidden_
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>

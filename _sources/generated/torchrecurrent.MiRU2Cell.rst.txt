@@ -1,0 +1,91 @@
+﻿torchrecurrent.MiRU2Cell
+========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MiRU2Cell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MiRU2Cell.__init__
+      ~MiRU2Cell.add_module
+      ~MiRU2Cell.apply
+      ~MiRU2Cell.bfloat16
+      ~MiRU2Cell.buffers
+      ~MiRU2Cell.children
+      ~MiRU2Cell.compile
+      ~MiRU2Cell.cpu
+      ~MiRU2Cell.cuda
+      ~MiRU2Cell.double
+      ~MiRU2Cell.eval
+      ~MiRU2Cell.extra_repr
+      ~MiRU2Cell.float
+      ~MiRU2Cell.forward
+      ~MiRU2Cell.get_buffer
+      ~MiRU2Cell.get_extra_state
+      ~MiRU2Cell.get_parameter
+      ~MiRU2Cell.get_submodule
+      ~MiRU2Cell.half
+      ~MiRU2Cell.init_weights
+      ~MiRU2Cell.ipu
+      ~MiRU2Cell.load_state_dict
+      ~MiRU2Cell.modules
+      ~MiRU2Cell.mtia
+      ~MiRU2Cell.named_buffers
+      ~MiRU2Cell.named_children
+      ~MiRU2Cell.named_modules
+      ~MiRU2Cell.named_parameters
+      ~MiRU2Cell.parameters
+      ~MiRU2Cell.register_backward_hook
+      ~MiRU2Cell.register_buffer
+      ~MiRU2Cell.register_forward_hook
+      ~MiRU2Cell.register_forward_pre_hook
+      ~MiRU2Cell.register_full_backward_hook
+      ~MiRU2Cell.register_full_backward_pre_hook
+      ~MiRU2Cell.register_load_state_dict_post_hook
+      ~MiRU2Cell.register_load_state_dict_pre_hook
+      ~MiRU2Cell.register_module
+      ~MiRU2Cell.register_parameter
+      ~MiRU2Cell.register_state_dict_post_hook
+      ~MiRU2Cell.register_state_dict_pre_hook
+      ~MiRU2Cell.requires_grad_
+      ~MiRU2Cell.set_extra_state
+      ~MiRU2Cell.set_submodule
+      ~MiRU2Cell.share_memory
+      ~MiRU2Cell.state_dict
+      ~MiRU2Cell.to
+      ~MiRU2Cell.to_empty
+      ~MiRU2Cell.train
+      ~MiRU2Cell.type
+      ~MiRU2Cell.uses_double_state
+      ~MiRU2Cell.xpu
+      ~MiRU2Cell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MiRU2Cell.T_destination
+      ~MiRU2Cell.call_super_init
+      ~MiRU2Cell.dump_patches
+      ~MiRU2Cell.weight_ih
+      ~MiRU2Cell.weight_hh
+      ~MiRU2Cell.bias_ih
+      ~MiRU2Cell.bias_hh
+      ~MiRU2Cell.input_size
+      ~MiRU2Cell.hidden_size
+      ~MiRU2Cell.bias
+      ~MiRU2Cell.recurrent_bias
+      ~MiRU2Cell.training
+   
+   

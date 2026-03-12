@@ -39,9 +39,9 @@
 <link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
 
     <script src="../_static/documentation_options.js?v=1e825a29"></script>
-    <script src="../_static/doctools.js?v=9bcbadda"></script>
-    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
-    <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.coRNN';</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
@@ -321,6 +321,8 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRUCell.html">torchrecurrent.LightRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRUCell.html">torchrecurrent.LiGRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGUCell.html">torchrecurrent.MGUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1Cell.html">torchrecurrent.MiRU1Cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2Cell.html">torchrecurrent.MiRU2Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTMCell.html">torchrecurrent.MultiplicativeLSTMCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT1Cell.html">torchrecurrent.MUT1Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2Cell.html">torchrecurrent.MUT2Cell</a></li>
@@ -353,6 +355,8 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRU.html">torchrecurrent.LightRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRU.html">torchrecurrent.LiGRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGU.html">torchrecurrent.MGU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1.html">torchrecurrent.MiRU1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2.html">torchrecurrent.MiRU2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTM.html">torchrecurrent.MultiplicativeLSTM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT1.html">torchrecurrent.MUT1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2.html">torchrecurrent.MUT2</a></li>
@@ -441,7 +445,7 @@
 <h1>torchrecurrent.coRNN<a class="headerlink" href="#torchrecurrent-cornn" title="Link to this heading">#</a></h1>
 <dl class="py class">
 <dt class="sig sig-object py" id="torchrecurrent.coRNN">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">coRNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/cornn_cell.html#coRNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.coRNN" title="Link to this definition">#</a></dt>
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">coRNN</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/cornn_cell.html#coRNN"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.coRNN" title="Link to this definition">#</a></dt>
 <dd><p>Multi-layer coupled oscillatory recurrent neural network.</p>
 <p>[<a class="reference external" href="https://arxiv.org/abs/2010.00951">arXiv</a>]</p>
 <p>Each layer consists of a <a class="reference internal" href="torchrecurrent.coRNNCell.html#torchrecurrent.coRNNCell" title="torchrecurrent.coRNNCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">coRNNCell</span></code></a>, which updates the hidden and
@@ -919,7 +923,7 @@ initializers (<cite>kernel_init</cite>, <cite>recurrent_kernel_init</cite>, etc.
         <div class="footer-item">
 
   <p class="sphinx-version">
-    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.2.3.
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
     <br/>
   </p>
 </div>
