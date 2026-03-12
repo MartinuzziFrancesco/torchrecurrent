@@ -59,6 +59,12 @@ references and official implementations where available.
    * - :doc:`MGU <generated/torchrecurrent.MGU>`
      - `IJAC 2016 <https://arxiv.org/abs/1603.09420>`__
      - –
+   * - :doc:`MiRU1 <generated/torchrecurrent.MiRU1>`
+     - `Neurocomputing 2026 <https://doi.org/10.1016/j.neucom.2026.132847>`__
+     - –
+   * - :doc:`MiRU2 <generated/torchrecurrent.MiRU2>`
+     - `Neurocomputing 2026 <https://doi.org/10.1016/j.neucom.2026.132847>`__
+     - –
    * - :doc:`MultiplicativeLSTM <generated/torchrecurrent.MultiplicativeLSTM>`
      - `Workshop ICLR 2017 <https://arxiv.org/abs/1609.07959>`__
      - `benkrause/mLSTM <https://github.com/benkrause/mLSTM>`__
