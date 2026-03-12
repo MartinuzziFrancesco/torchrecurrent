@@ -36,7 +36,7 @@ class MiRU1(BaseSingleRecurrentLayer):
             Default: True
         recurrent_bias: If ``False``, the layer does not use recurrent biases.
             Default: True
-        lambda_: Mixing hyperparameter controlling the blend between the
+        update_coefficient: Mixing hyperparameter controlling the blend between the
             previous hidden state and the candidate. Default: 0.5
         nonlinearity: Nonlinearity for the candidate hidden state.
             Default: :func:`torch.tanh`
@@ -118,7 +118,7 @@ class MiRU1Cell(BaseSingleRecurrentCell):
             Default: ``True``.
         recurrent_bias: If ``False``, the layer does not use recurrent biases.
             Default: ``True``.
-        lambda_: Mixing hyperparameter controlling the blend between the
+        update_coefficient: Mixing hyperparameter controlling the blend between the
             previous hidden state and the candidate. Default: ``0.5``.
         nonlinearity: Nonlinearity for the candidate hidden state.
             Default: :func:`torch.tanh`.
@@ -170,7 +170,7 @@ class MiRU1Cell(BaseSingleRecurrentCell):
         "hidden_size",
         "bias",
         "recurrent_bias",
-        "lambda_",
+        "update_coefficient",
         "nonlinearity",
         "gate_nonlinearity",
         "kernel_init",
@@ -190,7 +190,7 @@ class MiRU1Cell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        lambda_: float = 0.5,
+        update_coefficient: float = 0.5,
         nonlinearity: Callable = torch.tanh,
         gate_nonlinearity: Callable = torch.sigmoid,
         kernel_init: Callable = nn.init.xavier_uniform_,
@@ -203,7 +203,7 @@ class MiRU1Cell(BaseSingleRecurrentCell):
         super(MiRU1Cell, self).__init__(
             input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
-        self.lambda_ = lambda_
+        self.update_coefficient = update_coefficient
         self.nonlinearity = nonlinearity
         self.gate_nonlinearity = gate_nonlinearity
         self.kernel_init = kernel_init
@@ -248,7 +248,7 @@ class MiRU1Cell(BaseSingleRecurrentCell):
         candidate = self.nonlinearity(ch)
 
         # Update: h(t) = lambda * h + (1 - lambda) * h~
-        new_state = self.lambda_ * state + (1.0 - self.lambda_) * candidate
+        new_state = self.update_coefficient * state + (1.0 - self.update_coefficient) * candidate
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -286,8 +286,8 @@ class MiRU2(BaseSingleRecurrentLayer):
             Default: True
         recurrent_bias: If ``False``, the layer does not use recurrent biases.
             Default: True
-        lambda_: Mixing hyperparameter. Default: 0.5
-        theta: Hidden-state scaling hyperparameter. Default: 0.5
+        update_coefficient: Mixing hyperparameter. Default: 0.5
+        reset_coefficient: Hidden-state scaling hyperparameter. Default: 0.5
         nonlinearity: Nonlinearity for the candidate hidden state.
             Default: :func:`torch.tanh`
         kernel_init: Initializer for ``W_h``.
@@ -363,8 +363,8 @@ class MiRU2Cell(BaseSingleRecurrentCell):
             Default: ``True``.
         recurrent_bias: If ``False``, the layer does not use recurrent biases.
             Default: ``True``.
-        lambda_: Mixing hyperparameter. Default: ``0.5``.
-        theta: Hidden-state scaling hyperparameter. Default: ``0.5``.
+        update_coefficient: Mixing hyperparameter. Default: ``0.5``.
+        reset_coefficient: Hidden-state scaling hyperparameter. Default: ``0.5``.
         nonlinearity: Nonlinearity for the candidate hidden state.
             Default: :func:`torch.tanh`.
         kernel_init: Initializer for ``W_h``.
@@ -413,8 +413,8 @@ class MiRU2Cell(BaseSingleRecurrentCell):
         "hidden_size",
         "bias",
         "recurrent_bias",
-        "lambda_",
-        "theta",
+        "update_coefficient",
+        "reset_coefficient",
         "nonlinearity",
         "kernel_init",
         "recurrent_kernel_init",
@@ -433,8 +433,8 @@ class MiRU2Cell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        lambda_: float = 0.5,
-        theta: float = 0.5,
+        update_coefficient: float = 0.5,
+        reset_coefficient: float = 0.5,
         nonlinearity: Callable = torch.tanh,
         kernel_init: Callable = nn.init.xavier_uniform_,
         recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
@@ -446,8 +446,8 @@ class MiRU2Cell(BaseSingleRecurrentCell):
         super(MiRU2Cell, self).__init__(
             input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
-        self.lambda_ = lambda_
-        self.theta = theta
+        self.update_coefficient = update_coefficient
+        self.reset_coefficient = reset_coefficient
         self.nonlinearity = nonlinearity
         self.kernel_init = kernel_init
         self.recurrent_kernel_init = recurrent_kernel_init
@@ -472,17 +472,17 @@ class MiRU2Cell(BaseSingleRecurrentCell):
         self._validate_state(state)
         inp, state, is_batched = self._preprocess_input_and_state(inp, state)
 
-        # Candidate: h~(t) = tanh(W_h x + b_h + U_h (theta * h))
+        # Candidate: h~(t) = tanh(W_h x + b_h + U_h (reset_coefficient * h))
         ch = (
             inp @ self.weight_ih.t()
             + self.bias_ih
-            + (self.theta * state) @ self.weight_hh.t()
+            + (self.reset_coefficient * state) @ self.weight_hh.t()
             + self.bias_hh
         )
         candidate = self.nonlinearity(ch)
 
         # Update: h(t) = lambda * h + (1 - lambda) * h~
-        new_state = self.lambda_ * state + (1.0 - self.lambda_) * candidate
+        new_state = self.update_coefficient * state + (1.0 - self.update_coefficient) * candidate
 
         if not is_batched:
             new_state = new_state.squeeze(0)
