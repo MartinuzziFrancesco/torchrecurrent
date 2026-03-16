@@ -29,6 +29,7 @@ from .star_cell import STAR, STARCell
 from .ugrnn_cell import UGRNN, UGRNNCell
 from .unicornn_cell import UnICORNN, UnICORNNCell
 from .wmclstm_cell import WMCLSTM, WMCLSTMCell
+from .plrnn_cell import PLRNN, PLRNNCell
 
 # from .rhn_cell import RHN, RHNCell
 
@@ -92,4 +93,6 @@ __all__ = [
     "UnICORNNCell",
     "WMCLSTM",
     "WMCLSTMCell",
+    "PLRNN",
+    "PLRNNCell",
 ]
