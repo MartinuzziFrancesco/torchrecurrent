@@ -22,6 +22,8 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.LightRUCell
    torchrecurrent.LiGRUCell
    torchrecurrent.MGUCell
+   torchrecurrent.MiRU1Cell
+   torchrecurrent.MiRU2Cell
    torchrecurrent.MultiplicativeLSTMCell
    torchrecurrent.MUT1Cell
    torchrecurrent.MUT2Cell
