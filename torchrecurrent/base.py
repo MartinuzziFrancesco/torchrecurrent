@@ -37,7 +37,7 @@ def resolve_activation(act: Any) -> nn.Module:
         key = act.lower()
         if key not in _ACTIVATIONS:
             raise ValueError(f"Unknown activation '{act}'. Supported: {sorted(_ACTIVATIONS.keys())}")
-        return type(_ACTIVATIONS[key])()
+        return _ACTIVATIONS[key].__class__()
 
     if act is torch.tanh:
         return nn.Tanh()
@@ -129,9 +129,6 @@ class RecurrentCellBase(nn.Module):
     hidden_size: int
     bias: bool
     recurrent_bias: bool
-    _param_device: torch.device
-    _param_dtype: torch.dtype
-    init_cfg: Dict[str, str]
 
     def __init__(
         self,
@@ -148,8 +145,8 @@ class RecurrentCellBase(nn.Module):
         self.bias = bias
         self.recurrent_bias = recurrent_bias
 
-        self._param_device = device if device is not None else torch.device("cpu")
-        self._param_dtype = dtype if dtype is not None else torch.get_default_dtype()
+        self._init_device = device if device is not None else torch.device("cpu")
+        self._init_dtype = dtype if dtype is not None else torch.get_default_dtype()
 
         self.init_cfg = {
             "kernel": "xavier_uniform",
@@ -166,9 +163,7 @@ class RecurrentCellBase(nn.Module):
 
     def _validate_input(self, inp: Tensor) -> None:
         if inp.dim() not in (1, 2):
-            raise ValueError(
-                f"{self.__class__.__name__}: expected input 1D or 2D, got {inp.dim()}D."
-            )
+            raise ValueError("expected input 1D or 2D, got " + str(inp.dim()) + "D.")
 
     def _as_batched(self, inp: Tensor) -> Tuple[Tensor, bool]:
         if inp.dim() == 1:
@@ -185,10 +180,10 @@ class RecurrentCellBase(nn.Module):
         """
         for name, (shape, trainable) in specs.items():
             if trainable:
-                p = nn.Parameter(torch.empty(*shape, device=self._param_device, dtype=self._param_dtype))
+                p = nn.Parameter(torch.empty(*shape, device=self._init_device, dtype=self._init_dtype))
                 self.register_parameter(name, p)
             else:
-                b = torch.zeros(*shape, device=self._param_device, dtype=self._param_dtype)
+                b = torch.zeros(*shape, device=self._init_device, dtype=self._init_dtype)
                 self.register_buffer(name, b)
 
     def _default_register_tensors(
@@ -224,12 +219,20 @@ class RecurrentCellBase(nn.Module):
             elif "bias_hh" in name:
                 apply_init_(p, self.init_cfg["recurrent_bias"])
 
+    def _cleanup_non_scriptable(self) -> None:
+        del self._init_device
+        del self._init_dtype
+        del self.init_cfg
+
 
 class SingleStateCellBase(RecurrentCellBase):
     """
     TorchScript-friendly single-state interface:
       forward(inp, h) -> h_new
     """
+    def uses_double_state(self) -> bool:
+        return False
+
     def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         raise NotImplementedError
 
@@ -239,6 +242,9 @@ class DoubleStateCellBase(RecurrentCellBase):
     TorchScript-friendly double-state interface:
       forward(inp, (h, c)) -> (h_new, c_new)
     """
+    def uses_double_state(self) -> bool:
+        return True
+
     def forward(
         self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
@@ -272,6 +278,20 @@ class RecurrentLayerBase(nn.Module):
         self.dropout = float(dropout)
 
         self.dropout_layer = nn.Dropout(self.dropout) if self.dropout > 0.0 else None
+
+    def __repr__(self) -> str:
+        extra = self.extra_repr()
+        return f"{self.__class__.__name__}({extra})"
+
+    def extra_repr(self) -> str:
+        parts = [str(self.input_size), str(self.hidden_size)]
+        if self.num_layers != 1:
+            parts.append(f"num_layers={self.num_layers}")
+        if self.dropout != 0.0:
+            parts.append(f"dropout={self.dropout}")
+        if self.batch_first:
+            parts.append(f"batch_first={self.batch_first}")
+        return ", ".join(parts)
 
     def initialize_cells(self, cell_class, **kwargs) -> None:
         layers = [cell_class(self.input_size, self.hidden_size, **kwargs)] + [

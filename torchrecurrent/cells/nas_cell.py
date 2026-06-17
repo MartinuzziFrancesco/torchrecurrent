@@ -25,12 +25,12 @@
 
 import torch
 import torch.nn as nn
-from typing import Optional, Tuple, Union, Callable
+from typing import Optional, Tuple
 from torch import Tensor
-from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
+from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
 
 
-class NAS(BaseDoubleRecurrentLayer):
+class NAS(DoubleStateRecurrentLayerBase):
     r"""Multi-layer neural architecture search recurrent network.
 
     [`arXiv <https://arxiv.org/abs/1611.01578>`_]
@@ -178,7 +178,7 @@ class NAS(BaseDoubleRecurrentLayer):
         self.initialize_cells(NASCell, **kwargs)
 
 
-class NASCell(BaseDoubleRecurrentCell):
+class NASCell(DoubleStateCellBase):
     r"""A Neural Architecture Search (NAS) cell.
 
     [`arXiv <https://arxiv.org/abs/1611.01578>`_]
@@ -261,16 +261,7 @@ class NASCell(BaseDoubleRecurrentCell):
         >>> out_h = torch.stack(out_h, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -283,43 +274,47 @@ class NASCell(BaseDoubleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
         super(NASCell, self).__init__(
             input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=8,
-            hh_mult=8,
-            bias=bias,
-            recurrent_bias=recurrent_bias,
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
         )
-        self.init_weights()
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
+
+        self._default_register_tensors(ih_mult=8, hh_mult=8)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
     def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
-        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states((state, c_state))
-        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            h, c = state
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
 
         gates = (
-            inp @ self.weight_ih.t()
+            b_inp @ self.weight_ih.t()
             + self.bias_ih
-            + state @ self.weight_hh.t()
+            + b_h @ self.weight_hh.t()
             + self.bias_hh
         )
         g0, g1, g2, g3, g4, g5, g6, g7 = gates.chunk(8, 1)
@@ -336,13 +331,13 @@ class NASCell(BaseDoubleRecurrentCell):
         l2_1 = torch.tanh(layer1_2 + layer1_3)
         l2_2 = torch.tanh(layer1_4 * layer1_5)
         l2_3 = torch.sigmoid(layer1_6 + layer1_7)
-        l2_0 = torch.tanh(l2_0 + c_state)
-        new_cstate = l2_0 * l2_1
+        l2_0 = torch.tanh(l2_0 + b_c)
+        new_c = l2_0 * l2_1
         l3_1 = torch.tanh(l2_2 + l2_3)
-        new_state = torch.tanh(new_cstate * l3_1)
+        new_h = torch.tanh(new_c * l3_1)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
-            new_cstate = new_cstate.squeeze(0)
+            new_h = new_h.squeeze(0)
+            new_c = new_c.squeeze(0)
 
-        return new_state, new_cstate
+        return new_h, new_c

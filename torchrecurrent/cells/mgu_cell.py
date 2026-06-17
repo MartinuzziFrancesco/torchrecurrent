@@ -1,11 +1,17 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import (
+    SingleStateRecurrentLayerBase,
+    SingleStateCellBase,
+    resolve_activation,
+    resolve_init_name,
+    apply_init_,
+)
 
 
-class MGU(BaseSingleRecurrentLayer):
+class MGU(SingleStateRecurrentLayerBase):
     r"""Multi-layer minimal gated unit neural network.
 
     [`arXiv <https://arxiv.org/abs/1603.09420>`_]
@@ -138,7 +144,7 @@ class MGU(BaseSingleRecurrentLayer):
         self.initialize_cells(MGUCell, **kwargs)
 
 
-class MGUCell(BaseSingleRecurrentCell):
+class MGUCell(SingleStateCellBase):
     r"""A Minimal Gated Unit (MGU) cell.
 
     [`arXiv <https://arxiv.org/abs/1603.09420>`_]
@@ -219,18 +225,7 @@ class MGUCell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "nonlinearity",
-        "gate_nonlinearity",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -243,59 +238,63 @@ class MGUCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        nonlinearity: Callable = torch.tanh,
-        gate_nonlinearity: Callable = torch.sigmoid,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        nonlinearity="tanh",
+        gate_nonlinearity="sigmoid",
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(MGUCell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
-        )
-        self.nonlinearity = nonlinearity
-        self.gate_nonlinearity = gate_nonlinearity
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=2,
-            hh_mult=2,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
             bias=bias,
             recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.init_weights()
+        self.act = resolve_activation(nonlinearity)
+        self.gate_act = resolve_activation(gate_nonlinearity)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors(ih_mult=2, hh_mult=2)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
 
         weight_ih_f, weight_ih_h = self.weight_ih.chunk(2, 0)
         weight_hh_f, weight_hh_h = self.weight_hh.chunk(2, 0)
         bias_ih_f, bias_ih_h = self.bias_ih.chunk(2, 0)
         bias_hh_f, bias_hh_h = self.bias_hh.chunk(2, 0)
 
-        fg = inp @ weight_ih_f.t() + bias_ih_f + state @ weight_hh_f.t() + bias_hh_f
-        forget_gate = self.gate_nonlinearity(fg)
-        hidden_modulated = forget_gate * state
+        fg = b_inp @ weight_ih_f.t() + bias_ih_f + b_state @ weight_hh_f.t() + bias_hh_f
+        forget_gate = self.gate_act(fg)
+        hidden_modulated = forget_gate * b_state
         ch = (
-            inp @ weight_ih_h.t()
+            b_inp @ weight_ih_h.t()
             + bias_ih_h
             + hidden_modulated @ weight_hh_h.t()
             + bias_hh_h
         )
-        candidate_hidden = self.nonlinearity(ch)
-        new_state = forget_gate * candidate_hidden + (1.0 - forget_gate) * state
+        candidate_hidden = self.act(ch)
+        new_state = forget_gate * candidate_hidden + (1.0 - forget_gate) * b_state
 
         if not is_batched:
             new_state = new_state.squeeze(0)

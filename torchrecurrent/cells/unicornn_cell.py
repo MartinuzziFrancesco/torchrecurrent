@@ -1,11 +1,11 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Callable, Union, Tuple
-from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
+from typing import Optional, Tuple
+from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
 
 
-class UnICORNN(BaseDoubleRecurrentLayer):
+class UnICORNN(DoubleStateRecurrentLayerBase):
     r"""Multi-layer Undamped Independent Controlled Oscillatory RNN (UnICORNN).
 
     [`arXiv <https://arxiv.org/abs/2103.05487>`_]
@@ -121,7 +121,7 @@ class UnICORNN(BaseDoubleRecurrentLayer):
         self.initialize_cells(UnICORNNCell, **kwargs)
 
 
-class UnICORNNCell(BaseDoubleRecurrentCell):
+class UnICORNNCell(DoubleStateCellBase):
     r"""An Undamped Independent Controlled Oscillatory RNN (UnICORNN) cell.
 
     [`arXiv <https://arxiv.org/abs/2103.05487>`_]
@@ -216,19 +216,7 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         >>> outs_z = torch.stack(outs_z, dim=0)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "control_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-        "dt",
-        "alpha",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias", "dt", "alpha"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -243,11 +231,11 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        control_kernel_init: Callable = nn.init.normal_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        control_kernel_init=nn.init.normal_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         dt: float = 1.0,
         alpha: float = 0.0,
         device: Optional[torch.device] = None,
@@ -256,13 +244,17 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
         super(UnICORNNCell, self).__init__(
             input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.control_kernel_init = control_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
         self.dt = dt
         self.alpha = alpha
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["control_kernel"] = resolve_init_name(control_kernel_init, "normal")
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
         self._register_tensors(
             {
@@ -273,42 +265,45 @@ class UnICORNNCell(BaseDoubleRecurrentCell):
                 "bias_hh": ((hidden_size,), recurrent_bias),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
-    def init_weights(self):
-        for name, param in self.named_parameters():
-            if "weight_ih" in name:
-                self.kernel_init(param)
-            elif "weight_hh" in name:
-                self.recurrent_kernel_init(param)
-            elif "weight_ch" in name:
-                self.control_kernel_init(param)
-            elif "bias_ih" in name:
-                self.bias_init(param)
-            elif "bias_hh" in name:
-                self.recurrent_bias_init(param)
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        apply_init_(self.weight_ch, self.init_cfg["control_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
 
     def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
-        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states((state, c_state))
-        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            h, c = state
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
 
         candidate_state = torch.tanh(
-            inp @ self.weight_ih.t()
+            b_inp @ self.weight_ih.t()
             + self.bias_ih
-            + state @ self.weight_hh.t()
+            + b_h @ self.weight_hh.t()
             + self.bias_hh
         )
-        new_cstate = c_state - self.dt * torch.sigmoid(self.weight_ch) * (
-            candidate_state + self.alpha * state
+        new_c = b_c - self.dt * torch.sigmoid(self.weight_ch) * (
+            candidate_state + self.alpha * b_h
         )
-        new_state = state + self.dt * torch.sigmoid(self.weight_ch) * new_cstate
+        new_h = b_h + self.dt * torch.sigmoid(self.weight_ch) * new_c
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
-            new_cstate = new_cstate.squeeze(0)
+            new_h = new_h.squeeze(0)
+            new_c = new_c.squeeze(0)
 
-        return new_state, new_cstate
+        return new_h, new_c

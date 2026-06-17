@@ -1,11 +1,17 @@
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import (
+    SingleStateRecurrentLayerBase,
+    SingleStateCellBase,
+    resolve_activation,
+    resolve_init_name,
+    apply_init_,
+)
 
 
-class FastRNN(BaseSingleRecurrentLayer):
+class FastRNN(SingleStateRecurrentLayerBase):
     r"""Multi-layer fast recurrent neural network.
 
     [`arXiv <https://arxiv.org/abs/1901.02358>`_]
@@ -143,7 +149,7 @@ class FastRNN(BaseSingleRecurrentLayer):
         self.initialize_cells(FastRNNCell, **kwargs)
 
 
-class FastRNNCell(BaseSingleRecurrentCell):
+class FastRNNCell(SingleStateCellBase):
     r"""A Fast RNN cell with two scalar gates :math:`\alpha` and :math:`\beta`.
 
     [`arXiv <https://arxiv.org/abs/1901.02358>`_]
@@ -229,11 +235,6 @@ class FastRNNCell(BaseSingleRecurrentCell):
         "hidden_size",
         "bias",
         "recurrent_bias",
-        "nonlinearity",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
         "alpha_init",
         "beta_init",
     ]
@@ -251,26 +252,35 @@ class FastRNNCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        nonlinearity: Callable = torch.tanh,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        nonlinearity="tanh",
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         alpha_init: float = 3.0,
         beta_init: float = -3.0,
-        device: Optional[torch.device] = None,
-        dtype: Optional[torch.dtype] = None,
+        device=None,
+        dtype=None,
     ):
-        super(FastRNNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
         self.alpha_init = alpha_init
         self.beta_init = beta_init
-        self.nonlinearity = nonlinearity
+        self.act = resolve_activation(nonlinearity)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
         self._register_tensors(
             {
@@ -282,48 +292,45 @@ class FastRNNCell(BaseSingleRecurrentCell):
                 "beta": ((1,), True),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
-    def init_weights(self):
-        for name, param in self.named_parameters():
-            if name.endswith("weight_ih"):
-                self.kernel_init(param)
-            elif name.endswith("weight_hh"):
-                self.recurrent_kernel_init(param)
-            elif name.endswith("bias_ih"):
-                self.bias_init(param)
-            elif name.endswith("bias_hh"):
-                self.recurrent_bias_init(param)
-            elif name == "alpha":
-                nn.init.constant_(param, self.alpha_init)
-            elif name == "beta":
-                nn.init.constant_(param, self.beta_init)
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
+        nn.init.constant_(self.alpha, self.alpha_init)
+        nn.init.constant_(self.beta, self.beta_init)
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        candidate_state = self.nonlinearity(
-            inp @ self.weight_ih.t()
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        candidate_state = self.act(
+            b_inp @ self.weight_ih.t()
             + self.bias_ih
-            + state @ self.weight_hh.t()
+            + b_state @ self.weight_hh.t()
             + self.bias_hh
         )
         alpha = torch.sigmoid(self.alpha)
         beta = torch.sigmoid(self.beta)
-        new_state = alpha * candidate_state + beta * state
+        h_new = alpha * candidate_state + beta * b_state
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
+            h_new = h_new.squeeze(0)
 
-        return new_state
+        return h_new
 
 
-class FastGRNN(BaseSingleRecurrentLayer):
+class FastGRNN(SingleStateRecurrentLayerBase):
     r"""Multi-layer FastGRNN.
 
     [`arXiv <https://arxiv.org/abs/1901.02358>`_]
@@ -433,8 +440,8 @@ class FastGRNN(BaseSingleRecurrentLayer):
         self.initialize_cells(FastGRNNCell, **kwargs)
 
 
-class FastGRNNCell(BaseSingleRecurrentCell):
-    r"""A “Fast RNN” cell with two scalar gates.
+class FastGRNNCell(SingleStateCellBase):
+    r"""A "Fast RNN" cell with two scalar gates.
 
     [`arXiv <https://arxiv.org/abs/1901.02358>`_]
 
@@ -514,11 +521,6 @@ class FastGRNNCell(BaseSingleRecurrentCell):
         "hidden_size",
         "bias",
         "recurrent_bias",
-        "nonlinearity",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
         "zeta_init",
         "nu_init",
     ]
@@ -536,26 +538,35 @@ class FastGRNNCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        nonlinearity: Callable = torch.tanh,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        nonlinearity="tanh",
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         zeta_init: float = 3.0,
         nu_init: float = -3.0,
-        device: Optional[torch.device] = None,
-        dtype: Optional[torch.dtype] = None,
+        device=None,
+        dtype=None,
     ):
-        super(FastGRNNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
         self.zeta_init = zeta_init
         self.nu_init = nu_init
-        self.nonlinearity = nonlinearity
+        self.act = resolve_activation(nonlinearity)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
         self._register_tensors(
             {
@@ -567,42 +578,39 @@ class FastGRNNCell(BaseSingleRecurrentCell):
                 "nu": ((1,), True),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
-    def init_weights(self):
-        for name, param in self.named_parameters():
-            if name.endswith("weight_ih"):
-                self.kernel_init(param)
-            elif name.endswith("weight_hh"):
-                self.recurrent_kernel_init(param)
-            elif name.endswith("bias_ih"):
-                self.bias_init(param)
-            elif name.endswith("bias_hh"):
-                self.recurrent_bias_init(param)
-            elif name == "zeta":
-                nn.init.constant_(param, self.zeta_init)
-            elif name == "nu":
-                nn.init.constant_(param, self.nu_init)
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
+        nn.init.constant_(self.zeta, self.zeta_init)
+        nn.init.constant_(self.nu, self.nu_init)
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
 
         bias_ih_1, bias_ih_2 = self.bias_ih.chunk(2)
         bias_hh_1, bias_hh_2 = self.bias_hh.chunk(2)
 
-        partial_gate = inp @ self.weight_ih.t() + state @ self.weight_hh.t()
-        gate = self.nonlinearity(partial_gate + bias_ih_1 + bias_hh_1)
+        partial_gate = b_inp @ self.weight_ih.t() + b_state @ self.weight_hh.t()
+        gate = self.act(partial_gate + bias_ih_1 + bias_hh_1)
         candidate_state = torch.tanh(partial_gate + bias_ih_2 + bias_hh_2)
         zeta = torch.sigmoid(self.zeta)
         nu = torch.sigmoid(self.nu)
-        new_state = (zeta * (1.0 - gate) + nu) * candidate_state + gate * state
+        h_new = (zeta * (1.0 - gate) + nu) * candidate_state + gate * b_state
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
+            h_new = h_new.squeeze(0)
 
-        return new_state
+        return h_new

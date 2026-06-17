@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple, Union
-from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
+from typing import Optional, Tuple
+from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
 
 
-class RAN(BaseDoubleRecurrentLayer):
+class RAN(DoubleStateRecurrentLayerBase):
     r"""Multi-layer Recurrent Additive Network (RAN).
 
     [`arXiv <https://arxiv.org/pdf/1705.07393>`_]
@@ -124,7 +124,7 @@ class RAN(BaseDoubleRecurrentLayer):
         self.initialize_cells(RANCell, **kwargs)
 
 
-class RANCell(BaseDoubleRecurrentCell):
+class RANCell(DoubleStateCellBase):
     r"""A Recurrent Additive Network (RAN) cell.
 
     [`arXiv <https://arxiv.org/pdf/1705.07393>`_]
@@ -207,16 +207,7 @@ class RANCell(BaseDoubleRecurrentCell):
         >>> outs = torch.stack(outs, dim=0)  # (time_steps, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -229,20 +220,24 @@ class RANCell(BaseDoubleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
         super(RANCell, self).__init__(
             input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
         self._register_tensors(
             {
@@ -252,31 +247,38 @@ class RANCell(BaseDoubleRecurrentCell):
                 "bias_hh": ((2 * hidden_size,), recurrent_bias),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
     def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
-        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states((state, c_state))
-        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            h, c = state
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
 
         weight_ih_c, weight_ih_i, weight_ih_f = self.weight_ih.chunk(3, 0)
         weight_hh_i, weight_hh_f = self.weight_hh.chunk(2, 0)
         bias_ih_i, bias_ih_f = self.bias_ih.chunk(2, 0)
         bias_hh_i, bias_hh_f = self.bias_hh.chunk(2, 0)
 
-        content_layer = inp @ weight_ih_c.t()
-        ig = inp @ weight_ih_i.t() + bias_ih_i + state @ weight_hh_i.t() + bias_hh_i
-        fg = inp @ weight_ih_f.t() + bias_ih_f + state @ weight_hh_f.t() + bias_hh_f
+        content_layer = b_inp @ weight_ih_c.t()
+        ig = b_inp @ weight_ih_i.t() + bias_ih_i + b_h @ weight_hh_i.t() + bias_hh_i
+        fg = b_inp @ weight_ih_f.t() + bias_ih_f + b_h @ weight_hh_f.t() + bias_hh_f
         input_gate = torch.sigmoid(ig)
         forget_gate = torch.sigmoid(fg)
-        new_cstate = input_gate * content_layer + forget_gate * c_state
-        new_state = torch.tanh(new_cstate)
+        new_c = input_gate * content_layer + forget_gate * b_c
+        new_h = torch.tanh(new_c)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
-            new_cstate = new_cstate.squeeze(0)
+            new_h = new_h.squeeze(0)
+            new_c = new_c.squeeze(0)
 
-        return new_state, new_cstate
+        return new_h, new_c

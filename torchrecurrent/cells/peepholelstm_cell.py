@@ -1,11 +1,11 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Callable, Union, Tuple
-from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
+from typing import Optional, Tuple
+from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_activation, resolve_init_name, apply_init_
 
 
-class PeepholeLSTM(BaseDoubleRecurrentLayer):
+class PeepholeLSTM(DoubleStateRecurrentLayerBase):
     r"""Multi-layer peephole long short-term memory (LSTM) network.
 
     [`JMLR <https://www.jmlr.org/papers/volume3/gers02a/gers02a.pdf>`_]
@@ -147,7 +147,7 @@ class PeepholeLSTM(BaseDoubleRecurrentLayer):
         self.initialize_cells(PeepholeLSTMCell, **kwargs)
 
 
-class PeepholeLSTMCell(BaseDoubleRecurrentCell):
+class PeepholeLSTMCell(DoubleStateCellBase):
     r"""A Peephole LSTM cell with learnable peephole connections.
 
     [`JMLR <https://www.jmlr.org/papers/volume3/gers02a/gers02a.pdf>`_]
@@ -250,19 +250,7 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         >>> outs = torch.stack(outs, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "nonlinearity",
-        "gate_nonlinearity",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "peephole_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -276,26 +264,32 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        nonlinearity: Callable = torch.tanh,
-        gate_nonlinearity: Callable = torch.sigmoid,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        peephole_kernel_init: Callable = nn.init.normal_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        nonlinearity="tanh",
+        gate_nonlinearity="sigmoid",
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        peephole_kernel_init=nn.init.normal_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
         super(PeepholeLSTMCell, self).__init__(
             input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
-        self.nonlinearity = nonlinearity
-        self.gate_nonlinearity = gate_nonlinearity
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.peephole_kernel_init = peephole_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
+        self.act = resolve_activation(nonlinearity)
+        self.gate_act = resolve_activation(gate_nonlinearity)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
+        self.init_cfg["peephole_kernel"] = resolve_init_name(
+            peephole_kernel_init, "normal"
+        )
 
         self._register_tensors(
             {
@@ -306,28 +300,31 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
                 "bias_hh": ((4 * hidden_size,), recurrent_bias),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
-    def init_weights(self):
-        for name, param in self.named_parameters():
-            if "weight_ih" in name:
-                self.kernel_init(param)
-            elif "weight_hh" in name:
-                self.recurrent_kernel_init(param)
-            elif "weight_ph" in name:
-                self.peephole_kernel_init(param)
-            elif "bias_ih" in name:
-                self.bias_init(param)
-            elif "bias_hh" in name:
-                self.recurrent_bias_init(param)
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        apply_init_(self.weight_ph, self.init_cfg["peephole_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
 
     def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
-        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states((state, c_state))
-        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            h, c = state
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
 
         weight_ih_i, weight_ih_f, weight_ih_c, weight_ih_o = self.weight_ih.chunk(4, 0)
         weight_hh_i, weight_hh_f, weight_hh_c, weight_hh_o = self.weight_hh.chunk(4, 0)
@@ -336,33 +333,33 @@ class PeepholeLSTMCell(BaseDoubleRecurrentCell):
         bias_hh_i, bias_hh_f, bias_hh_c, bias_hh_o = self.bias_hh.chunk(4, 0)
 
         i = (
-            inp @ weight_ih_i.t()
+            b_inp @ weight_ih_i.t()
             + bias_ih_i
-            + state @ weight_hh_i.t()
-            + c_state * weight_ph_i
+            + b_h @ weight_hh_i.t()
+            + b_c * weight_ph_i
             + bias_hh_i
         )
-        input_gate = self.gate_nonlinearity(i)
+        input_gate = self.gate_act(i)
         f = (
-            inp @ weight_ih_f.t()
+            b_inp @ weight_ih_f.t()
             + bias_ih_f
-            + state @ weight_hh_f.t()
+            + b_h @ weight_hh_f.t()
             + bias_hh_f
-            + c_state * weight_ph_f
+            + b_c * weight_ph_f
         )
-        forget_gate = self.gate_nonlinearity(f)
-        c_hat = inp @ weight_ih_c.t() + bias_ih_c + state @ weight_hh_c.t() + bias_hh_c
-        cell_candidate = self.nonlinearity(c_hat)
-        new_c = forget_gate * c_state + input_gate * cell_candidate
+        forget_gate = self.gate_act(f)
+        c_hat = b_inp @ weight_ih_c.t() + bias_ih_c + b_h @ weight_hh_c.t() + bias_hh_c
+        cell_candidate = self.act(c_hat)
+        new_c = forget_gate * b_c + input_gate * cell_candidate
         o = (
-            inp @ weight_ih_o.t()
+            b_inp @ weight_ih_o.t()
             + bias_ih_o
-            + state @ weight_hh_o.t()
+            + b_h @ weight_hh_o.t()
             + bias_hh_o
             + new_c * weight_ph_o
         )
-        output_gate = self.gate_nonlinearity(o)
-        new_h = output_gate * self.nonlinearity(new_c)
+        output_gate = self.gate_act(o)
+        new_h = output_gate * self.act(new_c)
 
         if not is_batched:
             new_h = new_h.squeeze(0)

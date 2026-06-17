@@ -1,11 +1,11 @@
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import SingleStateRecurrentLayerBase, SingleStateCellBase, resolve_init_name, apply_init_
 
 
-class BR(BaseSingleRecurrentLayer):
+class BR(SingleStateRecurrentLayerBase):
     r"""Multi-layer bistable recurrent neural network.
 
     [`DOI <https://doi.org/10.1371/journal.pone.0252676>`_]
@@ -134,7 +134,7 @@ class BR(BaseSingleRecurrentLayer):
         self.initialize_cells(BRCell, **kwargs)
 
 
-class BRCell(BaseSingleRecurrentCell):
+class BRCell(SingleStateCellBase):
     r"""A Bistable recurrent cell.
 
     [`pub <https://doi.org/10.1371/journal.pone.0252676>`_]
@@ -207,16 +207,7 @@ class BRCell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -229,20 +220,29 @@ class BRCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.normal_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.normal_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(BRCell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
         self._register_tensors(
             {
@@ -252,35 +252,45 @@ class BRCell(BaseSingleRecurrentCell):
                 "bias_hh": ((2 * hidden_size,), recurrent_bias),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        input_exp = inp @ self.weight_ih.t() + self.bias_ih
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        input_exp = b_inp @ self.weight_ih.t() + self.bias_ih
         input_exp_1, input_exp_2, input_exp_3 = input_exp.chunk(3, 1)
         rec_matrix_1, rec_matrix_2 = self.weight_hh.chunk(2)
         bias_hh_1, bias_hh_2 = self.bias_hh.chunk(2, 0)
 
-        h1 = input_exp_1 + rec_matrix_1 * state + bias_hh_1
-        h2 = input_exp_2 + rec_matrix_2 * state + bias_hh_2
+        h1 = input_exp_1 + rec_matrix_1 * b_state + bias_hh_1
+        h2 = input_exp_2 + rec_matrix_2 * b_state + bias_hh_2
         modulation_gate = 1.0 + torch.tanh(h1)
         candidate_state = torch.sigmoid(h2)
-        h3 = input_exp_3 + modulation_gate * state
-        new_state = candidate_state * state + (1.0 - candidate_state) * torch.tanh(h3)
+        h3 = input_exp_3 + modulation_gate * b_state
+        h_new = candidate_state * b_state + (1.0 - candidate_state) * torch.tanh(h3)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
+            h_new = h_new.squeeze(0)
 
-        return new_state
+        return h_new
 
 
-class NBR(BaseSingleRecurrentLayer):
+class NBR(SingleStateRecurrentLayerBase):
     r"""Multi-layer neuromodulated bistable recurrent neural network.
 
     [`DOI <https://doi.org/10.1371/journal.pone.0252676>`_]
@@ -411,7 +421,7 @@ class NBR(BaseSingleRecurrentLayer):
         self.initialize_cells(NBRCell, **kwargs)
 
 
-class NBRCell(BaseSingleRecurrentCell):
+class NBRCell(SingleStateCellBase):
     r"""A Neuromodulated Bistable Recurrent cell.
 
     [`pub <https://doi.org/10.1371/journal.pone.0252676>`_]
@@ -484,16 +494,7 @@ class NBRCell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -506,20 +507,29 @@ class NBRCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(NBRCell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
         self._register_tensors(
             {
@@ -529,30 +539,40 @@ class NBRCell(BaseSingleRecurrentCell):
                 "bias_hh": ((2 * hidden_size,), recurrent_bias),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        input_exp = inp @ self.weight_ih.t() + self.bias_ih
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        input_exp = b_inp @ self.weight_ih.t() + self.bias_ih
         input_exp_1, input_exp_2, input_exp_3 = input_exp.chunk(3, 1)
         rec_matrix_1, rec_matrix_2 = self.weight_hh.chunk(2, 0)
         bias_hh_1, bias_hh_2 = self.bias_hh.chunk(2, 0)
 
-        h1 = input_exp_1 + state @ rec_matrix_1.t() + bias_hh_1
-        h2 = input_exp_2 + state @ rec_matrix_2.t() + bias_hh_2
+        h1 = input_exp_1 + b_state @ rec_matrix_1.t() + bias_hh_1
+        h2 = input_exp_2 + b_state @ rec_matrix_2.t() + bias_hh_2
         modulation_gate = 1.0 + torch.tanh(h1)
         candidate_state = torch.sigmoid(h2)
-        h3 = input_exp_3 + modulation_gate * state
+        h3 = input_exp_3 + modulation_gate * b_state
 
-        new_state = candidate_state * state + (1.0 - candidate_state) * torch.tanh(h3)
+        h_new = candidate_state * b_state + (1.0 - candidate_state) * torch.tanh(h3)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
+            h_new = h_new.squeeze(0)
 
-        return new_state
+        return h_new

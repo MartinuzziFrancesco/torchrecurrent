@@ -2,7 +2,7 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from torch import Tensor
-from ..base import SingleStateCellBase, SingleStateRecurrentLayerBase
+from ..base import SingleStateCellBase, SingleStateRecurrentLayerBase, resolve_activation, resolve_init_name, apply_init_
 
 
 class AntisymmetricRNN(SingleStateRecurrentLayerBase):
@@ -259,6 +259,7 @@ class AntisymmetricRNNCell(SingleStateCellBase):
 
         self._default_register_tensors()
         self.reset_parameters()
+        self._cleanup_non_scriptable()
 
     def reset_parameters(self) -> None:
         apply_init_(self.weight_ih, self.init_cfg["kernel"])
@@ -286,7 +287,7 @@ class AntisymmetricRNNCell(SingleStateCellBase):
         return h_new
 
 
-class GatedAntisymmetricRNN(BaseSingleRecurrentLayer):
+class GatedAntisymmetricRNN(SingleStateRecurrentLayerBase):
     r"""Multi-layer gated antisymmetric recurrent neural network.
 
     [`arXiv <https://arxiv.org/abs/1902.09689>`_]
@@ -424,7 +425,7 @@ class GatedAntisymmetricRNN(BaseSingleRecurrentLayer):
         self.initialize_cells(GatedAntisymmetricRNNCell, **kwargs)
 
 
-class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
+class GatedAntisymmetricRNNCell(SingleStateCellBase):
     r"""A gated antisymmetric recurrent neural network (RNN) cell.
 
     [`arXiv <https://arxiv.org/abs/1902.09689>`_]
@@ -505,18 +506,7 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-        "epsilon",
-        "gamma",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias", "epsilon", "gamma"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -529,54 +519,67 @@ class GatedAntisymmetricRNNCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.normal_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.normal_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         epsilon: float = 1.0,
         gamma: float = 0.0,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(GatedAntisymmetricRNNCell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
-        )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-        self.epsilon = epsilon
-        self.gamma = gamma
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=2,
-            hh_mult=1,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
             bias=bias,
             recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.init_weights()
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self.epsilon = float(epsilon)
+        self.gamma = float(gamma)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
+
+        self._default_register_tensors(ih_mult=2, hh_mult=1)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        weights_ih = inp @ self.weight_ih.t() + self.bias_ih
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        weights_ih = b_inp @ self.weight_ih.t() + self.bias_ih
         weight_ih_1, weight_ih_2 = weights_ih.chunk(2, 1)
         recurrent_matrix = _compute_asym(self.weight_hh, self.gamma)
-        pre_act = weight_ih_2 + state @ recurrent_matrix.t() + self.bias_hh
-        input_gate = torch.sigmoid(weight_ih_1 + state @ recurrent_matrix.t())
-        new_state = state + self.epsilon * input_gate * torch.tanh(pre_act)
+        pre_act = weight_ih_2 + b_state @ recurrent_matrix.t() + self.bias_hh
+        input_gate = torch.sigmoid(weight_ih_1 + b_state @ recurrent_matrix.t())
+        h_new = b_state + self.epsilon * input_gate * torch.tanh(pre_act)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
+            h_new = h_new.squeeze(0)
 
-        return new_state
+        return h_new
 
 
 def _compute_asym(W_hh: Tensor, gamma: float) -> Tensor:

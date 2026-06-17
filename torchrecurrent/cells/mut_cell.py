@@ -1,11 +1,11 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import SingleStateRecurrentLayerBase, SingleStateCellBase, resolve_init_name, apply_init_
 
 
-class MUT1(BaseSingleRecurrentLayer):
+class MUT1(SingleStateRecurrentLayerBase):
     r"""Multi-layer mutated unit type 1 recurrent network.
 
     [`PMLR <https://proceedings.mlr.press/v37/jozefowicz15.pdf>`_]
@@ -136,7 +136,7 @@ class MUT1(BaseSingleRecurrentLayer):
         self.initialize_cells(MUT1Cell, **kwargs)
 
 
-class MUT1Cell(BaseSingleRecurrentCell):
+class MUT1Cell(SingleStateCellBase):
     r"""A Mutated Unit Type 1 (MUT1) recurrent cell.
 
     [`PMLR <https://proceedings.mlr.press/v37/jozefowicz15.pdf>`_]
@@ -215,16 +215,7 @@ class MUT1Cell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -237,50 +228,54 @@ class MUT1Cell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(MUT1Cell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
-        )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=3,
-            hh_mult=2,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
             bias=bias,
             recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.init_weights()
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors(ih_mult=3, hh_mult=2)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        inp_expanded = inp @ self.weight_ih.t() + self.bias_ih
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        inp_expanded = b_inp @ self.weight_ih.t() + self.bias_ih
         gxs1, gxs2, gxs3 = inp_expanded.chunk(3, 1)
         weight_hh_1, weight_hh_2 = self.weight_hh.chunk(2, 0)
         bias_hh_1, bias_hh_2 = self.bias_hh.chunk(2, 0)
 
         input_gate = torch.sigmoid(gxs1)
-        reset_gate = torch.sigmoid(gxs2 + state @ weight_hh_1.t() + bias_hh_1)
+        reset_gate = torch.sigmoid(gxs2 + b_state @ weight_hh_1.t() + bias_hh_1)
         candidate_state = torch.tanh(
-            (reset_gate * state) @ weight_hh_2.t() + torch.tanh(gxs3) + bias_hh_2
+            (reset_gate * b_state) @ weight_hh_2.t() + torch.tanh(gxs3) + bias_hh_2
         )
-        new_state = candidate_state * input_gate + state * (1 - input_gate)
+        new_state = candidate_state * input_gate + b_state * (1 - input_gate)
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -288,7 +283,7 @@ class MUT1Cell(BaseSingleRecurrentCell):
         return new_state
 
 
-class MUT2(BaseSingleRecurrentLayer):
+class MUT2(SingleStateRecurrentLayerBase):
     r"""Multi-layer mutated unit type 2 recurrent network.
 
     [`PMLR <https://proceedings.mlr.press/v37/jozefowicz15.pdf>`_]
@@ -420,7 +415,7 @@ class MUT2(BaseSingleRecurrentLayer):
         self.initialize_cells(MUT2Cell, **kwargs)
 
 
-class MUT2Cell(BaseSingleRecurrentCell):
+class MUT2Cell(SingleStateCellBase):
     r"""A Mutated Unit Type 2 (MUT2) recurrent cell.
 
     [`PMLR <https://proceedings.mlr.press/v37/jozefowicz15.pdf>`_]
@@ -499,16 +494,7 @@ class MUT2Cell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -521,50 +507,54 @@ class MUT2Cell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(MUT2Cell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
-        )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=3,
-            hh_mult=3,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
             bias=bias,
             recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.init_weights()
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors(ih_mult=3, hh_mult=3)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        inp_expanded = inp @ self.weight_ih.t() + self.bias_ih
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        inp_expanded = b_inp @ self.weight_ih.t() + self.bias_ih
         gxs1, gxs2, gxs3 = inp_expanded.chunk(3, 1)
         weight_hh_1, weight_hh_2, weight_hh_3 = self.weight_hh.chunk(3, 0)
         bias_hh_1, bias_hh_2, bias_hh_3 = self.bias_hh.chunk(3, 0)
 
-        input_gate = torch.sigmoid(gxs1 + state @ weight_hh_1.t() + bias_hh_1)
-        reset_gate = torch.sigmoid(gxs2 + state @ weight_hh_2.t() + bias_hh_2)
+        input_gate = torch.sigmoid(gxs1 + b_state @ weight_hh_1.t() + bias_hh_1)
+        reset_gate = torch.sigmoid(gxs2 + b_state @ weight_hh_2.t() + bias_hh_2)
         candidate_state = torch.tanh(
-            gxs3 + (reset_gate * state) @ weight_hh_3.t() + bias_hh_3
+            gxs3 + (reset_gate * b_state) @ weight_hh_3.t() + bias_hh_3
         )
-        new_state = candidate_state * input_gate + state * (1 - input_gate)
+        new_state = candidate_state * input_gate + b_state * (1 - input_gate)
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -572,7 +562,7 @@ class MUT2Cell(BaseSingleRecurrentCell):
         return new_state
 
 
-class MUT3(BaseSingleRecurrentLayer):
+class MUT3(SingleStateRecurrentLayerBase):
     r"""Multi-layer mutated unit type 3 recurrent network.
 
     [`PMLR <https://proceedings.mlr.press/v37/jozefowicz15.pdf>`_]
@@ -703,7 +693,7 @@ class MUT3(BaseSingleRecurrentLayer):
         self.initialize_cells(MUT3Cell, **kwargs)
 
 
-class MUT3Cell(BaseSingleRecurrentCell):
+class MUT3Cell(SingleStateCellBase):
     r"""A Mutated Unit Type 3 (MUT3) recurrent cell.
 
     [`PMLR <https://proceedings.mlr.press/v37/jozefowicz15.pdf>`_]
@@ -783,16 +773,7 @@ class MUT3Cell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -805,50 +786,54 @@ class MUT3Cell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(MUT3Cell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
-        )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=3,
-            hh_mult=3,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
             bias=bias,
             recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.init_weights()
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors(ih_mult=3, hh_mult=3)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        inp_expanded = inp @ self.weight_ih.t() + self.bias_ih
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        inp_expanded = b_inp @ self.weight_ih.t() + self.bias_ih
         gxs1, gxs2, gxs3 = inp_expanded.chunk(3, 1)
         weight_hh_1, weight_hh_2, weight_hh_3 = self.weight_hh.chunk(3, 0)
         bias_hh_1, bias_hh_2, bias_hh_3 = self.bias_hh.chunk(3, 0)
 
-        input_gate = torch.sigmoid(gxs1 + torch.tanh(state) @ weight_hh_1.t() + bias_hh_1)
-        reset_gate = torch.sigmoid(gxs2 + state @ weight_hh_2.t() + bias_hh_2)
+        input_gate = torch.sigmoid(gxs1 + torch.tanh(b_state) @ weight_hh_1.t() + bias_hh_1)
+        reset_gate = torch.sigmoid(gxs2 + b_state @ weight_hh_2.t() + bias_hh_2)
         candidate_state = torch.tanh(
-            gxs3 + (reset_gate * state) @ weight_hh_3.t() + bias_hh_3
+            gxs3 + (reset_gate * b_state) @ weight_hh_3.t() + bias_hh_3
         )
-        new_state = candidate_state * input_gate + state * (1 - input_gate)
+        new_state = candidate_state * input_gate + b_state * (1 - input_gate)
 
         if not is_batched:
             new_state = new_state.squeeze(0)

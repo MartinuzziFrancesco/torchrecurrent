@@ -1,11 +1,11 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Callable, Optional, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import SingleStateRecurrentLayerBase, SingleStateCellBase, resolve_init_name, apply_init_
 
 
-class ATR(BaseSingleRecurrentLayer):
+class ATR(SingleStateRecurrentLayerBase):
     r"""Multi-layer additive–transform recurrent neural network.
 
     [`arXiv <https://arxiv.org/abs/1810.12546>`_]
@@ -132,7 +132,7 @@ class ATR(BaseSingleRecurrentLayer):
         self.initialize_cells(ATRCell, **kwargs)
 
 
-class ATRCell(BaseSingleRecurrentCell):
+class ATRCell(SingleStateCellBase):
     r"""An Additive–Transform Recurrent cell.
 
     [`arXiv <https://arxiv.org/abs/1810.12546>`_]
@@ -198,16 +198,7 @@ class ATRCell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0)        # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -220,41 +211,50 @@ class ATRCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.normal_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.normal_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(ATRCell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size, hidden_size, bias=bias, recurrent_bias=recurrent_bias
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
         )
-        self.init_weights()
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        pt = inp @ self.weight_ih.t() + self.bias_ih
-        qt = state @ self.weight_hh.t() + self.bias_hh
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        pt = b_inp @ self.weight_ih.t() + self.bias_ih
+        qt = b_state @ self.weight_hh.t() + self.bias_hh
         it = torch.sigmoid(pt + qt)
         ft = torch.sigmoid(pt - qt)
-        new_state = it * pt + ft * state
+        h_new = it * pt + ft * b_state
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
+            h_new = h_new.squeeze(0)
 
-        return new_state
+        return h_new

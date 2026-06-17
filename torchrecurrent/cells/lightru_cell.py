@@ -1,11 +1,11 @@
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import SingleStateRecurrentLayerBase, SingleStateCellBase, resolve_init_name, apply_init_
 
 
-class LightRU(BaseSingleRecurrentLayer):
+class LightRU(SingleStateRecurrentLayerBase):
     r"""Multi-layer light recurrent unit neural network.
 
     [`pub <https://www.mdpi.com/2079-9292/13/16/3204>`_]
@@ -133,7 +133,7 @@ class LightRU(BaseSingleRecurrentLayer):
         self.initialize_cells(LightRUCell, **kwargs)
 
 
-class LightRUCell(BaseSingleRecurrentCell):
+class LightRUCell(SingleStateCellBase):
     r"""A Light Recurrent Unit (LightRU) cell.
 
     [`pub <https://www.mdpi.com/2079-9292/13/16/3204>`_]
@@ -207,16 +207,7 @@ class LightRUCell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -229,45 +220,49 @@ class LightRUCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(LightRUCell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
-        )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=2,
-            hh_mult=1,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
             bias=bias,
             recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.init_weights()
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors(ih_mult=2, hh_mult=1)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        inp_expanded = inp @ self.weight_ih.t() + self.bias_ih
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        inp_expanded = b_inp @ self.weight_ih.t() + self.bias_ih
         gxs1, gxs2 = inp_expanded.chunk(2, 1)
 
         candidate_state = torch.tanh(gxs1)
-        forget_gate = torch.sigmoid(gxs2 + state @ self.weight_hh.t() + self.bias_hh)
-        new_state = (1.0 - forget_gate) * state + forget_gate * candidate_state
+        forget_gate = torch.sigmoid(gxs2 + b_state @ self.weight_hh.t() + self.bias_hh)
+        new_state = (1.0 - forget_gate) * b_state + forget_gate * candidate_state
 
         if not is_batched:
             new_state = new_state.squeeze(0)

@@ -125,3 +125,43 @@ def test_cell_gradients(Cell, in_size, hid_size, _):
     # ensure each param got a grad
     for p in params:
         assert p.grad is not None
+
+
+@pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
+def test_cell_compile(Cell, in_size, hid_size, double):
+    """Every cell should be compilable via torch.compile."""
+    cell = Cell(in_size, hid_size)
+    compiled = torch.compile(cell, fullgraph=True)
+
+    B = 4
+    x = torch.randn(B, in_size)
+    out_eager = cell(x)
+    out_compiled = compiled(x)
+
+    if double:
+        h_e, c_e = out_eager
+        h_c, c_c = out_compiled
+        assert h_c.shape == h_e.shape
+        assert c_c.shape == c_e.shape
+    else:
+        assert out_compiled.shape == out_eager.shape
+
+
+@pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
+def test_cell_compile_with_state(Cell, in_size, hid_size, double):
+    """Compiled cells should accept explicit state."""
+    cell = Cell(in_size, hid_size)
+    compiled = torch.compile(cell, fullgraph=True)
+
+    B = 4
+    x = torch.randn(B, in_size)
+    if double:
+        h0 = torch.randn(B, hid_size)
+        c0 = torch.randn(B, hid_size)
+        h, c = compiled(x, (h0, c0))
+        assert h.shape == (B, hid_size)
+        assert c.shape == (B, hid_size)
+    else:
+        h0 = torch.randn(B, hid_size)
+        h = compiled(x, h0)
+        assert h.shape == (B, hid_size)
