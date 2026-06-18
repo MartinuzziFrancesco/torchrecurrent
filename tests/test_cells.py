@@ -1,6 +1,12 @@
+import sys
+
 import pytest
 import torch
 from torch import Tensor
+
+skip_windows = pytest.mark.skipif(
+    sys.platform == "win32", reason="torch.compile requires Triton, which is not supported on Windows"
+)
 from torchrecurrent import (
     AntisymmetricRNNCell,
     ATRCell,
@@ -127,6 +133,7 @@ def test_cell_gradients(Cell, in_size, hid_size, _):
         assert p.grad is not None
 
 
+@skip_windows
 @pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
 def test_cell_compile(Cell, in_size, hid_size, double):
     """Every cell should be compilable via torch.compile."""
@@ -147,6 +154,7 @@ def test_cell_compile(Cell, in_size, hid_size, double):
         assert out_compiled.shape == out_eager.shape
 
 
+@skip_windows
 @pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
 def test_cell_compile_with_state(Cell, in_size, hid_size, double):
     """Compiled cells should accept explicit state."""
