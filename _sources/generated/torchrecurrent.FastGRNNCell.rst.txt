@@ -32,7 +32,6 @@
       ~FastGRNNCell.get_parameter
       ~FastGRNNCell.get_submodule
       ~FastGRNNCell.half
-      ~FastGRNNCell.init_weights
       ~FastGRNNCell.ipu
       ~FastGRNNCell.load_state_dict
       ~FastGRNNCell.modules
@@ -55,6 +54,7 @@
       ~FastGRNNCell.register_state_dict_post_hook
       ~FastGRNNCell.register_state_dict_pre_hook
       ~FastGRNNCell.requires_grad_
+      ~FastGRNNCell.reset_parameters
       ~FastGRNNCell.set_extra_state
       ~FastGRNNCell.set_submodule
       ~FastGRNNCell.share_memory

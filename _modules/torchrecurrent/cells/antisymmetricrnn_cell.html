@@ -26,41 +26,48 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
   
   <!-- So that users can add custom icons -->
-  <script src="../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
 
     <script src="../../../_static/documentation_options.js?v=1e825a29"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchrecurrent/cells/antisymmetricrnn_cell';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../../../_static/searchtools.js"></script>
+    <script src="../../../_static/language_data.js"></script>
+    <script src="../../../searchindex.js"></script>
+  
   </head>
-  
-  
-  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
-
+  <body data-default-mode="">
   
   
   <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
   
   <div id="pst-scroll-pixel-helper"></div>
   
   <button type="button" class="btn rounded-pill" id="pst-back-to-top">
     <i class="fa-solid fa-arrow-up"></i>Back to top</button>
-
+  
+  
+  
   
   <dialog id="pst-search-dialog">
     
@@ -86,7 +93,7 @@
 </div>
 
   
-    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
 <div class="bd-header__inner bd-page-width">
   <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
     <span class="fa-solid fa-bars"></span>
@@ -169,11 +176,18 @@
       
         <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
       
         <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -186,8 +200,7 @@
           
           
           
-          <a href="https://github.com/MartinuzziFrancesco/torchrecurrent" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/MartinuzziFrancesco/torchrecurrent" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
       
@@ -267,11 +280,18 @@
         
           <div class="navbar-item">
 
-<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
-  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
-  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
-  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
-</button></div>
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
         
           <div class="navbar-item"><ul class="navbar-icon-links"
     aria-label="Icon Links">
@@ -284,8 +304,7 @@
           
           
           
-          <a href="https://github.com/MartinuzziFrancesco/torchrecurrent" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
-            <span class="sr-only">GitHub</span></a>
+          <a href="https://github.com/MartinuzziFrancesco/torchrecurrent" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
         </li>
 </ul></div>
         
@@ -349,16 +368,16 @@
                 <article class="bd-article">
                   
   <h1>Source code for torchrecurrent.cells.antisymmetricrnn_cell</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Callable</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Union</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseSingleRecurrentLayer</span><span class="p">,</span> <span class="n">BaseSingleRecurrentCell</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingleStateCellBase</span><span class="p">,</span> <span class="n">SingleStateRecurrentLayerBase</span><span class="p">,</span> <span class="n">resolve_activation</span><span class="p">,</span> <span class="n">resolve_init_name</span><span class="p">,</span> <span class="n">apply_init_</span>
 
 
 <div class="viewcode-block" id="AntisymmetricRNN">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.AntisymmetricRNN.html#torchrecurrent.AntisymmetricRNN">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">AntisymmetricRNN</span><span class="p">(</span><span class="n">BaseSingleRecurrentLayer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AntisymmetricRNN</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer antisymmetric recurrent neural network.</span>
 
 <span class="sd">    [`arXiv &lt;https://arxiv.org/abs/1902.09689&gt;`_]</span>
@@ -497,7 +516,7 @@
 
 <div class="viewcode-block" id="AntisymmetricRNNCell">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.AntisymmetricRNNCell.html#torchrecurrent.AntisymmetricRNNCell">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">AntisymmetricRNNCell</span><span class="p">(</span><span class="n">BaseSingleRecurrentCell</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AntisymmetricRNNCell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;An antisymmetric recurrent neural network cell.</span>
 
 <span class="sd">    [`arXiv &lt;https://arxiv.org/abs/1902.09689&gt;`_]</span>
@@ -572,19 +591,7 @@
 <span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0)       # (time_steps, batch, hidden_size)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;input_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;nonlinearity&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;kernel_init&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;recurrent_kernel_init&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bias_init&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;recurrent_bias_init&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;epsilon&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;gamma&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
+    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;input_size&quot;</span><span class="p">,</span> <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span> <span class="s2">&quot;epsilon&quot;</span><span class="p">,</span> <span class="s2">&quot;gamma&quot;</span><span class="p">]</span>
 
     <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span>
@@ -599,67 +606,72 @@
         <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">nonlinearity</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">,</span>
-        <span class="n">kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
-        <span class="n">recurrent_kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">,</span>
-        <span class="n">bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
-        <span class="n">recurrent_bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="s2">&quot;tanh&quot;</span><span class="p">,</span>
+        <span class="n">kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">recurrent_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">,</span>
+        <span class="n">bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">recurrent_bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
         <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">AntisymmetricRNNCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">input_size</span><span class="p">,</span>
-            <span class="n">hidden_size</span><span class="p">,</span>
-            <span class="n">bias</span><span class="p">,</span>
-            <span class="n">recurrent_bias</span><span class="p">,</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="o">=</span><span class="n">input_size</span><span class="p">,</span>
+            <span class="n">hidden_size</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span>
+            <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
+            <span class="n">recurrent_bias</span><span class="o">=</span><span class="n">recurrent_bias</span><span class="p">,</span>
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
-            <span class="n">epsilon</span><span class="o">=</span><span class="n">epsilon</span><span class="p">,</span>
-            <span class="n">gamma</span><span class="o">=</span><span class="n">gamma</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nonlinearity</span> <span class="o">=</span> <span class="n">nonlinearity</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_init</span> <span class="o">=</span> <span class="n">kernel_init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_kernel_init</span> <span class="o">=</span> <span class="n">recurrent_kernel_init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span> <span class="o">=</span> <span class="n">bias_init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias_init</span> <span class="o">=</span> <span class="n">recurrent_bias_init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span>
-            <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span> <span class="n">recurrent_bias</span><span class="o">=</span><span class="n">recurrent_bias</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">resolve_activation</span><span class="p">(</span><span class="n">nonlinearity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_weights</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_non_scriptable</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
+        <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;bias_ih&quot;</span><span class="p">):</span>
+            <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;bias_hh&quot;</span><span class="p">):</span>
+            <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-        <span class="n">inp</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">is_batched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_input_and_state</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+        <span class="n">b_inp</span><span class="p">,</span> <span class="n">is_batched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_batched</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">b_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">b_state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">state</span>
 
         <span class="n">recurrent_matrix</span> <span class="o">=</span> <span class="n">_compute_asym</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
-        <span class="n">pre_act</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
-            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span>
-            <span class="o">+</span> <span class="n">state</span> <span class="o">@</span> <span class="n">recurrent_matrix</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
-            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
-        <span class="p">)</span>
-        <span class="n">new_state</span> <span class="o">=</span> <span class="n">state</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">nonlinearity</span><span class="p">(</span><span class="n">pre_act</span><span class="p">)</span>
+        <span class="n">pre_act</span> <span class="o">=</span> <span class="n">b_inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span> <span class="o">+</span> <span class="n">b_state</span> <span class="o">@</span> <span class="n">recurrent_matrix</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
+        <span class="n">h_new</span> <span class="o">=</span> <span class="n">b_state</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">pre_act</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_batched</span><span class="p">:</span>
-            <span class="n">new_state</span> <span class="o">=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-
-        <span class="k">return</span> <span class="n">new_state</span></div>
+            <span class="n">h_new</span> <span class="o">=</span> <span class="n">h_new</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">h_new</span></div>
 
 
 
 <div class="viewcode-block" id="GatedAntisymmetricRNN">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.GatedAntisymmetricRNN.html#torchrecurrent.GatedAntisymmetricRNN">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">GatedAntisymmetricRNN</span><span class="p">(</span><span class="n">BaseSingleRecurrentLayer</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GatedAntisymmetricRNN</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer gated antisymmetric recurrent neural network.</span>
 
 <span class="sd">    [`arXiv &lt;https://arxiv.org/abs/1902.09689&gt;`_]</span>
@@ -803,7 +815,7 @@
 
 <div class="viewcode-block" id="GatedAntisymmetricRNNCell">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.GatedAntisymmetricRNNCell.html#torchrecurrent.GatedAntisymmetricRNNCell">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">GatedAntisymmetricRNNCell</span><span class="p">(</span><span class="n">BaseSingleRecurrentCell</span><span class="p">):</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">GatedAntisymmetricRNNCell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A gated antisymmetric recurrent neural network (RNN) cell.</span>
 
 <span class="sd">    [`arXiv &lt;https://arxiv.org/abs/1902.09689&gt;`_]</span>
@@ -884,18 +896,7 @@
 <span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;input_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;kernel_init&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;recurrent_kernel_init&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bias_init&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;recurrent_bias_init&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;epsilon&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;gamma&quot;</span><span class="p">,</span>
-    <span class="p">]</span>
+    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;input_size&quot;</span><span class="p">,</span> <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span> <span class="s2">&quot;epsilon&quot;</span><span class="p">,</span> <span class="s2">&quot;gamma&quot;</span><span class="p">]</span>
 
     <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span>
@@ -910,63 +911,75 @@
         <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
-        <span class="n">recurrent_kernel_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">,</span>
-        <span class="n">bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
-        <span class="n">recurrent_bias_init</span><span class="p">:</span> <span class="n">Callable</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">recurrent_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">,</span>
+        <span class="n">bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
+        <span class="n">recurrent_bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
         <span class="n">epsilon</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
         <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">GatedAntisymmetricRNNCell</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">bias</span><span class="p">,</span> <span class="n">recurrent_bias</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span>
-        <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kernel_init</span> <span class="o">=</span> <span class="n">kernel_init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_kernel_init</span> <span class="o">=</span> <span class="n">recurrent_kernel_init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bias_init</span> <span class="o">=</span> <span class="n">bias_init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">recurrent_bias_init</span> <span class="o">=</span> <span class="n">recurrent_bias_init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="n">epsilon</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="n">gamma</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span>
-            <span class="n">input_size</span><span class="p">,</span>
-            <span class="n">hidden_size</span><span class="p">,</span>
-            <span class="n">ih_mult</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-            <span class="n">hh_mult</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+            <span class="n">input_size</span><span class="o">=</span><span class="n">input_size</span><span class="p">,</span>
+            <span class="n">hidden_size</span><span class="o">=</span><span class="n">hidden_size</span><span class="p">,</span>
             <span class="n">bias</span><span class="o">=</span><span class="n">bias</span><span class="p">,</span>
             <span class="n">recurrent_bias</span><span class="o">=</span><span class="n">recurrent_bias</span><span class="p">,</span>
+            <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+            <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_weights</span><span class="p">()</span></div>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">epsilon</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">gamma</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span><span class="n">ih_mult</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">hh_mult</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_non_scriptable</span><span class="p">()</span></div>
 
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Tensor</span><span class="p">,</span> <span class="o">...</span><span class="p">]]]</span> <span class="o">=</span> <span class="kc">None</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-        <span class="n">state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_check_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
+        <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;bias_ih&quot;</span><span class="p">):</span>
+            <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s2">&quot;bias_hh&quot;</span><span class="p">):</span>
+            <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">])</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_validate_state</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
-        <span class="n">inp</span><span class="p">,</span> <span class="n">state</span><span class="p">,</span> <span class="n">is_batched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_preprocess_input_and_state</span><span class="p">(</span><span class="n">inp</span><span class="p">,</span> <span class="n">state</span><span class="p">)</span>
+        <span class="n">b_inp</span><span class="p">,</span> <span class="n">is_batched</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_as_batched</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
 
-        <span class="n">weights_ih</span> <span class="o">=</span> <span class="n">inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span>
+        <span class="k">if</span> <span class="n">state</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">b_state</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">b_state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">state</span>
+
+        <span class="n">weights_ih</span> <span class="o">=</span> <span class="n">b_inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span>
         <span class="n">weight_ih_1</span><span class="p">,</span> <span class="n">weight_ih_2</span> <span class="o">=</span> <span class="n">weights_ih</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
         <span class="n">recurrent_matrix</span> <span class="o">=</span> <span class="n">_compute_asym</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">gamma</span><span class="p">)</span>
-        <span class="n">pre_act</span> <span class="o">=</span> <span class="n">weight_ih_2</span> <span class="o">+</span> <span class="n">state</span> <span class="o">@</span> <span class="n">recurrent_matrix</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
-        <span class="n">input_gate</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">weight_ih_1</span> <span class="o">+</span> <span class="n">state</span> <span class="o">@</span> <span class="n">recurrent_matrix</span><span class="o">.</span><span class="n">t</span><span class="p">())</span>
-        <span class="n">new_state</span> <span class="o">=</span> <span class="n">state</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">*</span> <span class="n">input_gate</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">pre_act</span><span class="p">)</span>
+        <span class="n">pre_act</span> <span class="o">=</span> <span class="n">weight_ih_2</span> <span class="o">+</span> <span class="n">b_state</span> <span class="o">@</span> <span class="n">recurrent_matrix</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
+        <span class="n">input_gate</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">weight_ih_1</span> <span class="o">+</span> <span class="n">b_state</span> <span class="o">@</span> <span class="n">recurrent_matrix</span><span class="o">.</span><span class="n">t</span><span class="p">())</span>
+        <span class="n">h_new</span> <span class="o">=</span> <span class="n">b_state</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">epsilon</span> <span class="o">*</span> <span class="n">input_gate</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">pre_act</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_batched</span><span class="p">:</span>
-            <span class="n">new_state</span> <span class="o">=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">h_new</span> <span class="o">=</span> <span class="n">h_new</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
-        <span class="k">return</span> <span class="n">new_state</span></div>
+        <span class="k">return</span> <span class="n">h_new</span></div>
 
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_compute_asym</span><span class="p">(</span><span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
-    <span class="k">if</span> <span class="n">weight_hh</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="n">weight_hh</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="o">!=</span> <span class="n">weight_hh</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">1</span><span class="p">):</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;weight_hh must be square, got shape </span><span class="si">{</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="n">id_mat</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">weight_hh</span> <span class="o">-</span> <span class="n">weight_hh</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">-</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">id_mat</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">_compute_asym</span><span class="p">(</span><span class="n">W_hh</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">gamma</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">W_hh</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">eye</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">W_hh</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">W_hh</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">W_hh</span> <span class="o">-</span> <span class="n">W_hh</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">gamma</span> <span class="o">*</span> <span class="n">I</span>
 </pre></div>
 
                 </article>
@@ -996,8 +1009,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1031,7 +1044,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.16.1.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
 </p></div>
       
     </div>

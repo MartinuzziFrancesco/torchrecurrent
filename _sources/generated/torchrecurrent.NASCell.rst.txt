@@ -32,7 +32,6 @@
       ~NASCell.get_parameter
       ~NASCell.get_submodule
       ~NASCell.half
-      ~NASCell.init_weights
       ~NASCell.ipu
       ~NASCell.load_state_dict
       ~NASCell.modules
@@ -55,6 +54,7 @@
       ~NASCell.register_state_dict_post_hook
       ~NASCell.register_state_dict_pre_hook
       ~NASCell.requires_grad_
+      ~NASCell.reset_parameters
       ~NASCell.set_extra_state
       ~NASCell.set_submodule
       ~NASCell.share_memory

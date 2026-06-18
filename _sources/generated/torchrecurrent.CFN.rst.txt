@@ -79,9 +79,10 @@
       ~CFN.dump_patches
       ~CFN.input_size
       ~CFN.hidden_size
-      ~CFN.bias
-      ~CFN.dropout
+      ~CFN.num_layers
       ~CFN.batch_first
+      ~CFN.dropout
+      ~CFN.cells
       ~CFN.training
    
    

@@ -79,9 +79,10 @@
       ~SCRN.dump_patches
       ~SCRN.input_size
       ~SCRN.hidden_size
-      ~SCRN.bias
-      ~SCRN.dropout
+      ~SCRN.num_layers
       ~SCRN.batch_first
+      ~SCRN.dropout
+      ~SCRN.cells
       ~SCRN.training
    
    

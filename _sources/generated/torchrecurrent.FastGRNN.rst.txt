@@ -79,9 +79,10 @@
       ~FastGRNN.dump_patches
       ~FastGRNN.input_size
       ~FastGRNN.hidden_size
-      ~FastGRNN.bias
-      ~FastGRNN.dropout
+      ~FastGRNN.num_layers
       ~FastGRNN.batch_first
+      ~FastGRNN.dropout
+      ~FastGRNN.cells
       ~FastGRNN.training
    
    

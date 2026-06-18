@@ -32,7 +32,6 @@
       ~LiGRUCell.get_parameter
       ~LiGRUCell.get_submodule
       ~LiGRUCell.half
-      ~LiGRUCell.init_weights
       ~LiGRUCell.ipu
       ~LiGRUCell.load_state_dict
       ~LiGRUCell.modules
@@ -55,6 +54,7 @@
       ~LiGRUCell.register_state_dict_post_hook
       ~LiGRUCell.register_state_dict_pre_hook
       ~LiGRUCell.requires_grad_
+      ~LiGRUCell.reset_parameters
       ~LiGRUCell.set_extra_state
       ~LiGRUCell.set_submodule
       ~LiGRUCell.share_memory

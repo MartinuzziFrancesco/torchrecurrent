@@ -32,7 +32,6 @@
       ~PeepholeLSTMCell.get_parameter
       ~PeepholeLSTMCell.get_submodule
       ~PeepholeLSTMCell.half
-      ~PeepholeLSTMCell.init_weights
       ~PeepholeLSTMCell.ipu
       ~PeepholeLSTMCell.load_state_dict
       ~PeepholeLSTMCell.modules
@@ -55,6 +54,7 @@
       ~PeepholeLSTMCell.register_state_dict_post_hook
       ~PeepholeLSTMCell.register_state_dict_pre_hook
       ~PeepholeLSTMCell.requires_grad_
+      ~PeepholeLSTMCell.reset_parameters
       ~PeepholeLSTMCell.set_extra_state
       ~PeepholeLSTMCell.set_submodule
       ~PeepholeLSTMCell.share_memory

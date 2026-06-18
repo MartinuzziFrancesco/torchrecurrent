@@ -79,9 +79,10 @@
       ~IndRNN.dump_patches
       ~IndRNN.input_size
       ~IndRNN.hidden_size
-      ~IndRNN.bias
-      ~IndRNN.dropout
+      ~IndRNN.num_layers
       ~IndRNN.batch_first
+      ~IndRNN.dropout
+      ~IndRNN.cells
       ~IndRNN.training
    
    

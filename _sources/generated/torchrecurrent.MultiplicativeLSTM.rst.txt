@@ -79,9 +79,10 @@
       ~MultiplicativeLSTM.dump_patches
       ~MultiplicativeLSTM.input_size
       ~MultiplicativeLSTM.hidden_size
-      ~MultiplicativeLSTM.bias
-      ~MultiplicativeLSTM.dropout
+      ~MultiplicativeLSTM.num_layers
       ~MultiplicativeLSTM.batch_first
+      ~MultiplicativeLSTM.dropout
+      ~MultiplicativeLSTM.cells
       ~MultiplicativeLSTM.training
    
    

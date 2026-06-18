@@ -32,7 +32,6 @@
       ~STARCell.get_parameter
       ~STARCell.get_submodule
       ~STARCell.half
-      ~STARCell.init_weights
       ~STARCell.ipu
       ~STARCell.load_state_dict
       ~STARCell.modules
@@ -55,6 +54,7 @@
       ~STARCell.register_state_dict_post_hook
       ~STARCell.register_state_dict_pre_hook
       ~STARCell.requires_grad_
+      ~STARCell.reset_parameters
       ~STARCell.set_extra_state
       ~STARCell.set_submodule
       ~STARCell.share_memory

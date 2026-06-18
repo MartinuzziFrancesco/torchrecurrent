@@ -32,7 +32,6 @@
       ~BRCell.get_parameter
       ~BRCell.get_submodule
       ~BRCell.half
-      ~BRCell.init_weights
       ~BRCell.ipu
       ~BRCell.load_state_dict
       ~BRCell.modules
@@ -55,6 +54,7 @@
       ~BRCell.register_state_dict_post_hook
       ~BRCell.register_state_dict_pre_hook
       ~BRCell.requires_grad_
+      ~BRCell.reset_parameters
       ~BRCell.set_extra_state
       ~BRCell.set_submodule
       ~BRCell.share_memory

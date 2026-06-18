@@ -32,7 +32,6 @@
       ~IndRNNCell.get_parameter
       ~IndRNNCell.get_submodule
       ~IndRNNCell.half
-      ~IndRNNCell.init_weights
       ~IndRNNCell.ipu
       ~IndRNNCell.load_state_dict
       ~IndRNNCell.modules
@@ -55,6 +54,7 @@
       ~IndRNNCell.register_state_dict_post_hook
       ~IndRNNCell.register_state_dict_pre_hook
       ~IndRNNCell.requires_grad_
+      ~IndRNNCell.reset_parameters
       ~IndRNNCell.set_extra_state
       ~IndRNNCell.set_submodule
       ~IndRNNCell.share_memory

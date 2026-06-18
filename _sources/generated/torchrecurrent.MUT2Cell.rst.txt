@@ -32,7 +32,6 @@
       ~MUT2Cell.get_parameter
       ~MUT2Cell.get_submodule
       ~MUT2Cell.half
-      ~MUT2Cell.init_weights
       ~MUT2Cell.ipu
       ~MUT2Cell.load_state_dict
       ~MUT2Cell.modules
@@ -55,6 +54,7 @@
       ~MUT2Cell.register_state_dict_post_hook
       ~MUT2Cell.register_state_dict_pre_hook
       ~MUT2Cell.requires_grad_
+      ~MUT2Cell.reset_parameters
       ~MUT2Cell.set_extra_state
       ~MUT2Cell.set_submodule
       ~MUT2Cell.share_memory

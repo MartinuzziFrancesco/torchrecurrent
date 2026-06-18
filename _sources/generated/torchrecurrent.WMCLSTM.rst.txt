@@ -79,9 +79,10 @@
       ~WMCLSTM.dump_patches
       ~WMCLSTM.input_size
       ~WMCLSTM.hidden_size
-      ~WMCLSTM.bias
-      ~WMCLSTM.dropout
+      ~WMCLSTM.num_layers
       ~WMCLSTM.batch_first
+      ~WMCLSTM.dropout
+      ~WMCLSTM.cells
       ~WMCLSTM.training
    
    

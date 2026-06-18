@@ -32,7 +32,6 @@
       ~coRNNCell.get_parameter
       ~coRNNCell.get_submodule
       ~coRNNCell.half
-      ~coRNNCell.init_weights
       ~coRNNCell.ipu
       ~coRNNCell.load_state_dict
       ~coRNNCell.modules
@@ -55,6 +54,7 @@
       ~coRNNCell.register_state_dict_post_hook
       ~coRNNCell.register_state_dict_pre_hook
       ~coRNNCell.requires_grad_
+      ~coRNNCell.reset_parameters
       ~coRNNCell.set_extra_state
       ~coRNNCell.set_submodule
       ~coRNNCell.share_memory

@@ -79,9 +79,10 @@
       ~STAR.dump_patches
       ~STAR.input_size
       ~STAR.hidden_size
-      ~STAR.bias
-      ~STAR.dropout
+      ~STAR.num_layers
       ~STAR.batch_first
+      ~STAR.dropout
+      ~STAR.cells
       ~STAR.training
    
    

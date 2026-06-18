@@ -32,7 +32,6 @@
       ~CFNCell.get_parameter
       ~CFNCell.get_submodule
       ~CFNCell.half
-      ~CFNCell.init_weights
       ~CFNCell.ipu
       ~CFNCell.load_state_dict
       ~CFNCell.modules
@@ -55,6 +54,7 @@
       ~CFNCell.register_state_dict_post_hook
       ~CFNCell.register_state_dict_pre_hook
       ~CFNCell.requires_grad_
+      ~CFNCell.reset_parameters
       ~CFNCell.set_extra_state
       ~CFNCell.set_submodule
       ~CFNCell.share_memory

@@ -32,7 +32,6 @@
       ~ATRCell.get_parameter
       ~ATRCell.get_submodule
       ~ATRCell.half
-      ~ATRCell.init_weights
       ~ATRCell.ipu
       ~ATRCell.load_state_dict
       ~ATRCell.modules
@@ -55,6 +54,7 @@
       ~ATRCell.register_state_dict_post_hook
       ~ATRCell.register_state_dict_pre_hook
       ~ATRCell.requires_grad_
+      ~ATRCell.reset_parameters
       ~ATRCell.set_extra_state
       ~ATRCell.set_submodule
       ~ATRCell.share_memory

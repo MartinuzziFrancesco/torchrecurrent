@@ -79,9 +79,10 @@
       ~UGRNN.dump_patches
       ~UGRNN.input_size
       ~UGRNN.hidden_size
-      ~UGRNN.bias
-      ~UGRNN.dropout
+      ~UGRNN.num_layers
       ~UGRNN.batch_first
+      ~UGRNN.dropout
+      ~UGRNN.cells
       ~UGRNN.training
    
    

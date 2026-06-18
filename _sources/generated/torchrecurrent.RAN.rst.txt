@@ -79,9 +79,10 @@
       ~RAN.dump_patches
       ~RAN.input_size
       ~RAN.hidden_size
-      ~RAN.bias
-      ~RAN.dropout
+      ~RAN.num_layers
       ~RAN.batch_first
+      ~RAN.dropout
+      ~RAN.cells
       ~RAN.training
    
    

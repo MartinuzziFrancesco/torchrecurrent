@@ -32,7 +32,6 @@
       ~MGUCell.get_parameter
       ~MGUCell.get_submodule
       ~MGUCell.half
-      ~MGUCell.init_weights
       ~MGUCell.ipu
       ~MGUCell.load_state_dict
       ~MGUCell.modules
@@ -55,6 +54,7 @@
       ~MGUCell.register_state_dict_post_hook
       ~MGUCell.register_state_dict_pre_hook
       ~MGUCell.requires_grad_
+      ~MGUCell.reset_parameters
       ~MGUCell.set_extra_state
       ~MGUCell.set_submodule
       ~MGUCell.share_memory

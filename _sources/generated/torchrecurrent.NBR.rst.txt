@@ -79,9 +79,10 @@
       ~NBR.dump_patches
       ~NBR.input_size
       ~NBR.hidden_size
-      ~NBR.bias
-      ~NBR.dropout
+      ~NBR.num_layers
       ~NBR.batch_first
+      ~NBR.dropout
+      ~NBR.cells
       ~NBR.training
    
    

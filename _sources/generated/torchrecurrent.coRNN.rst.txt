@@ -79,9 +79,10 @@
       ~coRNN.dump_patches
       ~coRNN.input_size
       ~coRNN.hidden_size
-      ~coRNN.bias
-      ~coRNN.dropout
+      ~coRNN.num_layers
       ~coRNN.batch_first
+      ~coRNN.dropout
+      ~coRNN.cells
       ~coRNN.training
    
    

@@ -79,9 +79,10 @@
       ~NAS.dump_patches
       ~NAS.input_size
       ~NAS.hidden_size
-      ~NAS.bias
-      ~NAS.dropout
+      ~NAS.num_layers
       ~NAS.batch_first
+      ~NAS.dropout
+      ~NAS.cells
       ~NAS.training
    
    

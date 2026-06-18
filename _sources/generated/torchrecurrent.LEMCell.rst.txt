@@ -32,7 +32,6 @@
       ~LEMCell.get_parameter
       ~LEMCell.get_submodule
       ~LEMCell.half
-      ~LEMCell.init_weights
       ~LEMCell.ipu
       ~LEMCell.load_state_dict
       ~LEMCell.modules
@@ -55,6 +54,7 @@
       ~LEMCell.register_state_dict_post_hook
       ~LEMCell.register_state_dict_pre_hook
       ~LEMCell.requires_grad_
+      ~LEMCell.reset_parameters
       ~LEMCell.set_extra_state
       ~LEMCell.set_submodule
       ~LEMCell.share_memory

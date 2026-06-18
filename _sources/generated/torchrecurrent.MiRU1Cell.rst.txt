@@ -32,7 +32,6 @@
       ~MiRU1Cell.get_parameter
       ~MiRU1Cell.get_submodule
       ~MiRU1Cell.half
-      ~MiRU1Cell.init_weights
       ~MiRU1Cell.ipu
       ~MiRU1Cell.load_state_dict
       ~MiRU1Cell.modules
@@ -55,6 +54,7 @@
       ~MiRU1Cell.register_state_dict_post_hook
       ~MiRU1Cell.register_state_dict_pre_hook
       ~MiRU1Cell.requires_grad_
+      ~MiRU1Cell.reset_parameters
       ~MiRU1Cell.set_extra_state
       ~MiRU1Cell.set_submodule
       ~MiRU1Cell.share_memory

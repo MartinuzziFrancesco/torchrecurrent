@@ -32,7 +32,6 @@
       ~OriginalLSTMCell.get_parameter
       ~OriginalLSTMCell.get_submodule
       ~OriginalLSTMCell.half
-      ~OriginalLSTMCell.init_weights
       ~OriginalLSTMCell.ipu
       ~OriginalLSTMCell.load_state_dict
       ~OriginalLSTMCell.modules
@@ -55,6 +54,7 @@
       ~OriginalLSTMCell.register_state_dict_post_hook
       ~OriginalLSTMCell.register_state_dict_pre_hook
       ~OriginalLSTMCell.requires_grad_
+      ~OriginalLSTMCell.reset_parameters
       ~OriginalLSTMCell.set_extra_state
       ~OriginalLSTMCell.set_submodule
       ~OriginalLSTMCell.share_memory

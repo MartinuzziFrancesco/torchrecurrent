@@ -32,7 +32,6 @@
       ~SCRNCell.get_parameter
       ~SCRNCell.get_submodule
       ~SCRNCell.half
-      ~SCRNCell.init_weights
       ~SCRNCell.ipu
       ~SCRNCell.load_state_dict
       ~SCRNCell.modules
@@ -55,6 +54,7 @@
       ~SCRNCell.register_state_dict_post_hook
       ~SCRNCell.register_state_dict_pre_hook
       ~SCRNCell.requires_grad_
+      ~SCRNCell.reset_parameters
       ~SCRNCell.set_extra_state
       ~SCRNCell.set_submodule
       ~SCRNCell.share_memory

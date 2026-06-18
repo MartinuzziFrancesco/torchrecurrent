@@ -79,9 +79,10 @@
       ~LiGRU.dump_patches
       ~LiGRU.input_size
       ~LiGRU.hidden_size
-      ~LiGRU.bias
-      ~LiGRU.dropout
+      ~LiGRU.num_layers
       ~LiGRU.batch_first
+      ~LiGRU.dropout
+      ~LiGRU.cells
       ~LiGRU.training
    
    

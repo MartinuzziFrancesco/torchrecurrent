@@ -79,9 +79,10 @@
       ~AntisymmetricRNN.dump_patches
       ~AntisymmetricRNN.input_size
       ~AntisymmetricRNN.hidden_size
-      ~AntisymmetricRNN.bias
-      ~AntisymmetricRNN.dropout
+      ~AntisymmetricRNN.num_layers
       ~AntisymmetricRNN.batch_first
+      ~AntisymmetricRNN.dropout
+      ~AntisymmetricRNN.cells
       ~AntisymmetricRNN.training
    
    

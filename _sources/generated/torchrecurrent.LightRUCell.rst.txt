@@ -32,7 +32,6 @@
       ~LightRUCell.get_parameter
       ~LightRUCell.get_submodule
       ~LightRUCell.half
-      ~LightRUCell.init_weights
       ~LightRUCell.ipu
       ~LightRUCell.load_state_dict
       ~LightRUCell.modules
@@ -55,6 +54,7 @@
       ~LightRUCell.register_state_dict_post_hook
       ~LightRUCell.register_state_dict_pre_hook
       ~LightRUCell.requires_grad_
+      ~LightRUCell.reset_parameters
       ~LightRUCell.set_extra_state
       ~LightRUCell.set_submodule
       ~LightRUCell.share_memory

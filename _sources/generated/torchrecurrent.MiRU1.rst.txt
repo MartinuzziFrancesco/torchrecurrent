@@ -79,9 +79,10 @@
       ~MiRU1.dump_patches
       ~MiRU1.input_size
       ~MiRU1.hidden_size
-      ~MiRU1.bias
-      ~MiRU1.dropout
+      ~MiRU1.num_layers
       ~MiRU1.batch_first
+      ~MiRU1.dropout
+      ~MiRU1.cells
       ~MiRU1.training
    
    

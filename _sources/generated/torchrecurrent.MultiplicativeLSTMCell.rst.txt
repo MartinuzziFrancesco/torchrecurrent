@@ -32,7 +32,6 @@
       ~MultiplicativeLSTMCell.get_parameter
       ~MultiplicativeLSTMCell.get_submodule
       ~MultiplicativeLSTMCell.half
-      ~MultiplicativeLSTMCell.init_weights
       ~MultiplicativeLSTMCell.ipu
       ~MultiplicativeLSTMCell.load_state_dict
       ~MultiplicativeLSTMCell.modules
@@ -55,6 +54,7 @@
       ~MultiplicativeLSTMCell.register_state_dict_post_hook
       ~MultiplicativeLSTMCell.register_state_dict_pre_hook
       ~MultiplicativeLSTMCell.requires_grad_
+      ~MultiplicativeLSTMCell.reset_parameters
       ~MultiplicativeLSTMCell.set_extra_state
       ~MultiplicativeLSTMCell.set_submodule
       ~MultiplicativeLSTMCell.share_memory

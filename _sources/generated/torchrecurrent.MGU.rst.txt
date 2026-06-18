@@ -79,9 +79,10 @@
       ~MGU.dump_patches
       ~MGU.input_size
       ~MGU.hidden_size
-      ~MGU.bias
-      ~MGU.dropout
+      ~MGU.num_layers
       ~MGU.batch_first
+      ~MGU.dropout
+      ~MGU.cells
       ~MGU.training
    
    

@@ -79,9 +79,10 @@
       ~ATR.dump_patches
       ~ATR.input_size
       ~ATR.hidden_size
-      ~ATR.bias
-      ~ATR.dropout
+      ~ATR.num_layers
       ~ATR.batch_first
+      ~ATR.dropout
+      ~ATR.cells
       ~ATR.training
    
    

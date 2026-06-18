@@ -79,9 +79,10 @@
       ~OriginalLSTM.dump_patches
       ~OriginalLSTM.input_size
       ~OriginalLSTM.hidden_size
-      ~OriginalLSTM.bias
-      ~OriginalLSTM.dropout
+      ~OriginalLSTM.num_layers
       ~OriginalLSTM.batch_first
+      ~OriginalLSTM.dropout
+      ~OriginalLSTM.cells
       ~OriginalLSTM.training
    
    

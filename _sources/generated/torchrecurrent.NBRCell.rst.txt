@@ -32,7 +32,6 @@
       ~NBRCell.get_parameter
       ~NBRCell.get_submodule
       ~NBRCell.half
-      ~NBRCell.init_weights
       ~NBRCell.ipu
       ~NBRCell.load_state_dict
       ~NBRCell.modules
@@ -55,6 +54,7 @@
       ~NBRCell.register_state_dict_post_hook
       ~NBRCell.register_state_dict_pre_hook
       ~NBRCell.requires_grad_
+      ~NBRCell.reset_parameters
       ~NBRCell.set_extra_state
       ~NBRCell.set_submodule
       ~NBRCell.share_memory

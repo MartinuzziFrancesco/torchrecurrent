@@ -32,7 +32,6 @@
       ~SGRNCell.get_parameter
       ~SGRNCell.get_submodule
       ~SGRNCell.half
-      ~SGRNCell.init_weights
       ~SGRNCell.ipu
       ~SGRNCell.load_state_dict
       ~SGRNCell.modules
@@ -55,6 +54,7 @@
       ~SGRNCell.register_state_dict_post_hook
       ~SGRNCell.register_state_dict_pre_hook
       ~SGRNCell.requires_grad_
+      ~SGRNCell.reset_parameters
       ~SGRNCell.set_extra_state
       ~SGRNCell.set_submodule
       ~SGRNCell.share_memory

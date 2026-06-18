@@ -79,9 +79,10 @@
       ~SGRN.dump_patches
       ~SGRN.input_size
       ~SGRN.hidden_size
-      ~SGRN.bias
-      ~SGRN.dropout
+      ~SGRN.num_layers
       ~SGRN.batch_first
+      ~SGRN.dropout
+      ~SGRN.cells
       ~SGRN.training
    
    

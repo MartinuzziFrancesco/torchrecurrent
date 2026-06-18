@@ -79,9 +79,10 @@
       ~PeepholeLSTM.dump_patches
       ~PeepholeLSTM.input_size
       ~PeepholeLSTM.hidden_size
-      ~PeepholeLSTM.bias
-      ~PeepholeLSTM.dropout
+      ~PeepholeLSTM.num_layers
       ~PeepholeLSTM.batch_first
+      ~PeepholeLSTM.dropout
+      ~PeepholeLSTM.cells
       ~PeepholeLSTM.training
    
    

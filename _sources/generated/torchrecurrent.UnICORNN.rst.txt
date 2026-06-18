@@ -79,9 +79,10 @@
       ~UnICORNN.dump_patches
       ~UnICORNN.input_size
       ~UnICORNN.hidden_size
-      ~UnICORNN.bias
-      ~UnICORNN.dropout
+      ~UnICORNN.num_layers
       ~UnICORNN.batch_first
+      ~UnICORNN.dropout
+      ~UnICORNN.cells
       ~UnICORNN.training
    
    

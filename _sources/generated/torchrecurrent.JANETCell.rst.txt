@@ -32,7 +32,6 @@
       ~JANETCell.get_parameter
       ~JANETCell.get_submodule
       ~JANETCell.half
-      ~JANETCell.init_weights
       ~JANETCell.ipu
       ~JANETCell.load_state_dict
       ~JANETCell.modules
@@ -55,6 +54,7 @@
       ~JANETCell.register_state_dict_post_hook
       ~JANETCell.register_state_dict_pre_hook
       ~JANETCell.requires_grad_
+      ~JANETCell.reset_parameters
       ~JANETCell.set_extra_state
       ~JANETCell.set_submodule
       ~JANETCell.share_memory

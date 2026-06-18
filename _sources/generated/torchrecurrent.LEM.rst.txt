@@ -79,9 +79,10 @@
       ~LEM.dump_patches
       ~LEM.input_size
       ~LEM.hidden_size
-      ~LEM.bias
-      ~LEM.dropout
+      ~LEM.num_layers
       ~LEM.batch_first
+      ~LEM.dropout
+      ~LEM.cells
       ~LEM.training
    
    

@@ -32,7 +32,6 @@
       ~GatedAntisymmetricRNNCell.get_parameter
       ~GatedAntisymmetricRNNCell.get_submodule
       ~GatedAntisymmetricRNNCell.half
-      ~GatedAntisymmetricRNNCell.init_weights
       ~GatedAntisymmetricRNNCell.ipu
       ~GatedAntisymmetricRNNCell.load_state_dict
       ~GatedAntisymmetricRNNCell.modules
@@ -55,6 +54,7 @@
       ~GatedAntisymmetricRNNCell.register_state_dict_post_hook
       ~GatedAntisymmetricRNNCell.register_state_dict_pre_hook
       ~GatedAntisymmetricRNNCell.requires_grad_
+      ~GatedAntisymmetricRNNCell.reset_parameters
       ~GatedAntisymmetricRNNCell.set_extra_state
       ~GatedAntisymmetricRNNCell.set_submodule
       ~GatedAntisymmetricRNNCell.share_memory

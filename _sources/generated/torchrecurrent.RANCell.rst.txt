@@ -32,7 +32,6 @@
       ~RANCell.get_parameter
       ~RANCell.get_submodule
       ~RANCell.half
-      ~RANCell.init_weights
       ~RANCell.ipu
       ~RANCell.load_state_dict
       ~RANCell.modules
@@ -55,6 +54,7 @@
       ~RANCell.register_state_dict_post_hook
       ~RANCell.register_state_dict_pre_hook
       ~RANCell.requires_grad_
+      ~RANCell.reset_parameters
       ~RANCell.set_extra_state
       ~RANCell.set_submodule
       ~RANCell.share_memory

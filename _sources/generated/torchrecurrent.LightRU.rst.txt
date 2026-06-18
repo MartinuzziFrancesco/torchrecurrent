@@ -79,9 +79,10 @@
       ~LightRU.dump_patches
       ~LightRU.input_size
       ~LightRU.hidden_size
-      ~LightRU.bias
-      ~LightRU.dropout
+      ~LightRU.num_layers
       ~LightRU.batch_first
+      ~LightRU.dropout
+      ~LightRU.cells
       ~LightRU.training
    
    

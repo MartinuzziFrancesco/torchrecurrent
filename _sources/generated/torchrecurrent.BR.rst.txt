@@ -79,9 +79,10 @@
       ~BR.dump_patches
       ~BR.input_size
       ~BR.hidden_size
-      ~BR.bias
-      ~BR.dropout
+      ~BR.num_layers
       ~BR.batch_first
+      ~BR.dropout
+      ~BR.cells
       ~BR.training
    
    

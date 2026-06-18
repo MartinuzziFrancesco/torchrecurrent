@@ -79,9 +79,10 @@
       ~JANET.dump_patches
       ~JANET.input_size
       ~JANET.hidden_size
-      ~JANET.bias
-      ~JANET.dropout
+      ~JANET.num_layers
       ~JANET.batch_first
+      ~JANET.dropout
+      ~JANET.cells
       ~JANET.training
    
    

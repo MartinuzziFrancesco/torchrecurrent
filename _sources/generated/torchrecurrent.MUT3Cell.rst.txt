@@ -32,7 +32,6 @@
       ~MUT3Cell.get_parameter
       ~MUT3Cell.get_submodule
       ~MUT3Cell.half
-      ~MUT3Cell.init_weights
       ~MUT3Cell.ipu
       ~MUT3Cell.load_state_dict
       ~MUT3Cell.modules
@@ -55,6 +54,7 @@
       ~MUT3Cell.register_state_dict_post_hook
       ~MUT3Cell.register_state_dict_pre_hook
       ~MUT3Cell.requires_grad_
+      ~MUT3Cell.reset_parameters
       ~MUT3Cell.set_extra_state
       ~MUT3Cell.set_submodule
       ~MUT3Cell.share_memory

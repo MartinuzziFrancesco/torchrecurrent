@@ -32,7 +32,6 @@
       ~FastRNNCell.get_parameter
       ~FastRNNCell.get_submodule
       ~FastRNNCell.half
-      ~FastRNNCell.init_weights
       ~FastRNNCell.ipu
       ~FastRNNCell.load_state_dict
       ~FastRNNCell.modules
@@ -55,6 +54,7 @@
       ~FastRNNCell.register_state_dict_post_hook
       ~FastRNNCell.register_state_dict_pre_hook
       ~FastRNNCell.requires_grad_
+      ~FastRNNCell.reset_parameters
       ~FastRNNCell.set_extra_state
       ~FastRNNCell.set_submodule
       ~FastRNNCell.share_memory

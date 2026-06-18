@@ -79,9 +79,10 @@
       ~GatedAntisymmetricRNN.dump_patches
       ~GatedAntisymmetricRNN.input_size
       ~GatedAntisymmetricRNN.hidden_size
-      ~GatedAntisymmetricRNN.bias
-      ~GatedAntisymmetricRNN.dropout
+      ~GatedAntisymmetricRNN.num_layers
       ~GatedAntisymmetricRNN.batch_first
+      ~GatedAntisymmetricRNN.dropout
+      ~GatedAntisymmetricRNN.cells
       ~GatedAntisymmetricRNN.training
    
    

@@ -79,9 +79,10 @@
       ~MUT3.dump_patches
       ~MUT3.input_size
       ~MUT3.hidden_size
-      ~MUT3.bias
-      ~MUT3.dropout
+      ~MUT3.num_layers
       ~MUT3.batch_first
+      ~MUT3.dropout
+      ~MUT3.cells
       ~MUT3.training
    
    

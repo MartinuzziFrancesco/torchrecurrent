@@ -32,7 +32,6 @@
       ~UGRNNCell.get_parameter
       ~UGRNNCell.get_submodule
       ~UGRNNCell.half
-      ~UGRNNCell.init_weights
       ~UGRNNCell.ipu
       ~UGRNNCell.load_state_dict
       ~UGRNNCell.modules
@@ -55,6 +54,7 @@
       ~UGRNNCell.register_state_dict_post_hook
       ~UGRNNCell.register_state_dict_pre_hook
       ~UGRNNCell.requires_grad_
+      ~UGRNNCell.reset_parameters
       ~UGRNNCell.set_extra_state
       ~UGRNNCell.set_submodule
       ~UGRNNCell.share_memory

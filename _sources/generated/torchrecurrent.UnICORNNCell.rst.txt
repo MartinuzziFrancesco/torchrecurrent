@@ -32,7 +32,6 @@
       ~UnICORNNCell.get_parameter
       ~UnICORNNCell.get_submodule
       ~UnICORNNCell.half
-      ~UnICORNNCell.init_weights
       ~UnICORNNCell.ipu
       ~UnICORNNCell.load_state_dict
       ~UnICORNNCell.modules
@@ -55,6 +54,7 @@
       ~UnICORNNCell.register_state_dict_post_hook
       ~UnICORNNCell.register_state_dict_pre_hook
       ~UnICORNNCell.requires_grad_
+      ~UnICORNNCell.reset_parameters
       ~UnICORNNCell.set_extra_state
       ~UnICORNNCell.set_submodule
       ~UnICORNNCell.share_memory

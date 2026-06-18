@@ -32,7 +32,6 @@
       ~WMCLSTMCell.get_parameter
       ~WMCLSTMCell.get_submodule
       ~WMCLSTMCell.half
-      ~WMCLSTMCell.init_weights
       ~WMCLSTMCell.ipu
       ~WMCLSTMCell.load_state_dict
       ~WMCLSTMCell.modules
@@ -55,6 +54,7 @@
       ~WMCLSTMCell.register_state_dict_post_hook
       ~WMCLSTMCell.register_state_dict_pre_hook
       ~WMCLSTMCell.requires_grad_
+      ~WMCLSTMCell.reset_parameters
       ~WMCLSTMCell.set_extra_state
       ~WMCLSTMCell.set_submodule
       ~WMCLSTMCell.share_memory
