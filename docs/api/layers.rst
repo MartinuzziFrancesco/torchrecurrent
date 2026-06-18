@@ -33,6 +33,7 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.PeepholeLSTM
    torchrecurrent.RAN
    torchrecurrent.SCRN
+   torchrecurrent.suRNN
    torchrecurrent.SGRN
    torchrecurrent.STAR
    torchrecurrent.UGRNN

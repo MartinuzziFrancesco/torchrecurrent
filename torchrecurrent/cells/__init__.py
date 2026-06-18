@@ -25,6 +25,7 @@ from .originallstm_cell import OriginalLSTM, OriginalLSTMCell
 from .peepholelstm_cell import PeepholeLSTM, PeepholeLSTMCell
 from .ran_cell import RAN, RANCell
 from .scrn_cell import SCRN, SCRNCell
+from .surnn_cell import suRNN, suRNNCell
 from .sgrn_cell import SGRN, SGRNCell
 from .star_cell import STAR, STARCell
 from .ugrnn_cell import UGRNN, UGRNNCell
@@ -87,6 +88,8 @@ __all__ = [
     "RANCell",
     "SCRN",
     "SCRNCell",
+    "suRNN",
+    "suRNNCell",
     "SGRN",
     "SGRNCell",
     "STAR",
