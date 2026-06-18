@@ -1,11 +1,16 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Callable, Union, Tuple
-from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
+from typing import Optional, Tuple
+from ..base import (
+    DoubleStateRecurrentLayerBase,
+    DoubleStateCellBase,
+    resolve_init_name,
+    apply_init_,
+)
 
 
-class JANET(BaseDoubleRecurrentLayer):
+class JANET(DoubleStateRecurrentLayerBase):
     r"""Multi-layer JANET (Just Another NETwork) recurrent neural network.
 
     [`arXiv <https://arxiv.org/abs/1804.04849>`_]
@@ -149,7 +154,7 @@ class JANET(BaseDoubleRecurrentLayer):
         self.initialize_cells(JANETCell, **kwargs)
 
 
-class JANETCell(BaseDoubleRecurrentCell):
+class JANETCell(DoubleStateCellBase):
     r"""A JANET (Just Another NETwork) recurrent cell.
 
     [`arXiv <https://arxiv.org/abs/1804.04849>`_]
@@ -233,16 +238,7 @@ class JANETCell(BaseDoubleRecurrentCell):
         >>> out_h = torch.stack(out_h, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -255,62 +251,73 @@ class JANETCell(BaseDoubleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         beta: float = 1.0,
-        device: Optional[torch.device] = None,
-        dtype: Optional[torch.dtype] = None,
+        device=None,
+        dtype=None,
     ):
-        super(JANETCell, self).__init__(
-            input_size,
-            hidden_size,
-            bias,
-            recurrent_bias,
-            beta=beta,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
             device=device,
             dtype=dtype,
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=2,
-            hh_mult=2,
-            bias=bias,
-            recurrent_bias=recurrent_bias,
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
         )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
+
+        self._default_register_tensors(ih_mult=2, hh_mult=2)
         self.beta = nn.Parameter(torch.tensor(beta))
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
 
     def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
-        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states((state, c_state))
-        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            h, c = state
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
 
         gates = (
-            inp @ self.weight_ih.t()
+            b_inp @ self.weight_ih.t()
             + self.bias_ih
-            + state @ self.weight_hh.t()
+            + b_h @ self.weight_hh.t()
             + self.bias_hh
         )
         s_t, s_c = gates.chunk(2, 1)
         forget_gate = torch.sigmoid(s_t)
         candidate_state = torch.tanh(s_c)
         update_gate = torch.sigmoid(s_t - self.beta)
-        new_cstate = forget_gate * c_state + (1.0 - update_gate) * candidate_state
-        new_state = new_cstate
+        new_c = forget_gate * b_c + (1.0 - update_gate) * candidate_state
+        new_h = new_c
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
-            new_cstate = new_cstate.squeeze(0)
+            new_h = new_h.squeeze(0)
+            new_c = new_c.squeeze(0)
 
-        return new_state, new_cstate
+        return new_h, new_c

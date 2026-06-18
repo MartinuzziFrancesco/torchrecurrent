@@ -1,11 +1,17 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Callable, Optional, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import (
+    SingleStateRecurrentLayerBase,
+    SingleStateCellBase,
+    resolve_activation,
+    resolve_init_name,
+    apply_init_,
+)
 
 
-class IndRNN(BaseSingleRecurrentLayer):
+class IndRNN(SingleStateRecurrentLayerBase):
     r"""Multi-layer independently recurrent neural network.
 
     [`arXiv <https://arxiv.org/abs/1803.04831>`_]
@@ -126,7 +132,7 @@ class IndRNN(BaseSingleRecurrentLayer):
         self.initialize_cells(IndRNNCell, **kwargs)
 
 
-class IndRNNCell(BaseSingleRecurrentCell):
+class IndRNNCell(SingleStateCellBase):
     r"""An Independently Recurrent Neural Network (IndRNN) cell.
 
     [`arXiv <https://arxiv.org/abs/1803.04831>`_]
@@ -195,10 +201,6 @@ class IndRNNCell(BaseSingleRecurrentCell):
         "hidden_size",
         "bias",
         "recurrent_bias",
-        "nonlinearity",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
     ]
 
     weight_ih: Tensor
@@ -212,22 +214,31 @@ class IndRNNCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        nonlinearity: Callable = torch.tanh,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.normal_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
-        device: Optional[torch.device] = None,
-        dtype: Optional[torch.dtype] = None,
+        nonlinearity="tanh",
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.normal_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
+        device=None,
+        dtype=None,
     ):
-        super(IndRNNCell, self).__init__(
-            input_size, hidden_size, bias, device=device, dtype=dtype
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.nonlinearity = nonlinearity
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
+        self.act = resolve_activation(nonlinearity)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
         self._register_tensors(
             {
@@ -237,33 +248,32 @@ class IndRNNCell(BaseSingleRecurrentCell):
                 "bias_hh": ((hidden_size,), recurrent_bias),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
-    def init_weights(self):
-        for name, param in self.named_parameters():
-            if "weight_ih" in name:
-                self.kernel_init(param)
-            elif "vector_u" in name:
-                self.recurrent_kernel_init(param)
-            elif "bias_ih" in name:
-                self.bias_init(param)
-            elif "bias_hh" in name:
-                self.recurrent_bias_init(param)
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.vector_u, self.init_cfg["recurrent_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        new_state = (
-            inp @ self.weight_ih.t() + self.bias_ih + self.vector_u * state + self.bias_hh
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        h_new = (
+            b_inp @ self.weight_ih.t() + self.bias_ih + self.vector_u * b_state + self.bias_hh
         )
-        new_state = self.nonlinearity(new_state)
+        h_new = self.act(h_new)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
+            h_new = h_new.squeeze(0)
 
-        return new_state
+        return h_new

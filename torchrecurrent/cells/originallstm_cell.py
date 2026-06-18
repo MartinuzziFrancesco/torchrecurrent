@@ -1,11 +1,11 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Callable, Union, Tuple
-from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
+from typing import Optional, Tuple
+from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
 
 
-class OriginalLSTM(BaseDoubleRecurrentLayer):
+class OriginalLSTM(DoubleStateRecurrentLayerBase):
     r"""Multi-layer original long short-term memory (LSTM) network.
 
     [`pub <https://ieeexplore.ieee.org/abstract/document/6795963>`_]
@@ -139,7 +139,7 @@ class OriginalLSTM(BaseDoubleRecurrentLayer):
         self.initialize_cells(OriginalLSTMCell, **kwargs)
 
 
-class OriginalLSTMCell(BaseDoubleRecurrentCell):
+class OriginalLSTMCell(DoubleStateCellBase):
     r"""Original formulation of the LSTM cell (no forget gate).
 
     [`pub <https://ieeexplore.ieee.org/abstract/document/6795963>`_]
@@ -216,16 +216,7 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
         >>> out_h = torch.stack(out_h, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -238,51 +229,55 @@ class OriginalLSTMCell(BaseDoubleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
         super(OriginalLSTMCell, self).__init__(
             input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=3,
-            hh_mult=3,
-            bias=bias,
-            recurrent_bias=recurrent_bias,
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
         )
-        self.init_weights()
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
+
+        self._default_register_tensors(ih_mult=3, hh_mult=3)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
     def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
-        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states((state, c_state))
-        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            h, c = state
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
 
         gates = (
-            inp @ self.weight_ih.t()
+            b_inp @ self.weight_ih.t()
             + self.bias_ih
-            + state @ self.weight_hh.t()
+            + b_h @ self.weight_hh.t()
             + self.bias_hh
         )
         input_gate, cell_gate, output_gate = gates.chunk(3, 1)
-        new_cstate = c_state + torch.sigmoid(input_gate) * torch.tanh(cell_gate)
-        new_state = torch.sigmoid(output_gate) * torch.tanh(new_cstate)
+        new_c = b_c + torch.sigmoid(input_gate) * torch.tanh(cell_gate)
+        new_h = torch.sigmoid(output_gate) * torch.tanh(new_c)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
-            new_cstate = new_cstate.squeeze(0)
+            new_h = new_h.squeeze(0)
+            new_c = new_c.squeeze(0)
 
-        return new_state, new_cstate
+        return new_h, new_c

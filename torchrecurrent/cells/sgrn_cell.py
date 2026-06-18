@@ -1,11 +1,11 @@
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import SingleStateRecurrentLayerBase, SingleStateCellBase, resolve_init_name, apply_init_
 
 
-class SGRN(BaseSingleRecurrentLayer):
+class SGRN(SingleStateRecurrentLayerBase):
     r"""Multi-layer Simple Gated Recurrent Network (SGRN).
 
     [`DOI <https://doi.org/10.1049/gtd2.12056>`_]
@@ -119,7 +119,7 @@ class SGRN(BaseSingleRecurrentLayer):
         self.initialize_cells(SGRNCell, **kwargs)
 
 
-class SGRNCell(BaseSingleRecurrentCell):
+class SGRNCell(SingleStateCellBase):
     r"""A Simple Gated Recurrent Network (SGRN) cell.
 
     [`DOI <https://doi.org/10.1049/gtd2.12056>`_]
@@ -194,16 +194,7 @@ class SGRNCell(BaseSingleRecurrentCell):
         >>> out = torch.stack(out, dim=0)  # (time_steps, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -216,44 +207,43 @@ class SGRNCell(BaseSingleRecurrentCell):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
         super(SGRNCell, self).__init__(
             input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=1,
-            hh_mult=1,
-            bias=bias,
-            recurrent_bias=recurrent_bias,
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
         )
-        self.init_weights()
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        inp_expanded = inp @ self.weight_ih.t() + self.bias_ih
-        state_expanded = state @ self.weight_hh.t() + self.bias_hh
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
+        inp_expanded = b_inp @ self.weight_ih.t() + self.bias_ih
+        state_expanded = b_state @ self.weight_hh.t() + self.bias_hh
         forget_gate = torch.sigmoid(inp_expanded + state_expanded)
         input_gate = 1.0 - forget_gate
-        new_state = torch.tanh(input_gate * inp_expanded + forget_gate * state)
+        new_state = torch.tanh(input_gate * inp_expanded + forget_gate * b_state)
 
         if not is_batched:
             new_state = new_state.squeeze(0)

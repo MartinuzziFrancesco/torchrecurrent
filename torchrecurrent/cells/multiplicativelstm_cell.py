@@ -1,11 +1,16 @@
 import torch
 from torch import Tensor
 import torch.nn as nn
-from typing import Optional, Callable, Union, Tuple
-from ..base import BaseDoubleRecurrentLayer, BaseDoubleRecurrentCell
+from typing import Optional, Tuple
+from ..base import (
+    DoubleStateRecurrentLayerBase,
+    DoubleStateCellBase,
+    resolve_init_name,
+    apply_init_,
+)
 
 
-class MultiplicativeLSTM(BaseDoubleRecurrentLayer):
+class MultiplicativeLSTM(DoubleStateRecurrentLayerBase):
     r"""Multi-layer multiplicative long short-term memory network.
 
     [`arXiv <https://arxiv.org/abs/1609.07959>`_]
@@ -155,7 +160,7 @@ class MultiplicativeLSTM(BaseDoubleRecurrentLayer):
         self.initialize_cells(MultiplicativeLSTMCell, **kwargs)
 
 
-class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
+class MultiplicativeLSTMCell(DoubleStateCellBase):
     r"""A multiplicative LSTM cell.
 
     [`arXiv <https://arxiv.org/abs/1609.07959>`_]
@@ -255,19 +260,7 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
         >>> out_h = torch.stack(out_h, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = [
-        "input_size",
-        "hidden_size",
-        "bias",
-        "recurrent_bias",
-        "multiplicative_bias",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "multiplicative_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
-        "multiplicative_bias_init",
-    ]
+    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -283,24 +276,37 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
         bias: bool = True,
         recurrent_bias: bool = True,
         multiplicative_bias: bool = True,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        multiplicative_kernel_init: Callable = nn.init.normal_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
-        multiplicative_bias_init: Callable = nn.init.zeros_,
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        multiplicative_kernel_init=nn.init.normal_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
+        multiplicative_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(MultiplicativeLSTMCell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.multiplicative_kernel_init = multiplicative_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-        self.multiplicative_bias_init = multiplicative_bias_init
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["multiplicative_kernel"] = resolve_init_name(
+            multiplicative_kernel_init, "normal"
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
+        self.init_cfg["multiplicative_bias"] = resolve_init_name(
+            multiplicative_bias_init, "zeros"
+        )
 
         self._register_tensors(
             {
@@ -312,45 +318,48 @@ class MultiplicativeLSTMCell(BaseDoubleRecurrentCell):
                 "bias_mh": ((4 * hidden_size,), multiplicative_bias),
             }
         )
-        self.init_weights()
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
 
-    def init_weights(self):
-        for name, param in self.named_parameters():
-            if "weight_ih" in name:
-                self.kernel_init(param)
-            elif "weight_hh" in name:
-                self.recurrent_kernel_init(param)
-            elif "weight_mh" in name:
-                self.multiplicative_kernel_init(param)
-            elif "bias_ih" in name:
-                self.bias_init(param)
-            elif "bias_hh" in name:
-                self.recurrent_bias_init(param)
-            elif "bias_mh" in name:
-                self.multiplicative_bias_init(param)
+    def reset_parameters(self) -> None:
+        apply_init_(self.weight_ih, self.init_cfg["kernel"])
+        apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
+        apply_init_(self.weight_mh, self.init_cfg["multiplicative_kernel"])
+        if hasattr(self, "bias_ih"):
+            apply_init_(self.bias_ih, self.init_cfg["bias"])
+        if hasattr(self, "bias_hh"):
+            apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
+        if hasattr(self, "bias_mh"):
+            apply_init_(self.bias_mh, self.init_cfg["multiplicative_bias"])
 
     def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
-        state, c_state = self._check_states(state)
         self._validate_input(inp)
-        self._validate_states((state, c_state))
-        inp, state, c_state, is_batched = self._preprocess_states(inp, (state, c_state))
+        b_inp, is_batched = self._as_batched(inp)
 
-        inp_expanded = inp @ self.weight_ih.t() + self.bias_ih
+        if state is None:
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            h, c = state
+            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+
+        inp_expanded = b_inp @ self.weight_ih.t() + self.bias_ih
         gxs1, gxs2, gxs3, gxs4, gxs5 = inp_expanded.chunk(5, 1)
-        multiplicative_state = gxs1 * (state @ self.weight_hh.t() + self.bias_hh)
+        multiplicative_state = gxs1 * (b_h @ self.weight_hh.t() + self.bias_hh)
         mult_expanded = multiplicative_state @ self.weight_mh.t() + self.bias_mh
         gms1, gms2, gms3, gms4 = mult_expanded.chunk(4, 1)
         input_gate = torch.sigmoid(gxs2 + gms1)
         forget_gate = torch.sigmoid(gxs3 + gms2)
         candidate_state = torch.tanh(gxs4 + gms3)
         output_gate = torch.sigmoid(gxs5 + gms4)
-        new_cstate = forget_gate * c_state + input_gate * candidate_state
-        new_state = output_gate * torch.tanh(new_cstate)
+        new_c = forget_gate * b_c + input_gate * candidate_state
+        new_h = output_gate * torch.tanh(new_c)
 
         if not is_batched:
-            new_state = new_state.squeeze(0)
-            new_cstate = new_cstate.squeeze(0)
+            new_h = new_h.squeeze(0)
+            new_c = new_c.squeeze(0)
 
-        return new_state, new_cstate
+        return new_h, new_c

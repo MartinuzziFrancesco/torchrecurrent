@@ -1,11 +1,17 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from typing import Optional, Callable, Tuple, Union
-from ..base import BaseSingleRecurrentLayer, BaseSingleRecurrentCell
+from typing import Optional, Tuple
+from ..base import (
+    SingleStateRecurrentLayerBase,
+    SingleStateCellBase,
+    resolve_activation,
+    resolve_init_name,
+    apply_init_,
+)
 
 
-class MiRU1(BaseSingleRecurrentLayer):
+class MiRU1(SingleStateRecurrentLayerBase):
     r"""Multi-layer Minion Gated Unit 1 (MiRU1) neural network.
 
     [`DOI <https://doi.org/10.1016/j.neucom.2026.132847>`_]
@@ -39,9 +45,9 @@ class MiRU1(BaseSingleRecurrentLayer):
         update_coefficient: Mixing hyperparameter controlling the blend between the
             previous hidden state and the candidate. Default: 0.5
         nonlinearity: Nonlinearity for the candidate hidden state.
-            Default: :func:`torch.tanh`
+            Default: ``"tanh"``
         gate_nonlinearity: Activation for the reset gate.
-            Default: :func:`torch.sigmoid`
+            Default: ``"sigmoid"``
         kernel_init: Initializer for ``W_*``.
             Default: :func:`torch.nn.init.xavier_uniform_`
         recurrent_kernel_init: Initializer for ``U_*``.
@@ -91,7 +97,7 @@ class MiRU1(BaseSingleRecurrentLayer):
         self.initialize_cells(MiRU1Cell, **kwargs)
 
 
-class MiRU1Cell(BaseSingleRecurrentCell):
+class MiRU1Cell(SingleStateCellBase):
     r"""A Minion Gated Unit 1 (MiRU1) cell.
 
     [`DOI <https://doi.org/10.1016/j.neucom.2026.132847>`_]
@@ -121,9 +127,9 @@ class MiRU1Cell(BaseSingleRecurrentCell):
         update_coefficient: Mixing hyperparameter controlling the blend between the
             previous hidden state and the candidate. Default: ``0.5``.
         nonlinearity: Nonlinearity for the candidate hidden state.
-            Default: :func:`torch.tanh`.
+            Default: ``"tanh"``.
         gate_nonlinearity: Activation for the reset gate.
-            Default: :func:`torch.sigmoid`.
+            Default: ``"sigmoid"``.
         kernel_init: Initializer for ``W_r`` and ``W_h``.
             Default: :func:`torch.nn.init.xavier_uniform_`.
         recurrent_kernel_init: Initializer for ``U_r`` and ``U_h``.
@@ -171,12 +177,6 @@ class MiRU1Cell(BaseSingleRecurrentCell):
         "bias",
         "recurrent_bias",
         "update_coefficient",
-        "nonlinearity",
-        "gate_nonlinearity",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
     ]
 
     weight_ih: Tensor
@@ -191,64 +191,65 @@ class MiRU1Cell(BaseSingleRecurrentCell):
         bias: bool = True,
         recurrent_bias: bool = True,
         update_coefficient: float = 0.5,
-        nonlinearity: Callable = torch.tanh,
-        gate_nonlinearity: Callable = torch.sigmoid,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        nonlinearity="tanh",
+        gate_nonlinearity="sigmoid",
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(MiRU1Cell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
-        )
-        self.update_coefficient = update_coefficient
-        self.nonlinearity = nonlinearity
-        self.gate_nonlinearity = gate_nonlinearity
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=2,
-            hh_mult=2,
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
             bias=bias,
             recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
-        self.init_weights()
+        self.update_coefficient = update_coefficient
+        self.act = resolve_activation(nonlinearity)
+        self.gate_act = resolve_activation(gate_nonlinearity)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+        )
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors(ih_mult=2, hh_mult=2)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
+
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
 
         weight_ih_r, weight_ih_h = self.weight_ih.chunk(2, 0)
         weight_hh_r, weight_hh_h = self.weight_hh.chunk(2, 0)
         bias_ih_r, bias_ih_h = self.bias_ih.chunk(2, 0)
         bias_hh_r, bias_hh_h = self.bias_hh.chunk(2, 0)
 
-        # Reset gate: r(t) = sigmoid(W_r x + b_r + U_r h)
-        rg = inp @ weight_ih_r.t() + bias_ih_r + state @ weight_hh_r.t() + bias_hh_r
-        reset_gate = self.gate_nonlinearity(rg)
+        rg = b_inp @ weight_ih_r.t() + bias_ih_r + b_state @ weight_hh_r.t() + bias_hh_r
+        reset_gate = self.gate_act(rg)
 
-        # Candidate: h~(t) = tanh(W_h x + b_h + U_h (r(t) * h))
         ch = (
-            inp @ weight_ih_h.t()
+            b_inp @ weight_ih_h.t()
             + bias_ih_h
-            + (reset_gate * state) @ weight_hh_h.t()
+            + (reset_gate * b_state) @ weight_hh_h.t()
             + bias_hh_h
         )
-        candidate = self.nonlinearity(ch)
+        candidate = self.act(ch)
 
-        # Update: h(t) = lambda * h + (1 - lambda) * h~
-        new_state = self.update_coefficient * state + (1.0 - self.update_coefficient) * candidate
+        new_state = self.update_coefficient * b_state + (1.0 - self.update_coefficient) * candidate
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -256,7 +257,7 @@ class MiRU1Cell(BaseSingleRecurrentCell):
         return new_state
 
 
-class MiRU2(BaseSingleRecurrentLayer):
+class MiRU2(SingleStateRecurrentLayerBase):
     r"""Multi-layer Minion Gated Unit 2 (MiRU2) neural network.
 
     [`DOI <https://doi.org/10.1016/j.neucom.2026.132847>`_]
@@ -289,7 +290,7 @@ class MiRU2(BaseSingleRecurrentLayer):
         update_coefficient: Mixing hyperparameter. Default: 0.5
         reset_coefficient: Hidden-state scaling hyperparameter. Default: 0.5
         nonlinearity: Nonlinearity for the candidate hidden state.
-            Default: :func:`torch.tanh`
+            Default: ``"tanh"``
         kernel_init: Initializer for ``W_h``.
             Default: :func:`torch.nn.init.xavier_uniform_`
         recurrent_kernel_init: Initializer for ``U_h``.
@@ -339,7 +340,7 @@ class MiRU2(BaseSingleRecurrentLayer):
         self.initialize_cells(MiRU2Cell, **kwargs)
 
 
-class MiRU2Cell(BaseSingleRecurrentCell):
+class MiRU2Cell(SingleStateCellBase):
     r"""A Minion Gated Unit 2 (MiRU2) cell.
 
     [`DOI <https://doi.org/10.1016/j.neucom.2026.132847>`_]
@@ -366,7 +367,7 @@ class MiRU2Cell(BaseSingleRecurrentCell):
         update_coefficient: Mixing hyperparameter. Default: ``0.5``.
         reset_coefficient: Hidden-state scaling hyperparameter. Default: ``0.5``.
         nonlinearity: Nonlinearity for the candidate hidden state.
-            Default: :func:`torch.tanh`.
+            Default: ``"tanh"``.
         kernel_init: Initializer for ``W_h``.
             Default: :func:`torch.nn.init.xavier_uniform_`.
         recurrent_kernel_init: Initializer for ``U_h``.
@@ -415,11 +416,6 @@ class MiRU2Cell(BaseSingleRecurrentCell):
         "recurrent_bias",
         "update_coefficient",
         "reset_coefficient",
-        "nonlinearity",
-        "kernel_init",
-        "recurrent_kernel_init",
-        "bias_init",
-        "recurrent_bias_init",
     ]
 
     weight_ih: Tensor
@@ -435,54 +431,56 @@ class MiRU2Cell(BaseSingleRecurrentCell):
         recurrent_bias: bool = True,
         update_coefficient: float = 0.5,
         reset_coefficient: float = 0.5,
-        nonlinearity: Callable = torch.tanh,
-        kernel_init: Callable = nn.init.xavier_uniform_,
-        recurrent_kernel_init: Callable = nn.init.xavier_uniform_,
-        bias_init: Callable = nn.init.zeros_,
-        recurrent_bias_init: Callable = nn.init.zeros_,
+        nonlinearity="tanh",
+        kernel_init=nn.init.xavier_uniform_,
+        recurrent_kernel_init=nn.init.xavier_uniform_,
+        bias_init=nn.init.zeros_,
+        recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
     ):
-        super(MiRU2Cell, self).__init__(
-            input_size, hidden_size, bias, recurrent_bias, device=device, dtype=dtype
+        super().__init__(
+            input_size=input_size,
+            hidden_size=hidden_size,
+            bias=bias,
+            recurrent_bias=recurrent_bias,
+            device=device,
+            dtype=dtype,
         )
         self.update_coefficient = update_coefficient
         self.reset_coefficient = reset_coefficient
-        self.nonlinearity = nonlinearity
-        self.kernel_init = kernel_init
-        self.recurrent_kernel_init = recurrent_kernel_init
-        self.bias_init = bias_init
-        self.recurrent_bias_init = recurrent_bias_init
-
-        self._default_register_tensors(
-            input_size,
-            hidden_size,
-            ih_mult=1,
-            hh_mult=1,
-            bias=bias,
-            recurrent_bias=recurrent_bias,
+        self.act = resolve_activation(nonlinearity)
+        self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
+        self.init_cfg["recurrent_kernel"] = resolve_init_name(
+            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
         )
-        self.init_weights()
+        self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
+        self.init_cfg["recurrent_bias"] = resolve_init_name(
+            recurrent_bias_init, self.init_cfg["recurrent_bias"]
+        )
 
-    def forward(
-        self, inp: Tensor, state: Optional[Union[Tensor, Tuple[Tensor, ...]]] = None
-    ) -> Tensor:
-        state = self._check_state(state)
+        self._default_register_tensors(ih_mult=1, hh_mult=1)
+        self.reset_parameters()
+        self._cleanup_non_scriptable()
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
-        self._validate_state(state)
-        inp, state, is_batched = self._preprocess_input_and_state(inp, state)
+        b_inp, is_batched = self._as_batched(inp)
 
-        # Candidate: h~(t) = tanh(W_h x + b_h + U_h (reset_coefficient * h))
+        if state is None:
+            b_state = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+        else:
+            b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
+
         ch = (
-            inp @ self.weight_ih.t()
+            b_inp @ self.weight_ih.t()
             + self.bias_ih
-            + (self.reset_coefficient * state) @ self.weight_hh.t()
+            + (self.reset_coefficient * b_state) @ self.weight_hh.t()
             + self.bias_hh
         )
-        candidate = self.nonlinearity(ch)
+        candidate = self.act(ch)
 
-        # Update: h(t) = lambda * h + (1 - lambda) * h~
-        new_state = self.update_coefficient * state + (1.0 - self.update_coefficient) * candidate
+        new_state = self.update_coefficient * b_state + (1.0 - self.update_coefficient) * candidate
 
         if not is_batched:
             new_state = new_state.squeeze(0)
