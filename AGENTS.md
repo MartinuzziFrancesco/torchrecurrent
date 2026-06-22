@@ -2,171 +2,127 @@
 
 Guidance for AI agents working in the **torchrecurrent** repository.
 
-## What this project is
+## Project Snapshot
 
-`torchrecurrent` is a PyTorch-compatible collection of recurrent neural network
-**cells** and **layers** drawn from the research literature. Every model exposes
-a native-PyTorch-style interface (mirroring `torch.nn.RNN`/`RNNCell`) while adding
-extra knobs for initialization and customization. It is published on
-[PyPI](https://pypi.org/project/torchrecurrent/) and conda-forge, and is intended
-primarily for academic research.
+- Package: `torchrecurrent`
+- Purpose: PyTorch-compatible recurrent neural network cells and layers from
+  research literature, primarily for academic research.
+- Python: `>=3.9`; CI covers Python 3.9-3.14 on Linux, Windows, and macOS.
+- Runtime dependency policy: `torch` is the only runtime dependency.
+- Style: Black, line length 92.
 
-- Package: `torchrecurrent` (version in `pyproject.toml`)
-- Python: `>=3.9` (CI runs 3.9–3.14 on Linux/Windows/macOS)
-- Single runtime dependency: `torch`
-- Companion projects: [RecurrentLayers.jl](https://github.com/MartinuzziFrancesco/RecurrentLayers.jl)
-  (Flux), [LuxRecurrentLayers.jl](https://github.com/MartinuzziFrancesco/LuxRecurrentLayers.jl) (Lux)
+## Commands
 
-## Project structure
-
-Generated with `tree -I '__pycache__|*.egg-info|.venv|.git|.pytest_cache|runs|generated'`
-(the `runs/` experiment artifacts and `generated/` autosummary stubs are collapsed):
-
-```
-.
-├── benchmarks                          # standalone training scripts + saved runs/ (not packaged)
-│   ├── adding_problem
-│   │   └── adding_problem.py
-│   └── copy_memory
-│       └── copy_memory.py
-├── docs                                # Sphinx documentation
-│   ├── api
-│   │   ├── benchmarks.rst
-│   │   ├── cells.rst
-│   │   ├── index.rst
-│   │   └── layers.rst
-│   ├── _static
-│   │   ├── favicon.ico
-│   │   ├── logo-long2.png
-│   │   └── logo.png
-│   ├── conf.py
-│   ├── index.rst
-│   ├── make.bat
-│   ├── Makefile
-│   ├── models.rst                      # catalog of published models
-│   └── requirements.txt
-├── tests
-│   ├── test_cells.py                   # per-cell shape/dtype/state checks
-│   └── test_layers.py                  # per-layer stacking/batch_first checks
-├── torchrecurrent                      # the package
-│   ├── benchmarks
-│   │   ├── adding.py                    # adding_problem task generator
-│   │   ├── copymemory.py               # copy_memory task generator
-│   │   └── __init__.py
-│   ├── cells                           # each file defines BOTH a Cell and its layer
-│   │   ├── antisymmetricrnn_cell.py
-│   │   ├── atr_cell.py
-│   │   ├── br_cell.py
-│   │   ├── cfn_cell.py
-│   │   ├── cornn_cell.py
-│   │   ├── fastrnn_cell.py
-│   │   ├── indrnn_cell.py
-│   │   ├── __init__.py                 # re-exports every cell + its layer
-│   │   ├── janet_cell.py
-│   │   ├── lem_cell.py
-│   │   ├── lightru_cell.py
-│   │   ├── ligru_cell.py
-│   │   ├── mgu_cell.py
-│   │   ├── multiplicativelstm_cell.py
-│   │   ├── mut_cell.py                 # MUT1 / MUT2 / MUT3
-│   │   ├── nas_cell.py
-│   │   ├── originallstm_cell.py
-│   │   ├── peepholelstm_cell.py
-│   │   ├── ran_cell.py
-│   │   ├── rhn_cell.py                 # present but NOT exported (commented out)
-│   │   ├── scrn_cell.py
-│   │   ├── sgrn_cell.py
-│   │   ├── star_cell.py
-│   │   ├── ugrnn_cell.py
-│   │   ├── unicornn_cell.py
-│   │   └── wmclstm_cell.py
-│   ├── base.py                         # abstract base classes (see "Architecture")
-│   └── __init__.py                     # top-level public API (alphabetized re-exports)
-├── AGENTS.md
-├── LICENSE                             # MIT (NASCell re-impl carries Apache-2.0)
-├── MANIFEST.in
-├── pyproject.toml                      # build, deps, black config, test extras
-└── README.md
-```
-
-Two things worth internalizing:
-
-- **There is no `layers/` directory.** Each `*_cell.py` file defines *both* the
-  cell (e.g. `MGUCell`) and its multi-layer wrapper (e.g. `MGU`). The
-  `cells/__init__.py` and top-level `__init__.py` re-export both.
-- `torchrecurrent/benchmarks/` (packaged task generators) is distinct from the
-  top-level `benchmarks/` (standalone training scripts and saved run artifacts).
-
-## Architecture
-
-All models inherit from base classes in `torchrecurrent/base.py`:
-
-- `BaseRecurrentCell` — common cell machinery: input/state validation, zero-state
-  init, parameter/buffer registration (`_register_tensors`,
-  `_default_register_tensors`), and `init_weights()` which dispatches on parameter
-  name (`weight_ih`, `weight_hh`, `bias_ih`, `bias_hh`).
-  - `BaseSingleRecurrentCell` — single hidden state `h`; `uses_double_state()` → `False`.
-  - `BaseDoubleRecurrentCell` — LSTM-style `(h, c)`; `uses_double_state()` → `True`.
-- `BaseRecurrentLayer` — stacking, dropout between layers, `batch_first`,
-  `initialize_cells(CellClass, **kwargs)`.
-  - `BaseSingleRecurrentLayer` / `BaseDoubleRecurrentLayer` — iterate the cell
-    stack over the time dimension.
-
-### Conventions every cell follows
-
-- Weights are concatenated per-gate into `weight_ih` / `weight_hh` with shape
-  `(n_gates * hidden_size, ...)` and split with `.chunk(n, 0)` in `forward`.
-- Separate input-side (`bias`) and recurrent-side (`recurrent_bias`) bias flags.
-- Configurable `nonlinearity` / `gate_nonlinearity` and four init callables
-  (`kernel_init`, `recurrent_kernel_init`, `bias_init`, `recurrent_bias_init`),
-  defaulting to `xavier_uniform_` for weights and `zeros_` for biases.
-- A cell `forward` accepts `(input_size,)` or `(N, input_size)` and handles the
-  unbatched case internally via the `_preprocess_*` helpers.
-- Extensive Google/NumPy-style docstrings with a math block and an arXiv link —
-  these feed the Sphinx `generated/` autosummary pages.
-
-## Adding a new model
-
-1. Create `torchrecurrent/cells/<name>_cell.py` defining `<Name>Cell` (subclass a
-   `BaseSingle*`/`BaseDouble*` cell) and `<Name>` (subclass the matching layer,
-   calling `self.initialize_cells(<Name>Cell, **kwargs)`). Use `mgu_cell.py` as
-   the reference template, including the docstring style.
-2. Re-export both classes from `torchrecurrent/cells/__init__.py` (import +
-   `__all__`) and from `torchrecurrent/__init__.py` (both import lists + `__all__`).
-3. Add the cell to `CELL_CASES` in `tests/test_cells.py` and the layer to
-   `tests/test_layers.py`.
-4. Add docs: an entry under `docs/api/` and an autosummary stub under
-   `docs/generated/`, plus the model catalog in `docs/models.rst`.
-
-## Development workflow
+Run the narrowest useful command first, then broaden when the change touches
+shared behavior.
 
 ```bash
-pip install -e .[test]      # editable install with pytest + coverage
-
-pytest                      # run the test suite
-coverage run -m pytest      # how CI runs it
-
-pre-commit run --all-files  # black + ruff --fix
-black .                     # line length 92
-flake8                      # excludes docs/, benchmarks/, tests/
+pip install -e .[test]
+pytest
+coverage run -m pytest
+black .
+flake8
+pre-commit run --all-files
 ```
 
-- Code style: **black**, line length **92** (configured in both `pyproject.toml`
-  and `.flake8`). Run black/ruff before committing — pre-commit enforces it.
-- Tests are parametrized tables of model classes; keep them in sync when you add
-  or rename a model.
+- `pytest` runs the test suite.
+- `coverage run -m pytest` matches the CI test command.
+- `black .` formats with the configured 92-character line length.
+- `flake8` excludes `docs/`, `benchmarks/`, and `tests/`.
+- `pre-commit run --all-files` runs Black and Ruff fixes before committing.
 
-## Conventions for agents
+## Repository Map
 
-- **Keep cell and layer in the same file**, and keep the three export sites
-  (`cells/__init__.py`, top-level `__init__.py`, and each `__all__`) consistent —
-  a model missing from any of them won't be importable.
-- Match the existing docstring format (math block + arXiv link + Args/Inputs/
-  Outputs/Variables); docs generation depends on it.
-- Don't commit into `benchmarks/.../runs/` — those are saved experiment artifacts.
-- `rhn_cell.py` exists but is intentionally not exported; don't wire it up unless
-  asked.
-- Only `torch` may be added as a runtime dependency without discussion; keep the
-  package dependency-light.
-- Respect third-party licenses: `NASCell` is an Apache-2.0 re-implementation.
-```
+- `torchrecurrent/base.py`: abstract base classes for cells and layers.
+- `torchrecurrent/cells/`: each `*_cell.py` defines both a cell and its layer.
+- `torchrecurrent/benchmarks/`: packaged task generators.
+- `benchmarks/`: standalone training scripts and saved runs, not packaged.
+- `tests/test_cells.py`: per-cell shape, dtype, and state checks.
+- `tests/test_layers.py`: per-layer stacking and `batch_first` checks.
+- `docs/`: Sphinx docs and the model catalog in `docs/models.rst`.
+
+There is no `layers/` directory. Keep cell and layer implementations together in
+the relevant `torchrecurrent/cells/<name>_cell.py` file.
+
+## Architecture Conventions
+
+- `BaseSingleRecurrentCell` uses one hidden state `h`.
+- `BaseDoubleRecurrentCell` uses LSTM-style `(h, c)` state.
+- `BaseSingleRecurrentLayer` and `BaseDoubleRecurrentLayer` iterate cell stacks
+  over the time dimension.
+- Weights are concatenated per gate into `weight_ih` and `weight_hh`, then split
+  with `.chunk(n, 0)` in `forward`.
+- Cells support input shaped `(input_size,)` or `(N, input_size)` via the base
+  `_preprocess_*` helpers.
+- Bias controls are separate: `bias` for input-side terms and `recurrent_bias`
+  for recurrent-side terms.
+- Initializers are configurable through `kernel_init`, `recurrent_kernel_init`,
+  `bias_init`, and `recurrent_bias_init`; defaults are `xavier_uniform_` for
+  weights and `zeros_` for biases.
+
+## Adding A Model
+
+1. Create `torchrecurrent/cells/<name>_cell.py`.
+2. Define `<Name>Cell` from the matching single-state or double-state base cell.
+3. Define `<Name>` from the matching layer base and call
+   `self.initialize_cells(<Name>Cell, **kwargs)`.
+4. Use `torchrecurrent/cells/mgu_cell.py` as the implementation and docstring
+   template.
+5. Re-export both classes from `torchrecurrent/cells/__init__.py` and
+   `torchrecurrent/__init__.py`, including each `__all__`.
+6. Add the cell to `CELL_CASES` in `tests/test_cells.py`.
+7. Add the layer to `tests/test_layers.py`.
+8. Add docs under `docs/api/`, generated autosummary coverage, and
+   `docs/models.rst`.
+
+## Code Style
+
+- Format Python with Black before finishing changes that touch code.
+- Keep comments sparse. Add comments only when they explain non-obvious math,
+  paper-specific behavior, numerical stability choices, or API compatibility.
+- Do not add comments that merely restate the code.
+- Match the existing Google/NumPy-style docstrings with a math block, arXiv link,
+  Args, Inputs, Outputs, and Variables sections.
+- Keep tests table-driven and update the relevant parametrized cases when adding
+  or renaming public models.
+
+## Boundaries
+
+### Always Do
+
+- Preserve native PyTorch-style interfaces that mirror `torch.nn.RNN` and
+  `torch.nn.RNNCell` where applicable.
+- Keep the three export sites synchronized:
+  `torchrecurrent/cells/__init__.py`, `torchrecurrent/__init__.py`, and each
+  `__all__`.
+- Respect third-party licenses. `NASCell` is an Apache-2.0 reimplementation in an
+  MIT-licensed project.
+
+### Ask First
+
+- Adding, removing, or changing runtime dependencies. Do not add dependencies
+  just to simplify an implementation.
+- Exporting or otherwise wiring up `rhn_cell.py`; it exists but is intentionally
+  not part of the public API.
+- Large rewrites, API breaks, renamed public classes, or changes to package
+  metadata and release configuration.
+- Broad documentation regeneration if it would create large generated diffs.
+
+### Never Do
+
+- Do not create a separate `layers/` package.
+- Do not commit or edit saved artifacts under `benchmarks/.../runs/`.
+- Do not add unnecessary comments.
+- Do not skip tests silently; report any tests that could not be run.
+- Do not introduce non-`torch` runtime dependencies without explicit approval.
+
+## Done Criteria
+
+Before finishing, check the work against the scope of the change:
+
+- Code is formatted with Black when Python files changed.
+- Relevant tests were run, or the reason they were not run is stated.
+- New or renamed public models are exported from both package entry points.
+- Tests and docs are updated when public behavior changes.
+- The final response summarizes changed files, verification, and any remaining
+  risk or follow-up.
