@@ -12,6 +12,7 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.NBR
    torchrecurrent.BR
    torchrecurrent.CFN
+   torchrecurrent.DSGU
    torchrecurrent.coRNN
    torchrecurrent.FastRNN
    torchrecurrent.FastGRNN
@@ -33,6 +34,7 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.PeepholeLSTM
    torchrecurrent.RAN
    torchrecurrent.SCRN
+   torchrecurrent.SGU
    torchrecurrent.SGRN
    torchrecurrent.STAR
    torchrecurrent.UGRNN

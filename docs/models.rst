@@ -32,6 +32,9 @@ references and official implementations where available.
    * - :doc:`coRNN <generated/torchrecurrent.coRNN>`
      - `ICLR 2021 <https://arxiv.org/abs/2010.00951>`__
      - `tk-rusch/coRNN <https://github.com/tk-rusch/coRNN>`__
+   * - :doc:`DSGU <generated/torchrecurrent.DSGU>`
+     - `ACML 2016 <https://proceedings.mlr.press/v63/gao30.html>`__
+     - –
    * - :doc:`FastGRNN <generated/torchrecurrent.FastGRNN>`
      - `NeurIPS 2018 <https://arxiv.org/abs/1901.02358>`__
      - `Microsoft/EdgeML <https://github.com/Microsoft/EdgeML>`__
@@ -95,6 +98,9 @@ references and official implementations where available.
    * - :doc:`SCRN <generated/torchrecurrent.SCRN>`
      - `ICLR 2015 <https://arxiv.org/abs/1412.7753>`__
      - `facebookarchive/SCRNNs <https://github.com/facebookarchive/SCRNNs>`__
+   * - :doc:`SGU <generated/torchrecurrent.SGU>`
+     - `arXiv 2016 <https://arxiv.org/abs/1604.02910>`__
+     - –
    * - :doc:`SGRN <generated/torchrecurrent.SGRN>`
      - `IET 2018 <https://doi.org/10.1049/gtd2.12056>`__
      - –
