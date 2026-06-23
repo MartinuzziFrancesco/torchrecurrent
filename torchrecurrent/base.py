@@ -14,6 +14,9 @@ _ACTIVATIONS: Dict[str, nn.Module] = {
     "tanh": nn.Tanh(),
     "relu": nn.ReLU(),
     "sigmoid": nn.Sigmoid(),
+    "softplus": nn.Softplus(),
+    "hard_sigmoid": nn.Hardsigmoid(),
+    "hardsigmoid": nn.Hardsigmoid(),
     "gelu": nn.GELU(),
     "silu": nn.SiLU(),
     "elu": nn.ELU(),
@@ -36,7 +39,9 @@ def resolve_activation(act: Any) -> nn.Module:
     if isinstance(act, str):
         key = act.lower()
         if key not in _ACTIVATIONS:
-            raise ValueError(f"Unknown activation '{act}'. Supported: {sorted(_ACTIVATIONS.keys())}")
+            raise ValueError(
+                f"Unknown activation '{act}'. Supported: {sorted(_ACTIVATIONS.keys())}"
+            )
         return _ACTIVATIONS[key].__class__()
 
     if act is torch.tanh:
@@ -86,9 +91,14 @@ def resolve_init_name(init: Any, default: str) -> str:
     name = getattr(init, "__name__", "")
     name = name.rstrip("_")
     known = {
-        "zeros", "ones", "normal", "uniform",
-        "xavier_uniform", "xavier_normal",
-        "kaiming_uniform", "kaiming_normal",
+        "zeros",
+        "ones",
+        "normal",
+        "uniform",
+        "xavier_uniform",
+        "xavier_normal",
+        "kaiming_uniform",
+        "kaiming_normal",
         "orthogonal",
     }
     if name in known:
@@ -121,6 +131,7 @@ def apply_init_(t: Tensor, name: str) -> None:
         nn.init.orthogonal_(t)
     else:
         raise ValueError(f"Unknown initializer '{name}'.")
+
 
 class RecurrentCellBase(nn.Module):
     __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
@@ -180,7 +191,9 @@ class RecurrentCellBase(nn.Module):
         """
         for name, (shape, trainable) in specs.items():
             if trainable:
-                p = nn.Parameter(torch.empty(*shape, device=self._init_device, dtype=self._init_dtype))
+                p = nn.Parameter(
+                    torch.empty(*shape, device=self._init_device, dtype=self._init_dtype)
+                )
                 self.register_parameter(name, p)
             else:
                 b = torch.zeros(*shape, device=self._init_device, dtype=self._init_dtype)
@@ -230,6 +243,7 @@ class SingleStateCellBase(RecurrentCellBase):
     TorchScript-friendly single-state interface:
       forward(inp, h) -> h_new
     """
+
     def uses_double_state(self) -> bool:
         return False
 
@@ -242,6 +256,7 @@ class DoubleStateCellBase(RecurrentCellBase):
     TorchScript-friendly double-state interface:
       forward(inp, (h, c)) -> (h_new, c_new)
     """
+
     def uses_double_state(self) -> bool:
         return True
 
@@ -249,6 +264,7 @@ class DoubleStateCellBase(RecurrentCellBase):
         self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
     ) -> Tuple[Tensor, Tensor]:
         raise NotImplementedError
+
 
 # Recurrent layers
 class RecurrentLayerBase(nn.Module):
@@ -310,7 +326,11 @@ class SingleStateRecurrentLayerBase(RecurrentLayerBase):
 
         if state is None:
             state = torch.zeros(
-                self.num_layers, batch_size, self.hidden_size, dtype=inp.dtype, device=inp.device
+                self.num_layers,
+                batch_size,
+                self.hidden_size,
+                dtype=inp.dtype,
+                device=inp.device,
             )
 
         outputs = torch.jit.annotate(List[Tensor], [])
@@ -347,7 +367,11 @@ class DoubleStateRecurrentLayerBase(RecurrentLayerBase):
 
         if state is None:
             h = torch.zeros(
-                self.num_layers, batch_size, self.hidden_size, dtype=inp.dtype, device=inp.device
+                self.num_layers,
+                batch_size,
+                self.hidden_size,
+                dtype=inp.dtype,
+                device=inp.device,
             )
             c = torch.zeros_like(h)
             state = (h, c)

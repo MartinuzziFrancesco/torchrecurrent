@@ -5,7 +5,8 @@ import torch
 from torch import Tensor
 
 skip_windows = pytest.mark.skipif(
-    sys.platform == "win32", reason="torch.compile requires Triton, which is not supported on Windows"
+    sys.platform == "win32",
+    reason="torch.compile requires Triton, which is not supported on Windows",
 )
 from torchrecurrent import (
     AntisymmetricRNNCell,
@@ -13,6 +14,7 @@ from torchrecurrent import (
     NBRCell,
     BRCell,
     CFNCell,
+    DSGUCell,
     coRNNCell,
     FastRNNCell,
     FastGRNNCell,
@@ -32,6 +34,7 @@ from torchrecurrent import (
     PeepholeLSTMCell,
     RANCell,
     SCRNCell,
+    SGUCell,
     SGRNCell,
     STARCell,
     UGRNNCell,
@@ -46,6 +49,7 @@ CELL_CASES = [
     (NBRCell, 3, 5, False),
     (BRCell, 3, 5, False),
     (CFNCell, 3, 5, False),
+    (DSGUCell, 3, 5, False),
     (coRNNCell, 3, 5, True),
     (FastRNNCell, 3, 5, False),
     (FastGRNNCell, 3, 5, False),
@@ -65,6 +69,7 @@ CELL_CASES = [
     (OriginalLSTMCell, 3, 5, True),
     (RANCell, 4, 9, True),
     (SCRNCell, 3, 5, True),
+    (SGUCell, 3, 5, False),
     (SGRNCell, 3, 5, False),
     (STARCell, 3, 5, False),
     (UGRNNCell, 3, 5, False),
