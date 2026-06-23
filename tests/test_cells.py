@@ -33,6 +33,7 @@ from torchrecurrent import (
     OriginalLSTMCell,
     PeepholeLSTMCell,
     RANCell,
+    ResLSTMCell,
     SCRNCell,
     SGUCell,
     SGRNCell,
@@ -68,6 +69,7 @@ CELL_CASES = [
     (PeepholeLSTMCell, 5, 10, True),
     (OriginalLSTMCell, 3, 5, True),
     (RANCell, 4, 9, True),
+    (ResLSTMCell, 4, 9, True),
     (SCRNCell, 3, 5, True),
     (SGUCell, 3, 5, False),
     (SGRNCell, 3, 5, False),
@@ -118,6 +120,16 @@ def test_cell_output_and_state_shapes(Cell, in_size, hid_size, double):
     else:
         h3 = cell(x2, h2)
         assert h3.shape == (B, hid_size)
+
+
+def test_reslstm_cell_parameter_shapes():
+    cell = ResLSTMCell(4, 9)
+
+    assert cell.weight_ih.shape == (36, 4)
+    assert cell.weight_hh.shape == (36, 9)
+    assert cell.weight_proj.shape == (9, 9)
+    assert cell.weight_res.shape == (9, 4)
+    assert cell.weight_ph.shape == (27,)
 
 
 @pytest.mark.parametrize("Cell, in_size, hid_size, _", CELL_CASES)
