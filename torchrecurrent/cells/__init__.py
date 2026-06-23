@@ -24,6 +24,7 @@ from .nas_cell import NAS, NASCell
 from .originallstm_cell import OriginalLSTM, OriginalLSTMCell
 from .peepholelstm_cell import PeepholeLSTM, PeepholeLSTMCell
 from .ran_cell import RAN, RANCell
+from .reslstm_cell import ResLSTM, ResLSTMCell
 from .scrn_cell import SCRN, SCRNCell
 from .sgu_cell import DSGU, DSGUCell, SGU, SGUCell
 from .sgrn_cell import SGRN, SGRNCell
@@ -86,6 +87,8 @@ __all__ = [
     "PeepholeLSTMCell",
     "RAN",
     "RANCell",
+    "ResLSTM",
+    "ResLSTMCell",
     "SCRN",
     "SCRNCell",
     "DSGU",

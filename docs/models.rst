@@ -95,6 +95,9 @@ references and official implementations where available.
    * - :doc:`RAN <generated/torchrecurrent.RAN>`
      - `arXiv 2017 <https://arxiv.org/abs/1705.07393>`__
      - `kentonl/ran <https://github.com/kentonl/ran>`__
+   * - :doc:`ResLSTM <generated/torchrecurrent.ResLSTM>`
+     - `arXiv 2017 <https://arxiv.org/abs/1701.03360>`__
+     - –
    * - :doc:`SCRN <generated/torchrecurrent.SCRN>`
      - `ICLR 2015 <https://arxiv.org/abs/1412.7753>`__
      - `facebookarchive/SCRNNs <https://github.com/facebookarchive/SCRNNs>`__
