@@ -1,0 +1,88 @@
+﻿torchrecurrent.ResLSTM
+======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: ResLSTM
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ResLSTM.__init__
+      ~ResLSTM.add_module
+      ~ResLSTM.apply
+      ~ResLSTM.bfloat16
+      ~ResLSTM.buffers
+      ~ResLSTM.children
+      ~ResLSTM.compile
+      ~ResLSTM.cpu
+      ~ResLSTM.cuda
+      ~ResLSTM.double
+      ~ResLSTM.eval
+      ~ResLSTM.extra_repr
+      ~ResLSTM.float
+      ~ResLSTM.forward
+      ~ResLSTM.get_buffer
+      ~ResLSTM.get_extra_state
+      ~ResLSTM.get_parameter
+      ~ResLSTM.get_submodule
+      ~ResLSTM.half
+      ~ResLSTM.initialize_cells
+      ~ResLSTM.ipu
+      ~ResLSTM.load_state_dict
+      ~ResLSTM.modules
+      ~ResLSTM.mtia
+      ~ResLSTM.named_buffers
+      ~ResLSTM.named_children
+      ~ResLSTM.named_modules
+      ~ResLSTM.named_parameters
+      ~ResLSTM.parameters
+      ~ResLSTM.register_backward_hook
+      ~ResLSTM.register_buffer
+      ~ResLSTM.register_forward_hook
+      ~ResLSTM.register_forward_pre_hook
+      ~ResLSTM.register_full_backward_hook
+      ~ResLSTM.register_full_backward_pre_hook
+      ~ResLSTM.register_load_state_dict_post_hook
+      ~ResLSTM.register_load_state_dict_pre_hook
+      ~ResLSTM.register_module
+      ~ResLSTM.register_parameter
+      ~ResLSTM.register_state_dict_post_hook
+      ~ResLSTM.register_state_dict_pre_hook
+      ~ResLSTM.requires_grad_
+      ~ResLSTM.set_extra_state
+      ~ResLSTM.set_submodule
+      ~ResLSTM.share_memory
+      ~ResLSTM.state_dict
+      ~ResLSTM.to
+      ~ResLSTM.to_empty
+      ~ResLSTM.train
+      ~ResLSTM.type
+      ~ResLSTM.xpu
+      ~ResLSTM.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ResLSTM.T_destination
+      ~ResLSTM.call_super_init
+      ~ResLSTM.dump_patches
+      ~ResLSTM.input_size
+      ~ResLSTM.hidden_size
+      ~ResLSTM.num_layers
+      ~ResLSTM.batch_first
+      ~ResLSTM.dropout
+      ~ResLSTM.cells
+      ~ResLSTM.training
+   
+   

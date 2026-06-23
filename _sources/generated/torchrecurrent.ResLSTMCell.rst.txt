@@ -1,0 +1,94 @@
+﻿torchrecurrent.ResLSTMCell
+==========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: ResLSTMCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~ResLSTMCell.__init__
+      ~ResLSTMCell.add_module
+      ~ResLSTMCell.apply
+      ~ResLSTMCell.bfloat16
+      ~ResLSTMCell.buffers
+      ~ResLSTMCell.children
+      ~ResLSTMCell.compile
+      ~ResLSTMCell.cpu
+      ~ResLSTMCell.cuda
+      ~ResLSTMCell.double
+      ~ResLSTMCell.eval
+      ~ResLSTMCell.extra_repr
+      ~ResLSTMCell.float
+      ~ResLSTMCell.forward
+      ~ResLSTMCell.get_buffer
+      ~ResLSTMCell.get_extra_state
+      ~ResLSTMCell.get_parameter
+      ~ResLSTMCell.get_submodule
+      ~ResLSTMCell.half
+      ~ResLSTMCell.ipu
+      ~ResLSTMCell.load_state_dict
+      ~ResLSTMCell.modules
+      ~ResLSTMCell.mtia
+      ~ResLSTMCell.named_buffers
+      ~ResLSTMCell.named_children
+      ~ResLSTMCell.named_modules
+      ~ResLSTMCell.named_parameters
+      ~ResLSTMCell.parameters
+      ~ResLSTMCell.register_backward_hook
+      ~ResLSTMCell.register_buffer
+      ~ResLSTMCell.register_forward_hook
+      ~ResLSTMCell.register_forward_pre_hook
+      ~ResLSTMCell.register_full_backward_hook
+      ~ResLSTMCell.register_full_backward_pre_hook
+      ~ResLSTMCell.register_load_state_dict_post_hook
+      ~ResLSTMCell.register_load_state_dict_pre_hook
+      ~ResLSTMCell.register_module
+      ~ResLSTMCell.register_parameter
+      ~ResLSTMCell.register_state_dict_post_hook
+      ~ResLSTMCell.register_state_dict_pre_hook
+      ~ResLSTMCell.requires_grad_
+      ~ResLSTMCell.reset_parameters
+      ~ResLSTMCell.set_extra_state
+      ~ResLSTMCell.set_submodule
+      ~ResLSTMCell.share_memory
+      ~ResLSTMCell.state_dict
+      ~ResLSTMCell.to
+      ~ResLSTMCell.to_empty
+      ~ResLSTMCell.train
+      ~ResLSTMCell.type
+      ~ResLSTMCell.uses_double_state
+      ~ResLSTMCell.xpu
+      ~ResLSTMCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~ResLSTMCell.T_destination
+      ~ResLSTMCell.call_super_init
+      ~ResLSTMCell.dump_patches
+      ~ResLSTMCell.weight_ih
+      ~ResLSTMCell.weight_hh
+      ~ResLSTMCell.weight_proj
+      ~ResLSTMCell.weight_res
+      ~ResLSTMCell.weight_ph
+      ~ResLSTMCell.bias_ih
+      ~ResLSTMCell.bias_hh
+      ~ResLSTMCell.input_size
+      ~ResLSTMCell.hidden_size
+      ~ResLSTMCell.bias
+      ~ResLSTMCell.recurrent_bias
+      ~ResLSTMCell.training
+   
+   

@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>torchrecurrent.MiRU2 &#8212; torchrecurrent</title>
+    <title>torchrecurrent.ResLSTM &#8212; torchrecurrent</title>
   
   
   
@@ -42,13 +42,13 @@
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.MiRU2';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.ResLSTM';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchrecurrent.MultiplicativeLSTM" href="torchrecurrent.MultiplicativeLSTM.html" />
-    <link rel="prev" title="torchrecurrent.MiRU1" href="torchrecurrent.MiRU1.html" />
+    <link rel="next" title="torchrecurrent.SCRN" href="torchrecurrent.SCRN.html" />
+    <link rel="prev" title="torchrecurrent.RAN" href="torchrecurrent.RAN.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -386,7 +386,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRU.html">torchrecurrent.LiGRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGU.html">torchrecurrent.MGU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1.html">torchrecurrent.MiRU1</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.MiRU2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2.html">torchrecurrent.MiRU2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTM.html">torchrecurrent.MultiplicativeLSTM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT1.html">torchrecurrent.MUT1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2.html">torchrecurrent.MUT2</a></li>
@@ -395,7 +395,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.OriginalLSTM.html">torchrecurrent.OriginalLSTM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.PeepholeLSTM.html">torchrecurrent.PeepholeLSTM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.RAN.html">torchrecurrent.RAN</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ResLSTM.html">torchrecurrent.ResLSTM</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.ResLSTM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SCRN.html">torchrecurrent.SCRN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGU.html">torchrecurrent.SGU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGRN.html">torchrecurrent.SGRN</a></li>
@@ -456,7 +456,7 @@
     
     <li class="breadcrumb-item"><a href="../api/layers.html" class="nav-link">Recurrent Layers Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.MiRU2</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.ResLSTM</span></li>
   </ul>
 </nav>
 </div>
@@ -473,90 +473,204 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="torchrecurrent-miru2">
-<h1>torchrecurrent.MiRU2<a class="headerlink" href="#torchrecurrent-miru2" title="Link to this heading">#</a></h1>
+  <section id="torchrecurrent-reslstm">
+<h1>torchrecurrent.ResLSTM<a class="headerlink" href="#torchrecurrent-reslstm" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchrecurrent.MiRU2">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">MiRU2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/miru_cell.html#MiRU2"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MiRU2" title="Link to this definition">#</a></dt>
-<dd><p>Multi-layer Minion Gated Unit 2 (MiRU2) neural network.</p>
-<p>[<a class="reference external" href="https://doi.org/10.1016/j.neucom.2026.132847">DOI</a>]</p>
-<p>Each layer consists of a <a class="reference internal" href="torchrecurrent.MiRU2Cell.html#torchrecurrent.MiRU2Cell" title="torchrecurrent.MiRU2Cell"><code class="xref py py-class docutils literal notranslate"><span class="pre">MiRU2Cell</span></code></a>, which updates the hidden
-state according to:</p>
+<dt class="sig sig-object py" id="torchrecurrent.ResLSTM">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">ResLSTM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/reslstm_cell.html#ResLSTM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.ResLSTM" title="Link to this definition">#</a></dt>
+<dd><p>Multi-layer residual long short-term memory (LSTM) network.</p>
+<p>[<a class="reference external" href="https://arxiv.org/abs/1701.03360">arXiv</a>]</p>
+<p>Each layer consists of a <a class="reference internal" href="torchrecurrent.ResLSTMCell.html#torchrecurrent.ResLSTMCell" title="torchrecurrent.ResLSTMCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResLSTMCell</span></code></a>, which adds a spatial
+shortcut path from the layer input to the projected cell output and
+reuses the output gate to control that path:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\tilde{h}(t) &amp;= \tanh(W_h x(t) + b_h
-              + U_h (\theta \circ h(t-1))), \\
-h(t) &amp;= \lambda \circ h(t-1) + (1 - \lambda) \circ \tilde{h}(t)
+i_t &amp;= \sigma(W_{ih}^i x_t + b_{ih}^i + W_{hh}^i h_{t-1}
+    + b_{hh}^i + p^i \odot c_{t-1}), \\
+f_t &amp;= \sigma(W_{ih}^f x_t + b_{ih}^f + W_{hh}^f h_{t-1}
+    + b_{hh}^f + p^f \odot c_{t-1}), \\
+g_t &amp;= \phi(W_{ih}^g x_t + b_{ih}^g + W_{hh}^g h_{t-1} + b_{hh}^g), \\
+c_t &amp;= f_t \odot c_{t-1} + i_t \odot g_t, \\
+o_t &amp;= \sigma(W_{ih}^o x_t + b_{ih}^o + W_{hh}^o h_{t-1}
+    + b_{hh}^o + p^o \odot c_t), \\
+h_t &amp;= o_t \odot \bigl(W_p\,\phi(c_t) + W_r x_t\bigr),
 \end{aligned}\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(\lambda\)</span> and <span class="math notranslate nohighlight">\(\theta\)</span> are hyperparameters, and
-<span class="math notranslate nohighlight">\(\circ\)</span> denotes elementwise multiplication.</p>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is the sigmoid function, <span class="math notranslate nohighlight">\(\phi\)</span> is a pointwise
+nonlinearity (e.g., tanh), and <span class="math notranslate nohighlight">\(\odot\)</span> denotes elementwise
+multiplication. The projection <span class="math notranslate nohighlight">\(W_p\)</span> maps the cell output back to the
+hidden size, while the residual projection <span class="math notranslate nohighlight">\(W_r\)</span> maps the layer input
+<span class="math notranslate nohighlight">\(x_t\)</span> to the hidden size so that the shortcut term matches dimensions.</p>
+<p>In a multilayer ResLSTM, the input <span class="math notranslate nohighlight">\(x^{(l)}_t\)</span> of the <span class="math notranslate nohighlight">\(l\)</span>-th
+layer (<span class="math notranslate nohighlight">\(l \ge 2\)</span>) is the hidden state <span class="math notranslate nohighlight">\(h^{(l-1)}_t\)</span> of the
+previous layer multiplied by dropout <span class="math notranslate nohighlight">\(\delta^{(l-1)}_t\)</span>, where each
+<span class="math notranslate nohighlight">\(\delta^{(l-1)}_t\)</span> is a Bernoulli random variable which is 0 with
+probability <code class="xref py py-attr docutils literal notranslate"><span class="pre">dropout</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_size</strong> – The number of expected features in the input <cite>x</cite>.</p></li>
-<li><p><strong>hidden_size</strong> – The number of features in the hidden state <cite>h</cite>.</p></li>
-<li><p><strong>num_layers</strong> – Number of recurrent layers. Default: 1</p></li>
-<li><p><strong>dropout</strong> – Dropout probability on outputs of each layer except the last.
-Default: 0</p></li>
-<li><p><strong>batch_first</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, input/output tensors are <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">seq,</span>
-<span class="pre">feature)</span></code>. Default: False</p></li>
-<li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use input-side biases.
+<li><p><strong>hidden_size</strong> – The number of features in the hidden and cell states.</p></li>
+<li><p><strong>num_layers</strong> – Number of recurrent layers. E.g., setting <code class="docutils literal notranslate"><span class="pre">num_layers=2</span></code>
+would mean stacking two ResLSTM layers, with the second receiving
+the outputs of the first. Default: 1</p></li>
+<li><p><strong>dropout</strong> – If non-zero, introduces a <cite>Dropout</cite> layer on the outputs of
+each layer except the last layer, with dropout probability equal
+to <code class="xref py py-attr docutils literal notranslate"><span class="pre">dropout</span></code>. Default: 0</p></li>
+<li><p><strong>batch_first</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the input and output tensors are provided
+as <cite>(batch, seq, feature)</cite> instead of <cite>(seq, batch, feature)</cite>.
+Default: False</p></li>
+<li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the layer does not use input-side biases.
 Default: True</p></li>
-<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use recurrent biases.
-Default: True</p></li>
-<li><p><strong>update_coefficient</strong> – Mixing hyperparameter. Default: 0.5</p></li>
-<li><p><strong>reset_coefficient</strong> – Hidden-state scaling hyperparameter. Default: 0.5</p></li>
-<li><p><strong>nonlinearity</strong> – Nonlinearity for the candidate hidden state.
-Default: <code class="docutils literal notranslate"><span class="pre">&quot;tanh&quot;</span></code></p></li>
-<li><p><strong>kernel_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">W_h</span></code>.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
-<li><p><strong>recurrent_kernel_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">U_h</span></code>.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
-<li><p><strong>bias_init</strong> – Initializer for input-side biases.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
-<li><p><strong>recurrent_bias_init</strong> – Initializer for recurrent biases.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
+<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the layer does not use recurrent
+biases. Default: True</p></li>
+<li><p><strong>nonlinearity</strong> – Nonlinearity <span class="math notranslate nohighlight">\(\phi\)</span> for the candidate and cell
+output. Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.tanh()</span></code></p></li>
+<li><p><strong>gate_nonlinearity</strong> – Activation for the gates. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.sigmoid()</span></code></p></li>
+<li><p><strong>kernel_init</strong> – Initializer for <cite>W_{ih}^*</cite>. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
+<li><p><strong>recurrent_kernel_init</strong> – Initializer for <cite>W_{hh}^*</cite>. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
+<li><p><strong>peephole_kernel_init</strong> – Initializer for peephole weights <cite>p</cite>. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.normal_()</span></code></p></li>
+<li><p><strong>proj_init</strong> – Initializer for the projection <cite>W_p</cite>. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
+<li><p><strong>residual_init</strong> – Initializer for the residual projection <cite>W_r</cite>. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
+<li><p><strong>bias_init</strong> – Initializer for input-side biases. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
+<li><p><strong>recurrent_bias_init</strong> – Initializer for recurrent biases. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
 <li><p><strong>device</strong> – The desired device of parameters.</p></li>
 <li><p><strong>dtype</strong> – The desired floating point type of parameters.</p></li>
 </ul>
 </dd>
 </dl>
-<dl class="simple">
-<dt>Inputs: input, h_0</dt><dd><ul class="simple">
+<dl>
+<dt>Inputs: input, (h_0, c_0)</dt><dd><ul class="simple">
 <li><p><strong>input</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{in})\)</span> for unbatched input,
 <span class="math notranslate nohighlight">\((L, N, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
-<span class="math notranslate nohighlight">\((N, L, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code>.</p></li>
-<li><p><strong>h_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num\_layers}, H_{out})\)</span> for
-unbatched input or <span class="math notranslate nohighlight">\((\text{num\_layers}, N, H_{out})\)</span>.
-Defaults to zeros if not provided.</p></li>
+<span class="math notranslate nohighlight">\((N, L, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code> containing the
+features of the input sequence. The input can also be a packed
+variable length sequence. See
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.pack_padded_sequence()</span></code> or
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.pack_sequence()</span></code> for details.</p></li>
+<li><p><strong>h_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for
+unbatched input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing
+the initial hidden state. Defaults to zeros if not provided.</p></li>
+<li><p><strong>c_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for
+unbatched input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing
+the initial cell state. Defaults to zeros if not provided.</p></li>
 </ul>
+<p>where:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{aligned}
+    N ={} &amp; \text{batch size} \\
+    L ={} &amp; \text{sequence length} \\
+    H_{in} ={} &amp; \text{input\_size} \\
+    H_{out} ={} &amp; \text{hidden\_size}
+\end{aligned}\end{split}\]</div>
 </dd>
-<dt>Outputs: output, h_n</dt><dd><ul class="simple">
-<li><p><strong>output</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{out})\)</span> for unbatched
-input, <span class="math notranslate nohighlight">\((L, N, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
-<span class="math notranslate nohighlight">\((N, L, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code>.</p></li>
-<li><p><strong>h_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num\_layers}, H_{out})\)</span> for
-unbatched input or <span class="math notranslate nohighlight">\((\text{num\_layers}, N, H_{out})\)</span>.</p></li>
+<dt>Outputs: output, (h_n, c_n)</dt><dd><ul class="simple">
+<li><p><strong>output</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{out})\)</span> for unbatched input,
+<span class="math notranslate nohighlight">\((L, N, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
+<span class="math notranslate nohighlight">\((N, L, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code> containing the
+output features <cite>(h_t)</cite> from the last layer of the ResLSTM, for each
+<cite>t</cite>. If a <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.PackedSequence</span></code> has been given as
+the input, the output will also be a packed sequence.</p></li>
+<li><p><strong>h_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for
+unbatched input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing
+the final hidden state for each element in the sequence.</p></li>
+<li><p><strong>c_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for
+unbatched input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing
+the final cell state for each element in the sequence.</p></li>
 </ul>
 </dd>
 </dl>
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cells.{k}.weight_ih</span></span></dt>
+<dd><p>the learnable input-hidden weights of the
+<span class="math notranslate nohighlight">\(k\)</span>-th layer, of shape <cite>(4*hidden_size, input_size)</cite> for
+<cite>k = 0</cite>. Otherwise, the shape is <cite>(4*hidden_size, hidden_size)</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cells.{k}.weight_hh</span></span></dt>
+<dd><p>the learnable hidden-hidden weights of the
+<span class="math notranslate nohighlight">\(k\)</span>-th layer, of shape <cite>(4*hidden_size, hidden_size)</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cells.{k}.weight_proj</span></span></dt>
+<dd><p>the learnable projection weights <cite>W_p</cite> of the
+<span class="math notranslate nohighlight">\(k\)</span>-th layer, of shape <cite>(hidden_size, hidden_size)</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cells.{k}.weight_res</span></span></dt>
+<dd><p>the learnable residual projection weights <cite>W_r</cite>
+of the <span class="math notranslate nohighlight">\(k\)</span>-th layer, of shape <cite>(hidden_size, input_size)</cite> for
+<cite>k = 0</cite>. Otherwise, the shape is <cite>(hidden_size, hidden_size)</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cells.{k}.weight_ph</span></span></dt>
+<dd><p>the learnable peephole weights of the
+<span class="math notranslate nohighlight">\(k\)</span>-th layer, of shape <cite>(3*hidden_size,)</cite>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cells.{k}.bias_ih</span></span></dt>
+<dd><p>the learnable input-hidden biases of the
+<span class="math notranslate nohighlight">\(k\)</span>-th layer, of shape <cite>(4*hidden_size)</cite>. Only present when
+<code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py">
+<span class="sig-name descname"><span class="pre">cells.{k}.bias_hh</span></span></dt>
+<dd><p>the learnable hidden-hidden biases of the
+<span class="math notranslate nohighlight">\(k\)</span>-th layer, of shape <cite>(4*hidden_size)</cite>. Only present when
+<code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>.</p>
+</dd></dl>
+
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>All the weights and biases are initialized according to the provided
+initializers (<cite>kernel_init</cite>, <cite>recurrent_kernel_init</cite>, etc.).</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">batch_first</span></code> argument is ignored for unbatched inputs.</p>
+</div>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<p><a class="reference internal" href="torchrecurrent.ResLSTMCell.html#torchrecurrent.ResLSTMCell" title="torchrecurrent.ResLSTMCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">ResLSTMCell</span></code></a></p>
+</div>
 <p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rnn</span> <span class="o">=</span> <span class="n">MiRU2</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rnn</span> <span class="o">=</span> <span class="n">ResLSTM</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>   <span class="c1"># (seq_len, batch, input_size)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">,</span> <span class="n">hn</span> <span class="o">=</span> <span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">h0</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="n">hn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span> <span class="o">=</span> <span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="p">(</span><span class="n">h0</span><span class="p">,</span> <span class="n">c0</span><span class="p">))</span>
 </pre></div>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrecurrent.MiRU2.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/miru_cell.html#MiRU2.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MiRU2.__init__" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="torchrecurrent.ResLSTM.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/reslstm_cell.html#ResLSTM.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.ResLSTM.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.MiRU2.__init__" title="torchrecurrent.MiRU2.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.ResLSTM.__init__" title="torchrecurrent.ResLSTM.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, ...])</p></td>
 <td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_module</span></code>(name, module)</p></td>
@@ -766,20 +880,20 @@ unbatched input or <span class="math notranslate nohighlight">\((\text{num\_laye
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="torchrecurrent.MiRU1.html"
+       href="torchrecurrent.RAN.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">torchrecurrent.MiRU1</p>
+        <p class="prev-next-title">torchrecurrent.RAN</p>
       </div>
     </a>
     <a class="right-next"
-       href="torchrecurrent.MultiplicativeLSTM.html"
+       href="torchrecurrent.SCRN.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">torchrecurrent.MultiplicativeLSTM</p>
+        <p class="prev-next-title">torchrecurrent.SCRN</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -802,8 +916,8 @@ unbatched input or <span class="math notranslate nohighlight">\((\text{num\_laye
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.MiRU2"><code class="docutils literal notranslate"><span class="pre">MiRU2</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.MiRU2.__init__"><code class="docutils literal notranslate"><span class="pre">MiRU2.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.ResLSTM"><code class="docutils literal notranslate"><span class="pre">ResLSTM</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.ResLSTM.__init__"><code class="docutils literal notranslate"><span class="pre">ResLSTM.__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -813,7 +927,7 @@ unbatched input or <span class="math notranslate nohighlight">\((\text{num\_laye
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinuzziFrancesco/torchrecurrent/edit/main/docs/generated/torchrecurrent.MiRU2.rst">
+    <a href="https://github.com/MartinuzziFrancesco/torchrecurrent/edit/main/docs/generated/torchrecurrent.ResLSTM.rst">
       <i class="fa-solid fa-pencil"></i>
       
       
