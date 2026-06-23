@@ -1,0 +1,88 @@
+﻿torchrecurrent.SGU
+==================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: SGU
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SGU.__init__
+      ~SGU.add_module
+      ~SGU.apply
+      ~SGU.bfloat16
+      ~SGU.buffers
+      ~SGU.children
+      ~SGU.compile
+      ~SGU.cpu
+      ~SGU.cuda
+      ~SGU.double
+      ~SGU.eval
+      ~SGU.extra_repr
+      ~SGU.float
+      ~SGU.forward
+      ~SGU.get_buffer
+      ~SGU.get_extra_state
+      ~SGU.get_parameter
+      ~SGU.get_submodule
+      ~SGU.half
+      ~SGU.initialize_cells
+      ~SGU.ipu
+      ~SGU.load_state_dict
+      ~SGU.modules
+      ~SGU.mtia
+      ~SGU.named_buffers
+      ~SGU.named_children
+      ~SGU.named_modules
+      ~SGU.named_parameters
+      ~SGU.parameters
+      ~SGU.register_backward_hook
+      ~SGU.register_buffer
+      ~SGU.register_forward_hook
+      ~SGU.register_forward_pre_hook
+      ~SGU.register_full_backward_hook
+      ~SGU.register_full_backward_pre_hook
+      ~SGU.register_load_state_dict_post_hook
+      ~SGU.register_load_state_dict_pre_hook
+      ~SGU.register_module
+      ~SGU.register_parameter
+      ~SGU.register_state_dict_post_hook
+      ~SGU.register_state_dict_pre_hook
+      ~SGU.requires_grad_
+      ~SGU.set_extra_state
+      ~SGU.set_submodule
+      ~SGU.share_memory
+      ~SGU.state_dict
+      ~SGU.to
+      ~SGU.to_empty
+      ~SGU.train
+      ~SGU.type
+      ~SGU.xpu
+      ~SGU.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SGU.T_destination
+      ~SGU.call_super_init
+      ~SGU.dump_patches
+      ~SGU.input_size
+      ~SGU.hidden_size
+      ~SGU.num_layers
+      ~SGU.batch_first
+      ~SGU.dropout
+      ~SGU.cells
+      ~SGU.training
+   
+   

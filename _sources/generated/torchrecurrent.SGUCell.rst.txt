@@ -1,0 +1,91 @@
+﻿torchrecurrent.SGUCell
+======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: SGUCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SGUCell.__init__
+      ~SGUCell.add_module
+      ~SGUCell.apply
+      ~SGUCell.bfloat16
+      ~SGUCell.buffers
+      ~SGUCell.children
+      ~SGUCell.compile
+      ~SGUCell.cpu
+      ~SGUCell.cuda
+      ~SGUCell.double
+      ~SGUCell.eval
+      ~SGUCell.extra_repr
+      ~SGUCell.float
+      ~SGUCell.forward
+      ~SGUCell.get_buffer
+      ~SGUCell.get_extra_state
+      ~SGUCell.get_parameter
+      ~SGUCell.get_submodule
+      ~SGUCell.half
+      ~SGUCell.ipu
+      ~SGUCell.load_state_dict
+      ~SGUCell.modules
+      ~SGUCell.mtia
+      ~SGUCell.named_buffers
+      ~SGUCell.named_children
+      ~SGUCell.named_modules
+      ~SGUCell.named_parameters
+      ~SGUCell.parameters
+      ~SGUCell.register_backward_hook
+      ~SGUCell.register_buffer
+      ~SGUCell.register_forward_hook
+      ~SGUCell.register_forward_pre_hook
+      ~SGUCell.register_full_backward_hook
+      ~SGUCell.register_full_backward_pre_hook
+      ~SGUCell.register_load_state_dict_post_hook
+      ~SGUCell.register_load_state_dict_pre_hook
+      ~SGUCell.register_module
+      ~SGUCell.register_parameter
+      ~SGUCell.register_state_dict_post_hook
+      ~SGUCell.register_state_dict_pre_hook
+      ~SGUCell.requires_grad_
+      ~SGUCell.reset_parameters
+      ~SGUCell.set_extra_state
+      ~SGUCell.set_submodule
+      ~SGUCell.share_memory
+      ~SGUCell.state_dict
+      ~SGUCell.to
+      ~SGUCell.to_empty
+      ~SGUCell.train
+      ~SGUCell.type
+      ~SGUCell.uses_double_state
+      ~SGUCell.xpu
+      ~SGUCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~SGUCell.T_destination
+      ~SGUCell.call_super_init
+      ~SGUCell.dump_patches
+      ~SGUCell.weight_ih
+      ~SGUCell.weight_hh
+      ~SGUCell.bias_ih
+      ~SGUCell.bias_hh
+      ~SGUCell.input_size
+      ~SGUCell.hidden_size
+      ~SGUCell.bias
+      ~SGUCell.recurrent_bias
+      ~SGUCell.training
+   
+   

@@ -12,6 +12,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.NBRCell
    torchrecurrent.BRCell
    torchrecurrent.CFNCell
+   torchrecurrent.DSGUCell
    torchrecurrent.coRNNCell
    torchrecurrent.FastRNNCell
    torchrecurrent.FastGRNNCell
@@ -33,6 +34,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.PeepholeLSTMCell
    torchrecurrent.RANCell
    torchrecurrent.SCRNCell
+   torchrecurrent.SGUCell
    torchrecurrent.SGRNCell
    torchrecurrent.STARCell
    torchrecurrent.UGRNNCell

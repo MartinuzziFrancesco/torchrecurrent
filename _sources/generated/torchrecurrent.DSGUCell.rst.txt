@@ -1,0 +1,92 @@
+﻿torchrecurrent.DSGUCell
+=======================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: DSGUCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~DSGUCell.__init__
+      ~DSGUCell.add_module
+      ~DSGUCell.apply
+      ~DSGUCell.bfloat16
+      ~DSGUCell.buffers
+      ~DSGUCell.children
+      ~DSGUCell.compile
+      ~DSGUCell.cpu
+      ~DSGUCell.cuda
+      ~DSGUCell.double
+      ~DSGUCell.eval
+      ~DSGUCell.extra_repr
+      ~DSGUCell.float
+      ~DSGUCell.forward
+      ~DSGUCell.get_buffer
+      ~DSGUCell.get_extra_state
+      ~DSGUCell.get_parameter
+      ~DSGUCell.get_submodule
+      ~DSGUCell.half
+      ~DSGUCell.ipu
+      ~DSGUCell.load_state_dict
+      ~DSGUCell.modules
+      ~DSGUCell.mtia
+      ~DSGUCell.named_buffers
+      ~DSGUCell.named_children
+      ~DSGUCell.named_modules
+      ~DSGUCell.named_parameters
+      ~DSGUCell.parameters
+      ~DSGUCell.register_backward_hook
+      ~DSGUCell.register_buffer
+      ~DSGUCell.register_forward_hook
+      ~DSGUCell.register_forward_pre_hook
+      ~DSGUCell.register_full_backward_hook
+      ~DSGUCell.register_full_backward_pre_hook
+      ~DSGUCell.register_load_state_dict_post_hook
+      ~DSGUCell.register_load_state_dict_pre_hook
+      ~DSGUCell.register_module
+      ~DSGUCell.register_parameter
+      ~DSGUCell.register_state_dict_post_hook
+      ~DSGUCell.register_state_dict_pre_hook
+      ~DSGUCell.requires_grad_
+      ~DSGUCell.reset_parameters
+      ~DSGUCell.set_extra_state
+      ~DSGUCell.set_submodule
+      ~DSGUCell.share_memory
+      ~DSGUCell.state_dict
+      ~DSGUCell.to
+      ~DSGUCell.to_empty
+      ~DSGUCell.train
+      ~DSGUCell.type
+      ~DSGUCell.uses_double_state
+      ~DSGUCell.xpu
+      ~DSGUCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~DSGUCell.T_destination
+      ~DSGUCell.call_super_init
+      ~DSGUCell.dump_patches
+      ~DSGUCell.weight_ho
+      ~DSGUCell.weight_ih
+      ~DSGUCell.weight_hh
+      ~DSGUCell.bias_ih
+      ~DSGUCell.bias_hh
+      ~DSGUCell.input_size
+      ~DSGUCell.hidden_size
+      ~DSGUCell.bias
+      ~DSGUCell.recurrent_bias
+      ~DSGUCell.training
+   
+   
