@@ -29,6 +29,7 @@ from .scrn_cell import SCRN, SCRNCell
 from .sgu_cell import DSGU, DSGUCell, SGU, SGUCell
 from .sgrn_cell import SGRN, SGRNCell
 from .star_cell import STAR, STARCell
+from .taugru_cell import tauGRU, tauGRUCell
 from .ugrnn_cell import UGRNN, UGRNNCell
 from .unicornn_cell import UnICORNN, UnICORNNCell
 from .wmclstm_cell import WMCLSTM, WMCLSTMCell
@@ -99,6 +100,8 @@ __all__ = [
     "SGRNCell",
     "STAR",
     "STARCell",
+    "tauGRU",
+    "tauGRUCell",
     "UGRNN",
     "UGRNNCell",
     "UnICORNN",

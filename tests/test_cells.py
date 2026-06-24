@@ -38,6 +38,7 @@ from torchrecurrent import (
     SGUCell,
     SGRNCell,
     STARCell,
+    tauGRUCell,
     UGRNNCell,
     UnICORNNCell,
     WMCLSTMCell,
@@ -74,6 +75,7 @@ CELL_CASES = [
     (SGUCell, 3, 5, False),
     (SGRNCell, 3, 5, False),
     (STARCell, 3, 5, False),
+    (tauGRUCell, 3, 5, False),
     (UGRNNCell, 3, 5, False),
     (UnICORNNCell, 3, 5, True),
     (WMCLSTMCell, 3, 5, True),
@@ -130,6 +132,35 @@ def test_reslstm_cell_parameter_shapes():
     assert cell.weight_proj.shape == (9, 9)
     assert cell.weight_res.shape == (9, 4)
     assert cell.weight_ph.shape == (27,)
+
+
+def test_taugru_cell_parameter_shapes():
+    cell = tauGRUCell(4, 9)
+
+    assert cell.weight_ih.shape == (36, 4)
+    assert cell.weight_hh.shape == (36, 9)
+    assert cell.bias_ih.shape == (36,)
+    assert cell.bias_hh.shape == (36,)
+
+
+def test_taugru_cell_uses_delayed_state():
+    cell = tauGRUCell(1, 1)
+    with torch.no_grad():
+        cell.weight_ih.zero_()
+        cell.weight_hh.zero_()
+        cell.bias_ih.zero_()
+        cell.bias_hh.zero_()
+        cell.weight_hh[1, 0] = 1.0
+        cell.bias_hh[2] = 20.0
+        cell.bias_hh[3] = 20.0
+
+    x = torch.zeros(1, 1)
+    h = torch.zeros(1, 1)
+    delayed = torch.ones(1, 1)
+
+    out = cell(x, h, delayed)
+
+    assert torch.allclose(out, torch.tanh(delayed), atol=1e-4)
 
 
 @pytest.mark.parametrize("Cell, in_size, hid_size, _", CELL_CASES)
