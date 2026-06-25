@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>torchrecurrent.LEM &#8212; torchrecurrent</title>
+    <title>torchrecurrent.tauGRU &#8212; torchrecurrent</title>
   
   
   
@@ -42,13 +42,13 @@
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.LEM';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.tauGRU';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchrecurrent.LightRU" href="torchrecurrent.LightRU.html" />
-    <link rel="prev" title="torchrecurrent.JANET" href="torchrecurrent.JANET.html" />
+    <link rel="next" title="torchrecurrent.UGRNN" href="torchrecurrent.UGRNN.html" />
+    <link rel="prev" title="torchrecurrent.STAR" href="torchrecurrent.STAR.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -382,7 +382,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ATR.html">torchrecurrent.ATR</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IndRNN.html">torchrecurrent.IndRNN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.JANET.html">torchrecurrent.JANET</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.LEM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LEM.html">torchrecurrent.LEM</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRU.html">torchrecurrent.LightRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRU.html">torchrecurrent.LiGRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGU.html">torchrecurrent.MGU</a></li>
@@ -401,7 +401,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGU.html">torchrecurrent.SGU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGRN.html">torchrecurrent.SGRN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.STAR.html">torchrecurrent.STAR</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.tauGRU.html">torchrecurrent.tauGRU</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.tauGRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UGRNN.html">torchrecurrent.UGRNN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UnICORNN.html">torchrecurrent.UnICORNN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.WMCLSTM.html">torchrecurrent.WMCLSTM</a></li>
@@ -458,7 +458,7 @@
     
     <li class="breadcrumb-item"><a href="../api/layers.html" class="nav-link">Recurrent Layers Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.LEM</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.tauGRU</span></li>
   </ul>
 </nav>
 </div>
@@ -475,193 +475,118 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="torchrecurrent-lem">
-<h1>torchrecurrent.LEM<a class="headerlink" href="#torchrecurrent-lem" title="Link to this heading">#</a></h1>
+  <section id="torchrecurrent-taugru">
+<h1>torchrecurrent.tauGRU<a class="headerlink" href="#torchrecurrent-taugru" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchrecurrent.LEM">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">LEM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/lem_cell.html#LEM"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.LEM" title="Link to this definition">#</a></dt>
-<dd><p>Multi-layer long expressive memory recurrent neural network.</p>
-<p>[<a class="reference external" href="https://arxiv.org/abs/2110.04744">arXiv</a>]</p>
-<p>Each layer consists of a <a class="reference internal" href="torchrecurrent.LEMCell.html#torchrecurrent.LEMCell" title="torchrecurrent.LEMCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">LEMCell</span></code></a>, which updates the hidden and
-cell states according to:</p>
+<dt class="sig sig-object py" id="torchrecurrent.tauGRU">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">tauGRU</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/taugru_cell.html#tauGRU"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.tauGRU" title="Link to this definition">#</a></dt>
+<dd><p>Multi-layer tau-GRU neural network.</p>
+<p>[<a class="reference external" href="https://arxiv.org/abs/2212.00228">arXiv</a>]</p>
+<p>Each layer consists of a <a class="reference internal" href="torchrecurrent.tauGRUCell.html#torchrecurrent.tauGRUCell" title="torchrecurrent.tauGRUCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">tauGRUCell</span></code></a>, which updates the hidden state
+with a weighted time-delay feedback term:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{aligned}
-\Delta t_t &amp;= \Delta t \,\hat{\sigma}\bigl(
-    W_{ih}^{1} x_t + b_{ih}^{1}
-    + W_{hh}^{1} h_{t-1} + b_{hh}^{1}
-\bigr), \\
-\overline{\Delta t}_t &amp;= \Delta t \,\hat{\sigma}\bigl(
-    W_{ih}^{2} x_t + b_{ih}^{2}
-    + W_{hh}^{2} h_{t-1} + b_{hh}^{2}
-\bigr), \\
-c_t &amp;= (1 - \Delta t_t) \circ c_{t-1}
-    + \Delta t_t \circ \sigma\bigl(
-        W_{ih}^{c} x_t + b_{ih}^{c}
-        + W_{hh}^{c} h_{t-1} + b_{hh}^{c}
-    \bigr), \\
-h_t &amp;= (1 - \overline{\Delta t}_t) \circ h_{t-1}
-    + \overline{\Delta t}_t \circ \sigma\bigl(
-        W_{ih}^{h} x_t + b_{ih}^{h}
-        + W_{ch} c_t + b_{ch}
-    \bigr)
+u_n &amp;= \tanh(W_1 h_n + U_1 x_n), \\
+z_n &amp;= \tanh(W_2 h_{n-d} + U_2 x_n), \\
+g_n &amp;= \sigma(W_3 h_n + U_3 x_n), \\
+a_n &amp;= \sigma(W_4 h_n + U_4 x_n), \\
+h_{n+1} &amp;= (1 - g_n) \circ h_n + g_n \circ (u_n + a_n \circ z_n),
 \end{aligned}\end{split}\]</div>
-<p>where <span class="math notranslate nohighlight">\(h_t\)</span> is the hidden state at time <cite>t</cite>, <span class="math notranslate nohighlight">\(c_t\)</span> is the cell
-state at time <cite>t</cite>, <span class="math notranslate nohighlight">\(\hat{\sigma}\)</span> is the sigmoid function scaled to
-<span class="math notranslate nohighlight">\((0, \Delta t)\)</span>, and <span class="math notranslate nohighlight">\(\circ\)</span> denotes elementwise
-multiplication.</p>
-<p>In a multilayer LEM, the input <span class="math notranslate nohighlight">\(x^{(l)}_t\)</span> of the <span class="math notranslate nohighlight">\(l\)</span>-th layer
-(<span class="math notranslate nohighlight">\(l \ge 2\)</span>) is the hidden state <span class="math notranslate nohighlight">\(h^{(l-1)}_t\)</span> of the previous
-layer multiplied by dropout <span class="math notranslate nohighlight">\(\delta^{(l-1)}_t\)</span>, where each
-<span class="math notranslate nohighlight">\(\delta^{(l-1)}_t\)</span> is a Bernoulli random variable which is 0 with
-probability <code class="xref py py-attr docutils literal notranslate"><span class="pre">dropout</span></code>.</p>
+<p>where <span class="math notranslate nohighlight">\(d\)</span> is the integer delay in recurrent steps. Delayed states
+before the beginning of the sequence are initialized to zero.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>input_size</strong> – The number of expected features in the input <cite>x</cite>.</p></li>
-<li><p><strong>hidden_size</strong> – The number of features in the hidden/cell states <cite>h</cite> and <cite>c</cite>.</p></li>
-<li><p><strong>num_layers</strong> – Number of recurrent layers. E.g., setting <code class="docutils literal notranslate"><span class="pre">num_layers=2</span></code> would
-mean stacking two LEM layers, with the second receiving the outputs of
-the first. Default: 1</p></li>
-<li><p><strong>dropout</strong> – If non-zero, introduces a <cite>Dropout</cite> layer on the outputs of each
-layer except the last layer, with dropout probability equal to
-<code class="xref py py-attr docutils literal notranslate"><span class="pre">dropout</span></code>. Default: 0</p></li>
-<li><p><strong>batch_first</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, then the input and output tensors are provided as
-<cite>(batch, seq, feature)</cite> instead of <cite>(seq, batch, feature)</cite>. Default: False</p></li>
-<li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the layer does not use input-side bias <cite>b_ih</cite>.
+<li><p><strong>hidden_size</strong> – The number of features in the hidden state <cite>h</cite>.</p></li>
+<li><p><strong>num_layers</strong> – Number of recurrent layers. Default: 1</p></li>
+<li><p><strong>dropout</strong> – If non-zero, introduces a <cite>Dropout</cite> layer on the outputs of
+each layer except the last. Default: 0</p></li>
+<li><p><strong>batch_first</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, input and output tensors are provided as
+<cite>(batch, seq, feature)</cite> instead of <cite>(seq, batch, feature)</cite>.
+Default: False</p></li>
+<li><p><strong>delay</strong> – Integer delay <span class="math notranslate nohighlight">\(d\)</span> in recurrent steps. Default: 1</p></li>
+<li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use input-side biases.
 Default: True</p></li>
-<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the layer does not use recurrent bias
-<cite>b_hh</cite>. Default: True</p></li>
-<li><p><strong>cell_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the layer does not use cell bias <cite>b_ch</cite>.
+<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use recurrent biases.
 Default: True</p></li>
-<li><p><strong>kernel_init</strong> – Initializer for <cite>W_{ih}</cite>.</p></li>
-<li><p><strong>recurrent_kernel_init</strong> – Initializer for <cite>W_{hh}</cite>.</p></li>
-<li><p><strong>cell_kernel_init</strong> – Initializer for <cite>W_{ch}</cite>.</p></li>
-<li><p><strong>bias_init</strong> – Initializer for <cite>b_{ih}</cite>.</p></li>
-<li><p><strong>recurrent_bias_init</strong> – Initializer for <cite>b_{hh}</cite>.</p></li>
-<li><p><strong>cell_bias_init</strong> – Initializer for <cite>b_{ch}</cite>.</p></li>
-<li><p><strong>dt</strong> – Integration time step <span class="math notranslate nohighlight">\(\Delta t\)</span>. Default: 1.0</p></li>
+<li><p><strong>nonlinearity</strong> – Nonlinearity for <span class="math notranslate nohighlight">\(u_n\)</span> and <span class="math notranslate nohighlight">\(z_n\)</span>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.tanh()</span></code></p></li>
+<li><p><strong>gate_nonlinearity</strong> – Activation for <span class="math notranslate nohighlight">\(g_n\)</span> and <span class="math notranslate nohighlight">\(a_n\)</span>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.sigmoid()</span></code></p></li>
+<li><p><strong>kernel_init</strong> – Initializer for <cite>U_i</cite>. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
+<li><p><strong>recurrent_kernel_init</strong> – Initializer for <cite>W_i</cite>. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
+<li><p><strong>bias_init</strong> – Initializer for input-side biases. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
+<li><p><strong>recurrent_bias_init</strong> – Initializer for recurrent biases. Default:
+<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
 <li><p><strong>device</strong> – The desired device of parameters.</p></li>
 <li><p><strong>dtype</strong> – The desired floating point type of parameters.</p></li>
 </ul>
 </dd>
 </dl>
-<dl>
-<dt>Inputs: input, (h_0, c_0)</dt><dd><ul class="simple">
+<dl class="simple">
+<dt>Inputs: input, h_0</dt><dd><ul class="simple">
 <li><p><strong>input</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{in})\)</span> for unbatched input,
 <span class="math notranslate nohighlight">\((L, N, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
-<span class="math notranslate nohighlight">\((N, L, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code> containing the features of
-the input sequence. The input can also be a packed variable length
-sequence. See <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.pack_padded_sequence()</span></code> or
-<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.pack_sequence()</span></code> for details.</p></li>
-<li><p><strong>h_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for unbatched
-input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing the initial
-hidden state for each element in the input sequence. Defaults to zeros if
-not provided.</p></li>
-<li><p><strong>c_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for unbatched
-input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing the initial
-cell state for each element in the input sequence. Defaults to zeros if not
-provided.</p></li>
+<span class="math notranslate nohighlight">\((N, L, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code>.</p></li>
+<li><p><strong>h_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for
+unbatched input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span>.
+Defaults to zeros if not provided.</p></li>
 </ul>
-<p>where:</p>
-<div class="math notranslate nohighlight">
-\[\begin{split}\begin{aligned}
-    N ={} &amp; \text{batch size} \\
-    L ={} &amp; \text{sequence length} \\
-    H_{in} ={} &amp; \text{input\_size} \\
-    H_{out} ={} &amp; \text{hidden\_size}
-\end{aligned}\end{split}\]</div>
 </dd>
-<dt>Outputs: output, (h_n, c_n)</dt><dd><ul class="simple">
-<li><p><strong>output</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{out})\)</span> for unbatched input,
-<span class="math notranslate nohighlight">\((L, N, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
-<span class="math notranslate nohighlight">\((N, L, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code> containing the output
-features <cite>(h_t)</cite> from the last layer of the LEM, for each <cite>t</cite>. If a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.PackedSequence</span></code> has been given as the input,
-the output will also be a packed sequence.</p></li>
-<li><p><strong>h_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for unbatched
-input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing the final
-hidden state for each element in the sequence.</p></li>
-<li><p><strong>c_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for unbatched
-input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing the final cell
-state for each element in the sequence.</p></li>
+<dt>Outputs: output, h_n</dt><dd><ul class="simple">
+<li><p><strong>output</strong>: tensor containing the output features from the last layer,
+for each timestep.</p></li>
+<li><p><strong>h_n</strong>: tensor containing the final hidden state for each layer.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">cells.{k}.weight_ih</span></span></dt>
-<dd><p>the learnable input-hidden weights of the <span class="math notranslate nohighlight">\(k\)</span>-th
-layer, of shape <cite>(4*hidden_size, input_size)</cite> for <cite>k = 0</cite>. Otherwise, the
-shape is <cite>(4*hidden_size, hidden_size)</cite>.</p>
+<dd><p>input-hidden weights of shape
+<cite>(4*hidden_size, input_size)</cite> for <cite>k = 0</cite>, otherwise
+<cite>(4*hidden_size, hidden_size)</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">cells.{k}.weight_hh</span></span></dt>
-<dd><p>the learnable hidden-hidden weights of the <span class="math notranslate nohighlight">\(k\)</span>-th
-layer, of shape <cite>(3*hidden_size, hidden_size)</cite>.</p>
-</dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">cells.{k}.weight_ch</span></span></dt>
-<dd><p>the learnable cell-hidden weights of the <span class="math notranslate nohighlight">\(k\)</span>-th
-layer, of shape <cite>(hidden_size, hidden_size)</cite>.</p>
+<dd><p>hidden-hidden weights of shape
+<cite>(4*hidden_size, hidden_size)</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">cells.{k}.bias_ih</span></span></dt>
-<dd><p>the learnable input-hidden biases of the <span class="math notranslate nohighlight">\(k\)</span>-th
-layer, of shape <cite>(4*hidden_size)</cite>. Only present when <code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.</p>
+<dd><p>input-hidden biases of shape <cite>(4*hidden_size)</cite>.
+Only present when <code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.</p>
 </dd></dl>
 
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">cells.{k}.bias_hh</span></span></dt>
-<dd><p>the learnable hidden-hidden biases of the <span class="math notranslate nohighlight">\(k\)</span>-th
-layer, of shape <cite>(3*hidden_size)</cite>. Only present when <code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>.</p>
+<dd><p>hidden-hidden biases of shape <cite>(4*hidden_size)</cite>.
+Only present when <code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>.</p>
 </dd></dl>
 
-<dl class="py attribute">
-<dt class="sig sig-object py">
-<span class="sig-name descname"><span class="pre">cells.{k}.bias_ch</span></span></dt>
-<dd><p>the learnable cell-hidden biases of the <span class="math notranslate nohighlight">\(k\)</span>-th
-layer, of shape <cite>(hidden_size)</cite>. Only present when <code class="docutils literal notranslate"><span class="pre">cell_bias=True</span></code>.</p>
-</dd></dl>
-
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>All the weights and biases are initialized according to the provided
-initializers (<cite>kernel_init</cite>, <cite>recurrent_kernel_init</cite>, etc.). The
-integration step <span class="math notranslate nohighlight">\(\Delta t\)</span> is scaled by the given parameter <cite>dt</cite>.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">batch_first</span></code> argument is ignored for unbatched inputs.</p>
-</div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>
-<p><a class="reference internal" href="torchrecurrent.LEMCell.html#torchrecurrent.LEMCell" title="torchrecurrent.LEMCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">LEMCell</span></code></a></p>
-</div>
-<p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">rnn</span> <span class="o">=</span> <span class="n">LEM</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">num_layers</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">dropout</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">dt</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">)</span>   <span class="c1"># (seq_len, batch, input_size)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">h0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>      <span class="c1"># (num_layers, batch, hidden_size)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">c0</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span>      <span class="c1"># (num_layers, batch, hidden_size)</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">output</span><span class="p">,</span> <span class="p">(</span><span class="n">hn</span><span class="p">,</span> <span class="n">cn</span><span class="p">)</span> <span class="o">=</span> <span class="n">rnn</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="p">(</span><span class="n">h0</span><span class="p">,</span> <span class="n">c0</span><span class="p">))</span>
-</pre></div>
+<p><a class="reference internal" href="torchrecurrent.tauGRUCell.html#torchrecurrent.tauGRUCell" title="torchrecurrent.tauGRUCell"><code class="xref py py-class docutils literal notranslate"><span class="pre">tauGRUCell</span></code></a></p>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrecurrent.LEM.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/lem_cell.html#LEM.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.LEM.__init__" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="torchrecurrent.tauGRU.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_first</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delay</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/taugru_cell.html#tauGRU.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.tauGRU.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.LEM.__init__" title="torchrecurrent.LEM.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.tauGRU.__init__" title="torchrecurrent.tauGRU.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, ...])</p></td>
 <td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_module</span></code>(name, module)</p></td>
@@ -832,25 +757,28 @@ integration step <span class="math notranslate nohighlight">\(\Delta t\)</span> 
 <tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_patches</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">delay</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hidden_size</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_layers</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hidden_size</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">batch_first</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">num_layers</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropout</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">batch_first</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cells</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dropout</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cells</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -871,20 +799,20 @@ integration step <span class="math notranslate nohighlight">\(\Delta t\)</span> 
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="torchrecurrent.JANET.html"
+       href="torchrecurrent.STAR.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">torchrecurrent.JANET</p>
+        <p class="prev-next-title">torchrecurrent.STAR</p>
       </div>
     </a>
     <a class="right-next"
-       href="torchrecurrent.LightRU.html"
+       href="torchrecurrent.UGRNN.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">torchrecurrent.LightRU</p>
+        <p class="prev-next-title">torchrecurrent.UGRNN</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -907,8 +835,8 @@ integration step <span class="math notranslate nohighlight">\(\Delta t\)</span> 
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.LEM"><code class="docutils literal notranslate"><span class="pre">LEM</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.LEM.__init__"><code class="docutils literal notranslate"><span class="pre">LEM.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.tauGRU"><code class="docutils literal notranslate"><span class="pre">tauGRU</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.tauGRU.__init__"><code class="docutils literal notranslate"><span class="pre">tauGRU.__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -918,7 +846,7 @@ integration step <span class="math notranslate nohighlight">\(\Delta t\)</span> 
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinuzziFrancesco/torchrecurrent/edit/main/docs/generated/torchrecurrent.LEM.rst">
+    <a href="https://github.com/MartinuzziFrancesco/torchrecurrent/edit/main/docs/generated/torchrecurrent.tauGRU.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

@@ -1,0 +1,89 @@
+﻿torchrecurrent.tauGRU
+=====================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: tauGRU
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~tauGRU.__init__
+      ~tauGRU.add_module
+      ~tauGRU.apply
+      ~tauGRU.bfloat16
+      ~tauGRU.buffers
+      ~tauGRU.children
+      ~tauGRU.compile
+      ~tauGRU.cpu
+      ~tauGRU.cuda
+      ~tauGRU.double
+      ~tauGRU.eval
+      ~tauGRU.extra_repr
+      ~tauGRU.float
+      ~tauGRU.forward
+      ~tauGRU.get_buffer
+      ~tauGRU.get_extra_state
+      ~tauGRU.get_parameter
+      ~tauGRU.get_submodule
+      ~tauGRU.half
+      ~tauGRU.initialize_cells
+      ~tauGRU.ipu
+      ~tauGRU.load_state_dict
+      ~tauGRU.modules
+      ~tauGRU.mtia
+      ~tauGRU.named_buffers
+      ~tauGRU.named_children
+      ~tauGRU.named_modules
+      ~tauGRU.named_parameters
+      ~tauGRU.parameters
+      ~tauGRU.register_backward_hook
+      ~tauGRU.register_buffer
+      ~tauGRU.register_forward_hook
+      ~tauGRU.register_forward_pre_hook
+      ~tauGRU.register_full_backward_hook
+      ~tauGRU.register_full_backward_pre_hook
+      ~tauGRU.register_load_state_dict_post_hook
+      ~tauGRU.register_load_state_dict_pre_hook
+      ~tauGRU.register_module
+      ~tauGRU.register_parameter
+      ~tauGRU.register_state_dict_post_hook
+      ~tauGRU.register_state_dict_pre_hook
+      ~tauGRU.requires_grad_
+      ~tauGRU.set_extra_state
+      ~tauGRU.set_submodule
+      ~tauGRU.share_memory
+      ~tauGRU.state_dict
+      ~tauGRU.to
+      ~tauGRU.to_empty
+      ~tauGRU.train
+      ~tauGRU.type
+      ~tauGRU.xpu
+      ~tauGRU.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~tauGRU.T_destination
+      ~tauGRU.call_super_init
+      ~tauGRU.dump_patches
+      ~tauGRU.delay
+      ~tauGRU.input_size
+      ~tauGRU.hidden_size
+      ~tauGRU.num_layers
+      ~tauGRU.batch_first
+      ~tauGRU.dropout
+      ~tauGRU.cells
+      ~tauGRU.training
+   
+   

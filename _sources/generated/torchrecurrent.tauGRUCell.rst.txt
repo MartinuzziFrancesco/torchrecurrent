@@ -1,0 +1,91 @@
+﻿torchrecurrent.tauGRUCell
+=========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: tauGRUCell
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~tauGRUCell.__init__
+      ~tauGRUCell.add_module
+      ~tauGRUCell.apply
+      ~tauGRUCell.bfloat16
+      ~tauGRUCell.buffers
+      ~tauGRUCell.children
+      ~tauGRUCell.compile
+      ~tauGRUCell.cpu
+      ~tauGRUCell.cuda
+      ~tauGRUCell.double
+      ~tauGRUCell.eval
+      ~tauGRUCell.extra_repr
+      ~tauGRUCell.float
+      ~tauGRUCell.forward
+      ~tauGRUCell.get_buffer
+      ~tauGRUCell.get_extra_state
+      ~tauGRUCell.get_parameter
+      ~tauGRUCell.get_submodule
+      ~tauGRUCell.half
+      ~tauGRUCell.ipu
+      ~tauGRUCell.load_state_dict
+      ~tauGRUCell.modules
+      ~tauGRUCell.mtia
+      ~tauGRUCell.named_buffers
+      ~tauGRUCell.named_children
+      ~tauGRUCell.named_modules
+      ~tauGRUCell.named_parameters
+      ~tauGRUCell.parameters
+      ~tauGRUCell.register_backward_hook
+      ~tauGRUCell.register_buffer
+      ~tauGRUCell.register_forward_hook
+      ~tauGRUCell.register_forward_pre_hook
+      ~tauGRUCell.register_full_backward_hook
+      ~tauGRUCell.register_full_backward_pre_hook
+      ~tauGRUCell.register_load_state_dict_post_hook
+      ~tauGRUCell.register_load_state_dict_pre_hook
+      ~tauGRUCell.register_module
+      ~tauGRUCell.register_parameter
+      ~tauGRUCell.register_state_dict_post_hook
+      ~tauGRUCell.register_state_dict_pre_hook
+      ~tauGRUCell.requires_grad_
+      ~tauGRUCell.reset_parameters
+      ~tauGRUCell.set_extra_state
+      ~tauGRUCell.set_submodule
+      ~tauGRUCell.share_memory
+      ~tauGRUCell.state_dict
+      ~tauGRUCell.to
+      ~tauGRUCell.to_empty
+      ~tauGRUCell.train
+      ~tauGRUCell.type
+      ~tauGRUCell.uses_double_state
+      ~tauGRUCell.xpu
+      ~tauGRUCell.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~tauGRUCell.T_destination
+      ~tauGRUCell.call_super_init
+      ~tauGRUCell.dump_patches
+      ~tauGRUCell.weight_ih
+      ~tauGRUCell.weight_hh
+      ~tauGRUCell.bias_ih
+      ~tauGRUCell.bias_hh
+      ~tauGRUCell.input_size
+      ~tauGRUCell.hidden_size
+      ~tauGRUCell.bias
+      ~tauGRUCell.recurrent_bias
+      ~tauGRUCell.training
+   
+   
