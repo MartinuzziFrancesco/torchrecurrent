@@ -2,7 +2,12 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from typing import Optional, Tuple
-from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
+from ..base import (
+    DoubleStateRecurrentLayerBase,
+    DoubleStateCellBase,
+    resolve_init_name,
+    apply_init_,
+)
 
 
 class UnICORNN(DoubleStateRecurrentLayerBase):
@@ -18,7 +23,7 @@ class UnICORNN(DoubleStateRecurrentLayerBase):
         \begin{aligned}
             h(t) &= h(t-1) + \Delta t \, \hat{\sigma}(w_{ch}) \circ z(t), \\
             z(t) &= z(t-1) - \Delta t \, \hat{\sigma}(w_{ch}) \circ
-                \Bigl[\sigma(W_{hh} h(t-1) + W_{ih} x(t) + b_{ih})
+                \Bigl[\sigma(w_{hh} \circ h(t-1) + W_{ih} x(t) + b_{ih})
                 + \alpha h(t-1)\Bigr],
         \end{aligned}
 
@@ -36,18 +41,19 @@ class UnICORNN(DoubleStateRecurrentLayerBase):
             `(batch, seq, feature)` format instead of `(seq, batch, feature)`.
             Default: False
         bias: If ``False``, disables input bias `b_{ih}`. Default: True
-        recurrent_bias: If ``False``, disables hidden bias `b_{hh}`. Default: True
+        recurrent_bias: If ``True``, enables an extra hidden bias `b_{hh}`.
+            Default: False
         kernel_init: Initializer for `W_{ih}`.
             Default: :func:`torch.nn.init.xavier_uniform_`
-        recurrent_kernel_init: Initializer for `W_{hh}`.
-            Default: :func:`torch.nn.init.xavier_uniform_`
+        recurrent_kernel_init: Initializer for `w_{hh}`.
+            Default: :func:`torch.nn.init.uniform_`
         control_kernel_init: Initializer for `w_{ch}`.
-            Default: :func:`torch.nn.init.normal_`
+            Default: uniform on ``[-0.1, 0.1]``
         bias_init: Initializer for `b_{ih}` when ``bias=True``.
             Default: :func:`torch.nn.init.zeros_`
         recurrent_bias_init: Initializer for `b_{hh}` when ``recurrent_bias=True``.
             Default: :func:`torch.nn.init.zeros_`
-        dt: Integration step :math:`\Delta t`. Default: 1.0
+        dt: Integration step :math:`\Delta t`. Default: 0.1
         alpha: Leakage coefficient :math:`\alpha`. Default: 0.0
         device: Desired device of parameters.
         dtype: Desired floating point type of parameters.
@@ -85,13 +91,13 @@ class UnICORNN(DoubleStateRecurrentLayerBase):
         cells.{k}.weight_ih : input–hidden weights of the :math:`k`-th layer,
             shape `(hidden_size, input_size)` for `k=0`,
             otherwise `(hidden_size, hidden_size)`.
-        cells.{k}.weight_hh : hidden–hidden weights of the :math:`k`-th layer,
-            shape `(hidden_size, hidden_size)`.
+        cells.{k}.weight_hh : elementwise hidden weights of the :math:`k`-th layer,
+            shape `(hidden_size,)`.
         cells.{k}.weight_ch : control weights of the :math:`k`-th layer,
             shape `(hidden_size,)`.
         cells.{k}.bias_ih : input bias of the :math:`k`-th layer,
             shape `(hidden_size,)` if ``bias=True``.
-        cells.{k}.bias_hh : hidden bias of the :math:`k`-th layer,
+        cells.{k}.bias_hh : optional hidden bias of the :math:`k`-th layer,
             shape `(hidden_size,)` if ``recurrent_bias=True``.
 
     .. seealso::
@@ -140,7 +146,7 @@ class UnICORNNCell(DoubleStateCellBase):
                 - \Delta t\,\hat{\sigma}(\mathbf{w}_{ch}) \circ
                 \Bigl[
                     \sigma\bigl(
-                        \mathbf{W}_{hh}\,\mathbf{h}(t-1)
+                        \mathbf{w}_{hh} \circ \mathbf{h}(t-1)
                         + \mathbf{W}_{ih}\,\mathbf{x}(t)
                         + \mathbf{b}_{ih}
                     \bigr)
@@ -156,19 +162,19 @@ class UnICORNNCell(DoubleStateCellBase):
         hidden_size: The number of features in the hidden state ``h``.
         bias: If ``False``, the layer does not use the input bias
             ``b_{ih}``. Default: ``True``.
-        recurrent_bias: If ``False``, the layer does not use the hidden
-            bias ``b_{hh}``. Default: ``True``.
+        recurrent_bias: If ``True``, the layer uses an extra hidden
+            bias ``b_{hh}``. Default: ``False``.
         kernel_init: Initializer for ``W_{ih}``.
             Default: :func:`torch.nn.init.xavier_uniform_`.
-        recurrent_kernel_init: Initializer for ``W_{hh}``.
-            Default: :func:`torch.nn.init.xavier_uniform_`.
+        recurrent_kernel_init: Initializer for ``w_{hh}``.
+            Default: :func:`torch.nn.init.uniform_`.
         control_kernel_init: Initializer for ``w_{ch}``.
-            Default: :func:`torch.nn.init.normal_`.
+            Default: uniform on ``[-0.1, 0.1]``.
         bias_init: Initializer for ``b_{ih}``.
             Default: :func:`torch.nn.init.zeros_`.
         recurrent_bias_init: Initializer for ``b_{hh}``.
             Default: :func:`torch.nn.init.zeros_`.
-        dt: Time step :math:`\Delta t` between updates. Default: ``1.0``.
+        dt: Time step :math:`\Delta t` between updates. Default: ``0.1``.
         alpha: Leakage coefficient in the control update. Default: ``0.0``.
         device: The desired device of parameters.
         dtype: The desired floating point type of parameters.
@@ -192,14 +198,14 @@ class UnICORNNCell(DoubleStateCellBase):
     Variables:
         weight_ih: The learnable input–hidden weights,
             of shape ``(hidden_size, input_size)``.
-        weight_hh: The learnable hidden–hidden weights,
-            of shape ``(hidden_size, hidden_size)``.
+        weight_hh: The learnable elementwise hidden weights,
+            of shape ``(hidden_size,)``.
         weight_ch: The learnable control weights,
             of shape ``(hidden_size,)``.
         bias_ih: The learnable input bias,
             of shape ``(hidden_size,)``.
-        bias_hh: The learnable hidden bias,
-            of shape ``(hidden_size,)``.
+        bias_hh: The optional learnable hidden bias,
+            of shape ``(hidden_size,)`` when ``recurrent_bias=True``.
 
     Examples::
 
@@ -230,13 +236,13 @@ class UnICORNNCell(DoubleStateCellBase):
         input_size: int,
         hidden_size: int,
         bias: bool = True,
-        recurrent_bias: bool = True,
+        recurrent_bias: bool = False,
         kernel_init=nn.init.xavier_uniform_,
-        recurrent_kernel_init=nn.init.xavier_uniform_,
-        control_kernel_init=nn.init.normal_,
+        recurrent_kernel_init=nn.init.uniform_,
+        control_kernel_init="uniform_centered",
         bias_init=nn.init.zeros_,
         recurrent_bias_init=nn.init.zeros_,
-        dt: float = 1.0,
+        dt: float = 0.1,
         alpha: float = 0.0,
         device: Optional[torch.device] = None,
         dtype: Optional[torch.dtype] = None,
@@ -248,9 +254,11 @@ class UnICORNNCell(DoubleStateCellBase):
         self.alpha = alpha
         self.init_cfg["kernel"] = resolve_init_name(kernel_init, self.init_cfg["kernel"])
         self.init_cfg["recurrent_kernel"] = resolve_init_name(
-            recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
+            recurrent_kernel_init, "uniform"
         )
-        self.init_cfg["control_kernel"] = resolve_init_name(control_kernel_init, "normal")
+        self.init_cfg["control_kernel"] = resolve_init_name(
+            control_kernel_init, "uniform_centered"
+        )
         self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
         self.init_cfg["recurrent_bias"] = resolve_init_name(
             recurrent_bias_init, self.init_cfg["recurrent_bias"]
@@ -259,7 +267,7 @@ class UnICORNNCell(DoubleStateCellBase):
         self._register_tensors(
             {
                 "weight_ih": ((hidden_size, input_size), True),
-                "weight_hh": ((hidden_size, hidden_size), True),
+                "weight_hh": ((hidden_size,), True),
                 "weight_ch": ((hidden_size,), True),
                 "bias_ih": ((hidden_size,), bias),
                 "bias_hh": ((hidden_size,), recurrent_bias),
@@ -288,14 +296,19 @@ class UnICORNNCell(DoubleStateCellBase):
             b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
         else:
             h, c = state
-            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
-            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            b_h = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if h is None
+                else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            )
+            b_c = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if c is None
+                else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            )
 
         candidate_state = torch.tanh(
-            b_inp @ self.weight_ih.t()
-            + self.bias_ih
-            + b_h @ self.weight_hh.t()
-            + self.bias_hh
+            b_inp @ self.weight_ih.t() + self.bias_ih + b_h * self.weight_hh + self.bias_hh
         )
         new_c = b_c - self.dt * torch.sigmoid(self.weight_ch) * (
             candidate_state + self.alpha * b_h
