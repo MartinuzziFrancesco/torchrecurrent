@@ -110,6 +110,9 @@ references and official implementations where available.
    * - :doc:`STAR <generated/torchrecurrent.STAR>`
      - `TPAMI 2022 <https://arxiv.org/abs/1911.11033>`__
      - `0zgur0/STAckable-Recurrent-network <https://github.com/0zgur0/STAckable-Recurrent-network>`__
+   * - :doc:`tauGRU <generated/torchrecurrent.tauGRU>`
+     - `AISTATS 2025 <https://arxiv.org/abs/2212.00228>`__
+     - –
    * - :doc:`UGRNN <generated/torchrecurrent.UGRNN>`
      - `ICLR 2017 <https://arxiv.org/abs/1611.09913>`__
      - –
