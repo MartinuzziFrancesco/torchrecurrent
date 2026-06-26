@@ -2,7 +2,12 @@ import torch
 import torch.nn as nn
 from torch import Tensor
 from typing import Optional, Tuple
-from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
+from ..base import (
+    DoubleStateRecurrentLayerBase,
+    DoubleStateCellBase,
+    resolve_init_name,
+    apply_init_,
+)
 
 
 class coRNN(DoubleStateRecurrentLayerBase):
@@ -52,9 +57,9 @@ class coRNN(DoubleStateRecurrentLayerBase):
             `b_hh`. Default: True
         cell_bias: If ``False``, then the layer does not use cell bias `b_ch`.
             Default: True
-        dt: Integration step size :math:`\Delta t`. Default: 1.0
-        gamma: Damping coefficient on the hidden-state term. Default: 0.0
-        epsilon: Damping coefficient on the cell-state term. Default: 0.0
+        dt: Integration step size :math:`\Delta t`. Default: 0.1
+        gamma: Damping coefficient on the hidden-state term. Default: 1.0
+        epsilon: Damping coefficient on the cell-state term. Default: 1.0
         kernel_init: Initializer for `W_ih`. Default:
             :func:`torch.nn.init.xavier_uniform_`
         recurrent_kernel_init: Initializer for `W_{hh}`. Default:
@@ -190,9 +195,9 @@ class coRNNCell(DoubleStateCellBase):
             ``b_hh``. Default: ``True``.
         cell_bias: If ``False``, the layer does not use cell bias ``b_ch``.
             Default: ``True``.
-        dt: Integration step size :math:`\Delta t`. Default: ``1.0``.
-        gamma: Damping on hidden-state term. Default: ``0.0``.
-        epsilon: Damping on cell-state term. Default: ``0.0``.
+        dt: Integration step size :math:`\Delta t`. Default: ``0.1``.
+        gamma: Damping on hidden-state term. Default: ``1.0``.
+        epsilon: Damping on cell-state term. Default: ``1.0``.
         kernel_init: Initializer for ``W_{ih}``.
             Default: :func:`torch.nn.init.xavier_uniform_`.
         recurrent_kernel_init: Initializer for ``W_{hh}``.
@@ -279,9 +284,9 @@ class coRNNCell(DoubleStateCellBase):
         bias: bool = True,
         recurrent_bias: bool = True,
         cell_bias: bool = True,
-        dt: float = 1.0,
-        gamma: float = 0.0,
-        epsilon: float = 0.0,
+        dt: float = 0.1,
+        gamma: float = 1.0,
+        epsilon: float = 1.0,
         kernel_init=nn.init.xavier_uniform_,
         recurrent_kernel_init=nn.init.xavier_uniform_,
         cell_kernel_init=nn.init.xavier_uniform_,
@@ -350,8 +355,16 @@ class coRNNCell(DoubleStateCellBase):
             b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
         else:
             h, c = state
-            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
-            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            b_h = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if h is None
+                else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            )
+            b_c = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if c is None
+                else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            )
 
         pre_act = (
             b_inp @ self.weight_ih.t()
@@ -363,10 +376,7 @@ class coRNNCell(DoubleStateCellBase):
         )
         act = torch.tanh(pre_act)
         new_c = (
-            b_c
-            + self.dt * act
-            - self.dt * self.gamma * b_h
-            - self.dt * self.epsilon * b_c
+            b_c + self.dt * act - self.dt * self.gamma * b_h - self.dt * self.epsilon * b_c
         )
         new_h = b_h + self.dt * new_c
 

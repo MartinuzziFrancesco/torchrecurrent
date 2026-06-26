@@ -143,6 +143,74 @@ def test_taugru_cell_parameter_shapes():
     assert cell.bias_hh.shape == (36,)
 
 
+def test_cornn_cell_defaults_are_damped():
+    cell = coRNNCell(4, 9)
+
+    assert cell.dt == pytest.approx(0.1)
+    assert cell.gamma == pytest.approx(1.0)
+    assert cell.epsilon == pytest.approx(1.0)
+
+
+def test_cornn_cell_matches_official_explicit_update():
+    cell = coRNNCell(
+        2,
+        2,
+        bias=False,
+        recurrent_bias=False,
+        cell_bias=False,
+        dt=0.5,
+        gamma=2.0,
+        epsilon=3.0,
+    )
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.tensor([[0.1, 0.2], [0.3, 0.4]]))
+        cell.weight_hh.copy_(torch.tensor([[0.5, 0.6], [0.7, 0.8]]))
+        cell.weight_ch.copy_(torch.tensor([[0.9, 1.0], [1.1, 1.2]]))
+
+    x = torch.tensor([[0.2, -0.3]])
+    h = torch.tensor([[0.4, -0.5]])
+    z = torch.tensor([[0.6, -0.7]])
+
+    new_h, new_z = cell(x, (h, z))
+    act = torch.tanh(
+        x @ cell.weight_ih.t() + h @ cell.weight_hh.t() + z @ cell.weight_ch.t()
+    )
+    expected_z = z + 0.5 * (act - 2.0 * h - 3.0 * z)
+    expected_h = h + 0.5 * expected_z
+
+    assert torch.allclose(new_z, expected_z)
+    assert torch.allclose(new_h, expected_h)
+
+
+def test_unicornn_cell_parameter_shapes_match_independent_recurrence():
+    cell = UnICORNNCell(4, 9)
+
+    assert cell.weight_ih.shape == (9, 4)
+    assert cell.weight_hh.shape == (9,)
+    assert cell.weight_ch.shape == (9,)
+
+
+def test_unicornn_cell_matches_official_independent_update():
+    cell = UnICORNNCell(2, 2, bias=False, recurrent_bias=False, dt=0.25, alpha=0.5)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.tensor([[0.1, 0.2], [0.3, 0.4]]))
+        cell.weight_hh.copy_(torch.tensor([0.5, 0.6]))
+        cell.weight_ch.copy_(torch.tensor([0.7, -0.8]))
+
+    x = torch.tensor([[0.2, -0.3]])
+    h = torch.tensor([[0.4, -0.5]])
+    z = torch.tensor([[0.6, -0.7]])
+
+    new_h, new_z = cell(x, (h, z))
+    step = 0.25 * torch.sigmoid(cell.weight_ch)
+    candidate = torch.tanh(x @ cell.weight_ih.t() + h * cell.weight_hh)
+    expected_z = z - step * (candidate + 0.5 * h)
+    expected_h = h + step * expected_z
+
+    assert torch.allclose(new_z, expected_z)
+    assert torch.allclose(new_h, expected_h)
+
+
 def test_taugru_cell_uses_delayed_state():
     cell = tauGRUCell(1, 1)
     with torch.no_grad():

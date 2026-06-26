@@ -100,6 +100,7 @@ def resolve_init_name(init: Any, default: str) -> str:
         "kaiming_uniform",
         "kaiming_normal",
         "orthogonal",
+        "uniform_centered",
     }
     if name in known:
         return name
@@ -119,6 +120,8 @@ def apply_init_(t: Tensor, name: str) -> None:
         nn.init.normal_(t)
     elif key == "uniform":
         nn.init.uniform_(t)
+    elif key == "uniform_centered":
+        nn.init.uniform_(t, a=-0.1, b=0.1)
     elif key == "xavier_uniform":
         nn.init.xavier_uniform_(t)
     elif key == "xavier_normal":
