@@ -161,6 +161,45 @@ def test_layer_shapes_and_state(Layer, is_double):
         assert state_bf.shape == (num_layers, batch_size, hidden_size)
 
 
+@pytest.mark.parametrize("Layer, is_double", LAYER_CASES)
+def test_layer_runs_on_device(Layer, is_double, device):
+    """Every stacked layer should forward and backward on each available device
+    (cpu plus any accelerator: cuda, mps, xpu)."""
+    input_size, hidden_size = 5, 7
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = Layer(
+        input_size,
+        hidden_size,
+        num_layers=num_layers,
+        dropout=0.0,
+        batch_first=False,
+        bias=False,
+    ).to(device)
+
+    x = torch.randn(seq_len, batch_size, input_size, device=device, requires_grad=True)
+    out, state = layer(x)
+
+    assert out.device.type == device.type
+    assert out.shape == (seq_len, batch_size, hidden_size)
+
+    if is_double:
+        h, c = state
+        assert h.device.type == device.type
+        assert c.device.type == device.type
+        assert h.shape == (num_layers, batch_size, hidden_size)
+        assert c.shape == (num_layers, batch_size, hidden_size)
+    else:
+        assert state.device.type == device.type
+        assert state.shape == (num_layers, batch_size, hidden_size)
+
+    out.sum().backward()
+    for p in layer.parameters():
+        if p.requires_grad:
+            assert p.grad is not None
+            assert p.grad.device.type == device.type
+
+
 @pytest.mark.parametrize("Layer", LAYER_CLASSES)
 def test_default_repr_shows_input_hidden(Layer):
     # Default repr should exactly match "Class(input_size, hidden_size)"
