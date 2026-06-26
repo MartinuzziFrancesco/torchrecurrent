@@ -522,9 +522,9 @@ Default: True</p></li>
 <cite>b_hh</cite>. Default: True</p></li>
 <li><p><strong>cell_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, then the layer does not use cell bias <cite>b_ch</cite>.
 Default: True</p></li>
-<li><p><strong>dt</strong> – Integration step size <span class="math notranslate nohighlight">\(\Delta t\)</span>. Default: 1.0</p></li>
-<li><p><strong>gamma</strong> – Damping coefficient on the hidden-state term. Default: 0.0</p></li>
-<li><p><strong>epsilon</strong> – Damping coefficient on the cell-state term. Default: 0.0</p></li>
+<li><p><strong>dt</strong> – Integration step size <span class="math notranslate nohighlight">\(\Delta t\)</span>. Default: 0.1</p></li>
+<li><p><strong>gamma</strong> – Damping coefficient on the hidden-state term. Default: 1.0</p></li>
+<li><p><strong>epsilon</strong> – Damping coefficient on the cell-state term. Default: 1.0</p></li>
 <li><p><strong>kernel_init</strong> – Initializer for <cite>W_ih</cite>. Default:
 <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
 <li><p><strong>recurrent_kernel_init</strong> – Initializer for <cite>W_{hh}</cite>. Default:

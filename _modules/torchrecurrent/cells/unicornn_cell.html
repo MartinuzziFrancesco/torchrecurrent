@@ -372,7 +372,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DoubleStateRecurrentLayerBase</span><span class="p">,</span> <span class="n">DoubleStateCellBase</span><span class="p">,</span> <span class="n">resolve_init_name</span><span class="p">,</span> <span class="n">apply_init_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DoubleStateRecurrentLayerBase</span><span class="p">,</span>
+    <span class="n">DoubleStateCellBase</span><span class="p">,</span>
+    <span class="n">resolve_init_name</span><span class="p">,</span>
+    <span class="n">apply_init_</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="UnICORNN">
@@ -390,7 +395,7 @@
 <span class="sd">        \begin{aligned}</span>
 <span class="sd">            h(t) &amp;= h(t-1) + \Delta t \, \hat{\sigma}(w_{ch}) \circ z(t), \\</span>
 <span class="sd">            z(t) &amp;= z(t-1) - \Delta t \, \hat{\sigma}(w_{ch}) \circ</span>
-<span class="sd">                \Bigl[\sigma(W_{hh} h(t-1) + W_{ih} x(t) + b_{ih})</span>
+<span class="sd">                \Bigl[\sigma(w_{hh} \circ h(t-1) + W_{ih} x(t) + b_{ih})</span>
 <span class="sd">                + \alpha h(t-1)\Bigr],</span>
 <span class="sd">        \end{aligned}</span>
 
@@ -408,18 +413,19 @@
 <span class="sd">            `(batch, seq, feature)` format instead of `(seq, batch, feature)`.</span>
 <span class="sd">            Default: False</span>
 <span class="sd">        bias: If ``False``, disables input bias `b_{ih}`. Default: True</span>
-<span class="sd">        recurrent_bias: If ``False``, disables hidden bias `b_{hh}`. Default: True</span>
+<span class="sd">        recurrent_bias: If ``True``, enables an extra hidden bias `b_{hh}`.</span>
+<span class="sd">            Default: False</span>
 <span class="sd">        kernel_init: Initializer for `W_{ih}`.</span>
 <span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
-<span class="sd">        recurrent_kernel_init: Initializer for `W_{hh}`.</span>
-<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        recurrent_kernel_init: Initializer for `w_{hh}`.</span>
+<span class="sd">            Default: :func:`torch.nn.init.uniform_`</span>
 <span class="sd">        control_kernel_init: Initializer for `w_{ch}`.</span>
-<span class="sd">            Default: :func:`torch.nn.init.normal_`</span>
+<span class="sd">            Default: uniform on ``[-0.1, 0.1]``</span>
 <span class="sd">        bias_init: Initializer for `b_{ih}` when ``bias=True``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
 <span class="sd">        recurrent_bias_init: Initializer for `b_{hh}` when ``recurrent_bias=True``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
-<span class="sd">        dt: Integration step :math:`\Delta t`. Default: 1.0</span>
+<span class="sd">        dt: Integration step :math:`\Delta t`. Default: 0.1</span>
 <span class="sd">        alpha: Leakage coefficient :math:`\alpha`. Default: 0.0</span>
 <span class="sd">        device: Desired device of parameters.</span>
 <span class="sd">        dtype: Desired floating point type of parameters.</span>
@@ -457,13 +463,13 @@
 <span class="sd">        cells.{k}.weight_ih : input–hidden weights of the :math:`k`-th layer,</span>
 <span class="sd">            shape `(hidden_size, input_size)` for `k=0`,</span>
 <span class="sd">            otherwise `(hidden_size, hidden_size)`.</span>
-<span class="sd">        cells.{k}.weight_hh : hidden–hidden weights of the :math:`k`-th layer,</span>
-<span class="sd">            shape `(hidden_size, hidden_size)`.</span>
+<span class="sd">        cells.{k}.weight_hh : elementwise hidden weights of the :math:`k`-th layer,</span>
+<span class="sd">            shape `(hidden_size,)`.</span>
 <span class="sd">        cells.{k}.weight_ch : control weights of the :math:`k`-th layer,</span>
 <span class="sd">            shape `(hidden_size,)`.</span>
 <span class="sd">        cells.{k}.bias_ih : input bias of the :math:`k`-th layer,</span>
 <span class="sd">            shape `(hidden_size,)` if ``bias=True``.</span>
-<span class="sd">        cells.{k}.bias_hh : hidden bias of the :math:`k`-th layer,</span>
+<span class="sd">        cells.{k}.bias_hh : optional hidden bias of the :math:`k`-th layer,</span>
 <span class="sd">            shape `(hidden_size,)` if ``recurrent_bias=True``.</span>
 
 <span class="sd">    .. seealso::</span>
@@ -518,7 +524,7 @@
 <span class="sd">                - \Delta t\,\hat{\sigma}(\mathbf{w}_{ch}) \circ</span>
 <span class="sd">                \Bigl[</span>
 <span class="sd">                    \sigma\bigl(</span>
-<span class="sd">                        \mathbf{W}_{hh}\,\mathbf{h}(t-1)</span>
+<span class="sd">                        \mathbf{w}_{hh} \circ \mathbf{h}(t-1)</span>
 <span class="sd">                        + \mathbf{W}_{ih}\,\mathbf{x}(t)</span>
 <span class="sd">                        + \mathbf{b}_{ih}</span>
 <span class="sd">                    \bigr)</span>
@@ -534,19 +540,19 @@
 <span class="sd">        hidden_size: The number of features in the hidden state ``h``.</span>
 <span class="sd">        bias: If ``False``, the layer does not use the input bias</span>
 <span class="sd">            ``b_{ih}``. Default: ``True``.</span>
-<span class="sd">        recurrent_bias: If ``False``, the layer does not use the hidden</span>
-<span class="sd">            bias ``b_{hh}``. Default: ``True``.</span>
+<span class="sd">        recurrent_bias: If ``True``, the layer uses an extra hidden</span>
+<span class="sd">            bias ``b_{hh}``. Default: ``False``.</span>
 <span class="sd">        kernel_init: Initializer for ``W_{ih}``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`.</span>
-<span class="sd">        recurrent_kernel_init: Initializer for ``W_{hh}``.</span>
-<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`.</span>
+<span class="sd">        recurrent_kernel_init: Initializer for ``w_{hh}``.</span>
+<span class="sd">            Default: :func:`torch.nn.init.uniform_`.</span>
 <span class="sd">        control_kernel_init: Initializer for ``w_{ch}``.</span>
-<span class="sd">            Default: :func:`torch.nn.init.normal_`.</span>
+<span class="sd">            Default: uniform on ``[-0.1, 0.1]``.</span>
 <span class="sd">        bias_init: Initializer for ``b_{ih}``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.zeros_`.</span>
 <span class="sd">        recurrent_bias_init: Initializer for ``b_{hh}``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.zeros_`.</span>
-<span class="sd">        dt: Time step :math:`\Delta t` between updates. Default: ``1.0``.</span>
+<span class="sd">        dt: Time step :math:`\Delta t` between updates. Default: ``0.1``.</span>
 <span class="sd">        alpha: Leakage coefficient in the control update. Default: ``0.0``.</span>
 <span class="sd">        device: The desired device of parameters.</span>
 <span class="sd">        dtype: The desired floating point type of parameters.</span>
@@ -570,14 +576,14 @@
 <span class="sd">    Variables:</span>
 <span class="sd">        weight_ih: The learnable input–hidden weights,</span>
 <span class="sd">            of shape ``(hidden_size, input_size)``.</span>
-<span class="sd">        weight_hh: The learnable hidden–hidden weights,</span>
-<span class="sd">            of shape ``(hidden_size, hidden_size)``.</span>
+<span class="sd">        weight_hh: The learnable elementwise hidden weights,</span>
+<span class="sd">            of shape ``(hidden_size,)``.</span>
 <span class="sd">        weight_ch: The learnable control weights,</span>
 <span class="sd">            of shape ``(hidden_size,)``.</span>
 <span class="sd">        bias_ih: The learnable input bias,</span>
 <span class="sd">            of shape ``(hidden_size,)``.</span>
-<span class="sd">        bias_hh: The learnable hidden bias,</span>
-<span class="sd">            of shape ``(hidden_size,)``.</span>
+<span class="sd">        bias_hh: The optional learnable hidden bias,</span>
+<span class="sd">            of shape ``(hidden_size,)`` when ``recurrent_bias=True``.</span>
 
 <span class="sd">    Examples::</span>
 
@@ -610,13 +616,13 @@
         <span class="n">input_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-        <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
-        <span class="n">recurrent_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
-        <span class="n">control_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">normal_</span><span class="p">,</span>
+        <span class="n">recurrent_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">uniform_</span><span class="p">,</span>
+        <span class="n">control_kernel_init</span><span class="o">=</span><span class="s2">&quot;uniform_centered&quot;</span><span class="p">,</span>
         <span class="n">bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
         <span class="n">recurrent_bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
-        <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span>
         <span class="n">alpha</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
         <span class="n">dtype</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">dtype</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -628,9 +634,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">=</span> <span class="n">alpha</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span>
+            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;control_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">control_kernel_init</span><span class="p">,</span> <span class="s2">&quot;normal&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;control_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">control_kernel_init</span><span class="p">,</span> <span class="s2">&quot;uniform_centered&quot;</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
             <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
@@ -639,7 +647,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_register_tensors</span><span class="p">(</span>
             <span class="p">{</span>
                 <span class="s2">&quot;weight_ih&quot;</span><span class="p">:</span> <span class="p">((</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">input_size</span><span class="p">),</span> <span class="kc">True</span><span class="p">),</span>
-                <span class="s2">&quot;weight_hh&quot;</span><span class="p">:</span> <span class="p">((</span><span class="n">hidden_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">),</span> <span class="kc">True</span><span class="p">),</span>
+                <span class="s2">&quot;weight_hh&quot;</span><span class="p">:</span> <span class="p">((</span><span class="n">hidden_size</span><span class="p">,),</span> <span class="kc">True</span><span class="p">),</span>
                 <span class="s2">&quot;weight_ch&quot;</span><span class="p">:</span> <span class="p">((</span><span class="n">hidden_size</span><span class="p">,),</span> <span class="kc">True</span><span class="p">),</span>
                 <span class="s2">&quot;bias_ih&quot;</span><span class="p">:</span> <span class="p">((</span><span class="n">hidden_size</span><span class="p">,),</span> <span class="n">bias</span><span class="p">),</span>
                 <span class="s2">&quot;bias_hh&quot;</span><span class="p">:</span> <span class="p">((</span><span class="n">hidden_size</span><span class="p">,),</span> <span class="n">recurrent_bias</span><span class="p">),</span>
@@ -669,14 +677,19 @@
             <span class="n">b_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">h</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">state</span>
-            <span class="n">b_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">h</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">h</span><span class="p">)</span>
-            <span class="n">b_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">c</span><span class="p">)</span>
+            <span class="n">b_h</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">h</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">h</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">b_c</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">c</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="n">candidate_state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span>
-            <span class="n">b_inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
-            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span>
-            <span class="o">+</span> <span class="n">b_h</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>
-            <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
+            <span class="n">b_inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span> <span class="o">+</span> <span class="n">b_h</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
         <span class="p">)</span>
         <span class="n">new_c</span> <span class="o">=</span> <span class="n">b_c</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dt</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_ch</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span>
             <span class="n">candidate_state</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">b_h</span>

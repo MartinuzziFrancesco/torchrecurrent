@@ -489,7 +489,7 @@ state vectors, the hidden state <span class="math notranslate nohighlight">\(h(t
 \[\begin{split}\begin{aligned}
     h(t) &amp;= h(t-1) + \Delta t \, \hat{\sigma}(w_{ch}) \circ z(t), \\
     z(t) &amp;= z(t-1) - \Delta t \, \hat{\sigma}(w_{ch}) \circ
-        \Bigl[\sigma(W_{hh} h(t-1) + W_{ih} x(t) + b_{ih})
+        \Bigl[\sigma(w_{hh} \circ h(t-1) + W_{ih} x(t) + b_{ih})
         + \alpha h(t-1)\Bigr],
 \end{aligned}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(\Delta t\)</span> is the integration step <code class="docutils literal notranslate"><span class="pre">dt</span></code>,
@@ -507,18 +507,19 @@ Default: 0</p></li>
 <cite>(batch, seq, feature)</cite> format instead of <cite>(seq, batch, feature)</cite>.
 Default: False</p></li>
 <li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, disables input bias <cite>b_{ih}</cite>. Default: True</p></li>
-<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, disables hidden bias <cite>b_{hh}</cite>. Default: True</p></li>
+<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">True</span></code>, enables an extra hidden bias <cite>b_{hh}</cite>.
+Default: False</p></li>
 <li><p><strong>kernel_init</strong> – Initializer for <cite>W_{ih}</cite>.
 Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
-<li><p><strong>recurrent_kernel_init</strong> – Initializer for <cite>W_{hh}</cite>.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
+<li><p><strong>recurrent_kernel_init</strong> – Initializer for <cite>w_{hh}</cite>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.uniform_()</span></code></p></li>
 <li><p><strong>control_kernel_init</strong> – Initializer for <cite>w_{ch}</cite>.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.normal_()</span></code></p></li>
+Default: uniform on <code class="docutils literal notranslate"><span class="pre">[-0.1,</span> <span class="pre">0.1]</span></code></p></li>
 <li><p><strong>bias_init</strong> – Initializer for <cite>b_{ih}</cite> when <code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.
 Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
 <li><p><strong>recurrent_bias_init</strong> – Initializer for <cite>b_{hh}</cite> when <code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>.
 Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
-<li><p><strong>dt</strong> – Integration step <span class="math notranslate nohighlight">\(\Delta t\)</span>. Default: 1.0</p></li>
+<li><p><strong>dt</strong> – Integration step <span class="math notranslate nohighlight">\(\Delta t\)</span>. Default: 0.1</p></li>
 <li><p><strong>alpha</strong> – Leakage coefficient <span class="math notranslate nohighlight">\(\alpha\)</span>. Default: 0.0</p></li>
 <li><p><strong>device</strong> – Desired device of parameters.</p></li>
 <li><p><strong>dtype</strong> – Desired floating point type of parameters.</p></li>
@@ -567,8 +568,8 @@ otherwise <cite>(hidden_size, hidden_size)</cite>.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">cells.{k}.weight_hh</span></span></dt>
-<dd><p>hidden–hidden weights of the <span class="math notranslate nohighlight">\(k\)</span>-th layer,
-shape <cite>(hidden_size, hidden_size)</cite>.</p>
+<dd><p>elementwise hidden weights of the <span class="math notranslate nohighlight">\(k\)</span>-th layer,
+shape <cite>(hidden_size,)</cite>.</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -588,7 +589,7 @@ shape <cite>(hidden_size,)</cite> if <code class="docutils literal notranslate">
 <dl class="py attribute">
 <dt class="sig sig-object py">
 <span class="sig-name descname"><span class="pre">cells.{k}.bias_hh</span></span></dt>
-<dd><p>hidden bias of the <span class="math notranslate nohighlight">\(k\)</span>-th layer,
+<dd><p>optional hidden bias of the <span class="math notranslate nohighlight">\(k\)</span>-th layer,
 shape <cite>(hidden_size,)</cite> if <code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>.</p>
 </dd></dl>
 
