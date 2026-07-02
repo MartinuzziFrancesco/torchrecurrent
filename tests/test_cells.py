@@ -249,6 +249,41 @@ def test_cell_gradients(Cell, in_size, hid_size, _):
         assert p.grad is not None
 
 
+@pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
+def test_cell_runs_on_device(Cell, in_size, hid_size, double, device):
+    """Every cell should forward, init state, and backward on each available
+    device (cpu plus any accelerator: cuda, mps, xpu)."""
+    cell = Cell(in_size, hid_size, bias=False).to(device)
+
+    B = 4
+    x = torch.randn(B, in_size, device=device, requires_grad=True)
+
+    if double:
+        h, c = cell(x, (None, None))
+        assert h.device.type == device.type
+        assert c.device.type == device.type
+        assert h.shape == (B, hid_size)
+        assert c.shape == (B, hid_size)
+        # explicit state already living on the device should be accepted
+        h2, c2 = cell(x, (h, c))
+        assert h2.device.type == device.type
+        assert c2.device.type == device.type
+        out = h
+    else:
+        h = cell(x)
+        assert h.device.type == device.type
+        assert h.shape == (B, hid_size)
+        h2 = cell(x, h)
+        assert h2.device.type == device.type
+        out = h
+
+    out.sum().backward()
+    for p in cell.parameters():
+        if p.requires_grad:
+            assert p.grad is not None
+            assert p.grad.device.type == device.type
+
+
 @skip_windows
 @pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
 def test_cell_compile(Cell, in_size, hid_size, double):
