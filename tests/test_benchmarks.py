@@ -5,6 +5,7 @@ from torchrecurrent.benchmarks import (
     adding_problem,
     copy_memory,
     penn_treebank,
+    sequential_cifar10,
     sequential_mnist,
     timit,
 )
@@ -131,6 +132,78 @@ def test_sequential_mnist_dataloader_is_layer_ready():
 def test_sequential_mnist_validates_inputs(images, targets, permutation):
     with pytest.raises(ValueError):
         sequential_mnist(images, targets, permutation=permutation)
+
+
+def test_sequential_cifar10_normalizes_and_flattens_images():
+    images = (torch.arange(2 * 32 * 32 * 3) % 256).to(torch.uint8).reshape(2, 32, 32, 3)
+    targets = torch.tensor([3, 7], dtype=torch.int32)
+
+    sequences, result_targets = sequential_cifar10(
+        images, targets, return_dataloader=False, dtype=torch.float64
+    )
+
+    assert sequences.shape == (2, 1024, 3)
+    assert sequences.dtype == torch.float64
+    assert result_targets.dtype == torch.long
+    torch.testing.assert_close(sequences[0], images[0].reshape(1024, 3).double() / 255)
+    assert torch.equal(result_targets, targets.long())
+
+
+def test_sequential_cifar10_accepts_channels_first_images():
+    images = torch.arange(2 * 3 * 32 * 32).reshape(2, 3, 32, 32).float()
+    targets = torch.tensor([0, 1])
+
+    sequences, _ = sequential_cifar10(
+        images, targets, return_dataloader=False, normalize=False
+    )
+
+    expected = images.permute(0, 2, 3, 1).reshape(2, 1024, 3)
+    torch.testing.assert_close(sequences, expected)
+
+
+def test_sequential_cifar10_applies_one_fixed_permutation():
+    images = torch.arange(2 * 32 * 32 * 3).reshape(2, 32, 32, 3).float()
+    targets = torch.tensor([0, 1])
+    permutation = torch.arange(1023, -1, -1)
+
+    sequences, _ = sequential_cifar10(
+        images,
+        targets,
+        permutation=permutation,
+        return_dataloader=False,
+        normalize=False,
+    )
+
+    expected = images.reshape(2, 1024, 3)[:, permutation]
+    torch.testing.assert_close(sequences, expected)
+
+
+def test_sequential_cifar10_dataloader_is_layer_ready():
+    loader = sequential_cifar10(
+        torch.zeros(5, 32, 32, 3, dtype=torch.uint8),
+        torch.arange(5),
+        batch_size=3,
+        shuffle=False,
+    )
+    sequences, targets = next(iter(loader))
+
+    assert sequences.shape == (3, 1024, 3)
+    assert targets.shape == (3,)
+
+
+@pytest.mark.parametrize(
+    "images,targets,permutation",
+    [
+        (torch.zeros(2, 31, 32, 3), torch.zeros(2), None),
+        (torch.zeros(2, 32, 32, 4), torch.zeros(2), None),
+        (torch.zeros(2, 32, 32, 3), torch.zeros(3), None),
+        (torch.zeros(2, 32, 32, 3), torch.zeros(2), torch.zeros(1023)),
+        (torch.zeros(2, 32, 32, 3), torch.zeros(2), torch.zeros(1024)),
+    ],
+)
+def test_sequential_cifar10_validates_inputs(images, targets, permutation):
+    with pytest.raises(ValueError):
+        sequential_cifar10(images, targets, permutation=permutation)
 
 
 def test_penn_treebank_builds_vocabulary_and_shifted_streams(tmp_path):
