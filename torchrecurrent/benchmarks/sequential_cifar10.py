@@ -22,10 +22,11 @@ def sequential_cifar10(
     inputs in raster-scan order. With a permutation, the same fixed pixel
     ordering is applied to every image, mirroring the permuted-MNIST protocol
     of Arjovsky et al. (2016), Section 5.3
-    (https://proceedings.mlr.press/v48/arjovsky16.html), extended to CIFAR-10 as
-    used to benchmark long-range recurrent models (e.g. Li et al. (2018) IndRNN,
-    https://arxiv.org/abs/1803.04831). The caller supplies the CIFAR-10 tensors
-    so this package does not require a dataset-download dependency.
+    (https://proceedings.mlr.press/v48/arjovsky16.html). This function extends
+    that pixel-by-pixel/permuted protocol to CIFAR-10; it is not itself drawn
+    from a specific paper's CIFAR-10 experiment. The caller supplies the
+    CIFAR-10 tensors so this package does not require a dataset-download
+    dependency.
 
     Args:
         images: CIFAR-10 images with shape ``(N, 32, 32, 3)`` or

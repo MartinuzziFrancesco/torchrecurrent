@@ -35,6 +35,9 @@ def copy_memory(
             passed directly to recurrent layers. Targets remain integer class
             indices suitable for :class:`torch.nn.CrossEntropyLoss`.
         generator: Optional random number generator used for reproducibility.
+            Only forwarded to the returned data loader's shuffling when it is a
+            CPU generator; a non-CPU generator is still used for tensor
+            generation but the loader falls back to its own seeding.
         device: Device on which to create the tensors.
         **dataloader_kwargs: Arguments passed to
             :class:`torch.utils.data.DataLoader`.
@@ -88,6 +91,13 @@ def copy_memory(
     if not return_dataloader:
         return inputs, targets
 
+    # torch.utils.data.DataLoader shuffling always runs its generator on CPU
+    # (torch.randperm has no device argument), so a generator created for a
+    # non-CPU generation device cannot also drive the loader's shuffling.
+    loader_generator = generator
+    if generator is not None and generator.device.type != "cpu":
+        loader_generator = None
+
     return DataLoader(
-        TensorDataset(inputs, targets), generator=generator, **dataloader_kwargs
+        TensorDataset(inputs, targets), generator=loader_generator, **dataloader_kwargs
     )

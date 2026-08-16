@@ -29,6 +29,9 @@ def adding_problem(
         batch_size: Batch size of the returned data loader.
         shuffle: Whether the returned data loader shuffles samples.
         generator: Optional random number generator used for reproducibility.
+            Only forwarded to the returned data loader's shuffling when it is a
+            CPU generator; a non-CPU generator is still used for tensor
+            generation but the loader falls back to its own seeding.
         dtype: Floating-point dtype of inputs and targets.
         device: Device on which to create the tensors.
         **dataloader_kwargs: Additional arguments passed to
@@ -77,11 +80,18 @@ def adding_problem(
     if not return_dataloader:
         return inputs, targets
 
+    # torch.utils.data.DataLoader shuffling always runs its generator on CPU
+    # (torch.randperm has no device argument), so a generator created for a
+    # non-CPU generation device cannot also drive the loader's shuffling.
+    loader_generator = generator
+    if generator is not None and generator.device.type != "cpu":
+        loader_generator = None
+
     dataset = TensorDataset(inputs, targets)
     return DataLoader(
         dataset,
         batch_size=batch_size,
         shuffle=shuffle,
-        generator=generator,
+        generator=loader_generator,
         **dataloader_kwargs,
     )

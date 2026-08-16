@@ -18,11 +18,14 @@ def sequential_mnist(
 ):
     """Convert MNIST tensors into the sequential or permuted-MNIST task.
 
-    Every 28 by 28 image becomes a sequence of 784 scalar inputs. With a
-    permutation, the same fixed pixel ordering is applied to every image, as in
+    Every 28 by 28 image becomes a sequence of 784 scalar inputs in row-major
+    raster order. With a permutation, the same fixed pixel ordering is applied
+    to every image, matching the pixel-by-pixel and permuted task setup of
     Arjovsky et al. (2016), Section 5.3
-    (https://proceedings.mlr.press/v48/arjovsky16.html). The caller supplies the
-    MNIST tensors so this package does not require a dataset-download dependency.
+    (https://proceedings.mlr.press/v48/arjovsky16.html); the specific base scan
+    direction is an arbitrary fixed convention and does not affect task
+    difficulty. The caller supplies the MNIST tensors so this package does not
+    require a dataset-download dependency.
 
     Args:
         images: MNIST images with shape ``(N, 28, 28)`` or ``(N, 1, 28, 28)``.
