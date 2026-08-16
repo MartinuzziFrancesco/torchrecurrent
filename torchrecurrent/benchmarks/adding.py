@@ -1,5 +1,5 @@
 import torch
-from torch.utils.data import TensorDataset, DataLoader
+from torch.utils.data import DataLoader, TensorDataset
 
 
 def adding_problem(
@@ -7,56 +7,91 @@ def adding_problem(
     n_samples: int,
     return_dataloader: bool = True,
     batch_size: int = 64,
-    shuffle=True,
+    shuffle: bool = True,
+    *,
+    generator: torch.Generator = None,
+    dtype: torch.dtype = None,
+    device: torch.device = None,
+    **dataloader_kwargs,
 ):
-    """Generate data for the adding problem benchmark.
+    """Generate the adding problem introduced for long-term memory tests.
 
-    The adding problem is a synthetic task where each input sequence
-    consists of two features per time step:
+    Each input contains a uniform random sequence and a binary indicator
+    sequence. One indicator is sampled from each half of the sequence, and the
+    regression target is the sum of the two indicated values. This is the
+    formulation used by Arjovsky et al. (2016), Section 5.2
+    (https://proceedings.mlr.press/v48/arjovsky16.html).
 
-      1. A random number sampled uniformly from [0, 1].
-      2. A binary mask indicating which two positions in the sequence
-         should be summed.
+    Args:
+        sequence_length: Number of time steps. Must be at least 2.
+        n_samples: Number of independent sequences to generate.
+        return_dataloader: Return a data loader when true, otherwise tensors.
+        batch_size: Batch size of the returned data loader.
+        shuffle: Whether the returned data loader shuffles samples.
+        generator: Optional random number generator used for reproducibility.
+            Only forwarded to the returned data loader's shuffling when it is a
+            CPU generator; a non-CPU generator is still used for tensor
+            generation but the loader falls back to its own seeding.
+        dtype: Floating-point dtype of inputs and targets.
+        device: Device on which to create the tensors.
+        **dataloader_kwargs: Additional arguments passed to
+            :class:`torch.utils.data.DataLoader`.
 
-    The target is the sum of the two masked numbers.
-
-    Parameters
-    ----------
-    sequence_length : int
-        Length of each input sequence.
-    n_samples : int
-        Number of samples to generate.
-    return_dataloader : bool, default=True
-        If True, return a DataLoader wrapping the dataset.
-        If False, return raw tensors instead.
-    batch_size : int, default=64
-        Batch size used when returning a DataLoader.
-    shuffle : bool, default=True
-        Whether to shuffle the dataset when returning a DataLoader.
-
-    Returns
-    -------
-    torch.utils.data.DataLoader or tuple of (torch.Tensor, torch.Tensor)
-        - If ``return_dataloader`` is True: a DataLoader yielding batches of
-          (inputs, targets).
-        - If ``return_dataloader`` is False:
-            * inputs: torch.Tensor of shape (n_samples, sequence_length, 2)
-            * targets: torch.Tensor of shape (n_samples, 1)
+    Returns:
+        A data loader, or ``(inputs, targets)`` when ``return_dataloader=False``.
+        Inputs have shape ``(n_samples, sequence_length, 2)`` and targets have
+        shape ``(n_samples, 1)``.
     """
-    random_sequence = torch.rand(n_samples, sequence_length, 1)
-    mask_sequence = torch.zeros(n_samples, sequence_length, 1)
-    targets = torch.zeros(n_samples, 1)
+    if sequence_length < 2:
+        raise ValueError("sequence_length must be at least 2")
+    if n_samples < 1:
+        raise ValueError("n_samples must be positive")
+    if dtype is None:
+        dtype = torch.get_default_dtype()
+    if not dtype.is_floating_point:
+        raise TypeError("dtype must be a floating-point dtype")
 
-    for i in range(n_samples):
-        idx = torch.randperm(sequence_length)[:2]
-        mask_sequence[i, idx, 0] = 1
-        targets[i] = random_sequence[i, idx, 0].sum()
+    random_sequence = torch.rand(
+        n_samples,
+        sequence_length,
+        1,
+        generator=generator,
+        dtype=dtype,
+        device=device,
+    )
+    first_half = sequence_length // 2
+    first_indices = torch.randint(
+        first_half, (n_samples, 1), generator=generator, device=device
+    )
+    second_indices = torch.randint(
+        first_half,
+        sequence_length,
+        (n_samples, 1),
+        generator=generator,
+        device=device,
+    )
+    indices = torch.cat((first_indices, second_indices), dim=1)
 
-    inputs = torch.cat((random_sequence, mask_sequence), dim=2)
-    if return_dataloader:
-        dataset = TensorDataset(inputs, targets)
-        data_loader = DataLoader(dataset, batch_size=batch_size, shuffle=shuffle)
+    mask_sequence = torch.zeros_like(random_sequence)
+    mask_sequence.scatter_(1, indices.unsqueeze(-1), 1)
+    targets = random_sequence.squeeze(-1).gather(1, indices).sum(dim=1, keepdim=True)
+    inputs = torch.cat((random_sequence, mask_sequence), dim=-1)
 
-        return data_loader
-    else:
+    if not return_dataloader:
         return inputs, targets
+
+    # torch.utils.data.DataLoader shuffling always runs its generator on CPU
+    # (torch.randperm has no device argument), so a generator created for a
+    # non-CPU generation device cannot also drive the loader's shuffling.
+    loader_generator = generator
+    if generator is not None and generator.device.type != "cpu":
+        loader_generator = None
+
+    dataset = TensorDataset(inputs, targets)
+    return DataLoader(
+        dataset,
+        batch_size=batch_size,
+        shuffle=shuffle,
+        generator=loader_generator,
+        **dataloader_kwargs,
+    )
