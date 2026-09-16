@@ -26,16 +26,16 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../../_static/documentation_options.js?v=1e825a29"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -378,7 +378,7 @@
 <div class="viewcode-block" id="MUT1">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT1.html#torchrecurrent.MUT1">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MUT1</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer mutated unit type 1 recurrent network.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Multi-layer mutated unit type 1 recurrent network.</span>
 
 <span class="sd">    [`PMLR &lt;https://proceedings.mlr.press/v37/jozefowicz15.pdf&gt;`_]</span>
 
@@ -491,7 +491,7 @@
 <span class="sd">        &gt;&gt;&gt; input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)</span>
 <span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)</span>
 <span class="sd">        &gt;&gt;&gt; output, hn = rnn(input, h0)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="MUT1.__init__">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT1.html#torchrecurrent.MUT1.__init__">[docs]</a>
@@ -515,7 +515,7 @@
 <div class="viewcode-block" id="MUT1Cell">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT1Cell.html#torchrecurrent.MUT1Cell">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MUT1Cell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A Mutated Unit Type 1 (MUT1) recurrent cell.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""A Mutated Unit Type 1 (MUT1) recurrent cell.</span>
 
 <span class="sd">    [`PMLR &lt;https://proceedings.mlr.press/v37/jozefowicz15.pdf&gt;`_]</span>
 
@@ -591,9 +591,9 @@
 <span class="sd">        ...     h = cell(x[t], h)</span>
 <span class="sd">        ...     out.append(h)</span>
 <span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;input_size&quot;</span><span class="p">,</span> <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"input_size"</span><span class="p">,</span> <span class="s2">"hidden_size"</span><span class="p">,</span> <span class="s2">"bias"</span><span class="p">,</span> <span class="s2">"recurrent_bias"</span><span class="p">]</span>
 
     <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span>
@@ -623,13 +623,13 @@
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span><span class="n">ih_mult</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">hh_mult</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -668,7 +668,7 @@
 <div class="viewcode-block" id="MUT2">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT2.html#torchrecurrent.MUT2">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MUT2</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer mutated unit type 2 recurrent network.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Multi-layer mutated unit type 2 recurrent network.</span>
 
 <span class="sd">    [`PMLR &lt;https://proceedings.mlr.press/v37/jozefowicz15.pdf&gt;`_]</span>
 
@@ -782,7 +782,7 @@
 <span class="sd">        &gt;&gt;&gt; input = torch.randn(5, 3, 16)   # (seq_len, batch, input_size)</span>
 <span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 32)      # (num_layers, batch, hidden_size)</span>
 <span class="sd">        &gt;&gt;&gt; output, hn = rnn(input, h0)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="MUT2.__init__">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT2.html#torchrecurrent.MUT2.__init__">[docs]</a>
@@ -806,7 +806,7 @@
 <div class="viewcode-block" id="MUT2Cell">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT2Cell.html#torchrecurrent.MUT2Cell">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MUT2Cell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A Mutated Unit Type 2 (MUT2) recurrent cell.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""A Mutated Unit Type 2 (MUT2) recurrent cell.</span>
 
 <span class="sd">    [`PMLR &lt;https://proceedings.mlr.press/v37/jozefowicz15.pdf&gt;`_]</span>
 
@@ -882,9 +882,9 @@
 <span class="sd">        ...     h = cell(x[t], h)</span>
 <span class="sd">        ...     out.append(h)</span>
 <span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;input_size&quot;</span><span class="p">,</span> <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"input_size"</span><span class="p">,</span> <span class="s2">"hidden_size"</span><span class="p">,</span> <span class="s2">"bias"</span><span class="p">,</span> <span class="s2">"recurrent_bias"</span><span class="p">]</span>
 
     <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span>
@@ -914,13 +914,13 @@
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span><span class="n">ih_mult</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">hh_mult</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -959,7 +959,7 @@
 <div class="viewcode-block" id="MUT3">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT3.html#torchrecurrent.MUT3">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MUT3</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer mutated unit type 3 recurrent network.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Multi-layer mutated unit type 3 recurrent network.</span>
 
 <span class="sd">    [`PMLR &lt;https://proceedings.mlr.press/v37/jozefowicz15.pdf&gt;`_]</span>
 
@@ -1072,7 +1072,7 @@
 <span class="sd">        &gt;&gt;&gt; input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)</span>
 <span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)</span>
 <span class="sd">        &gt;&gt;&gt; output, hn = rnn(input, h0)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="MUT3.__init__">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT3.html#torchrecurrent.MUT3.__init__">[docs]</a>
@@ -1096,7 +1096,7 @@
 <div class="viewcode-block" id="MUT3Cell">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MUT3Cell.html#torchrecurrent.MUT3Cell">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MUT3Cell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A Mutated Unit Type 3 (MUT3) recurrent cell.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""A Mutated Unit Type 3 (MUT3) recurrent cell.</span>
 
 <span class="sd">    [`PMLR &lt;https://proceedings.mlr.press/v37/jozefowicz15.pdf&gt;`_]</span>
 
@@ -1173,9 +1173,9 @@
 <span class="sd">        ...     h = cell(x[t], h)</span>
 <span class="sd">        ...     out.append(h)</span>
 <span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
-    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;input_size&quot;</span><span class="p">,</span> <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span> <span class="s2">&quot;bias&quot;</span><span class="p">,</span> <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+    <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"input_size"</span><span class="p">,</span> <span class="s2">"hidden_size"</span><span class="p">,</span> <span class="s2">"bias"</span><span class="p">,</span> <span class="s2">"recurrent_bias"</span><span class="p">]</span>
 
     <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span>
@@ -1205,13 +1205,13 @@
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span><span class="n">ih_mult</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">hh_mult</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -1274,8 +1274,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -1309,7 +1309,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

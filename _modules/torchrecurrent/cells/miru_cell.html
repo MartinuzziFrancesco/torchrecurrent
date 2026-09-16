@@ -26,16 +26,16 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../../_static/documentation_options.js?v=1e825a29"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -384,7 +384,7 @@
 <div class="viewcode-block" id="MiRU1">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MiRU1.html#torchrecurrent.MiRU1">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MiRU1</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer Minion Gated Unit 1 (MiRU1) neural network.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Multi-layer Minion Gated Unit 1 (MiRU1) neural network.</span>
 
 <span class="sd">    [`DOI &lt;https://doi.org/10.1016/j.neucom.2026.132847&gt;`_]</span>
 
@@ -417,9 +417,9 @@
 <span class="sd">        update_coefficient: Mixing hyperparameter controlling the blend between the</span>
 <span class="sd">            previous hidden state and the candidate. Default: 0.5</span>
 <span class="sd">        nonlinearity: Nonlinearity for the candidate hidden state.</span>
-<span class="sd">            Default: ``&quot;tanh&quot;``</span>
+<span class="sd">            Default: ``"tanh"``</span>
 <span class="sd">        gate_nonlinearity: Activation for the reset gate.</span>
-<span class="sd">            Default: ``&quot;sigmoid&quot;``</span>
+<span class="sd">            Default: ``"sigmoid"``</span>
 <span class="sd">        kernel_init: Initializer for ``W_*``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
 <span class="sd">        recurrent_kernel_init: Initializer for ``U_*``.</span>
@@ -452,7 +452,7 @@
 <span class="sd">        &gt;&gt;&gt; input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)</span>
 <span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)</span>
 <span class="sd">        &gt;&gt;&gt; output, hn = rnn(input, h0)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="MiRU1.__init__">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MiRU1.html#torchrecurrent.MiRU1.__init__">[docs]</a>
@@ -476,7 +476,7 @@
 <div class="viewcode-block" id="MiRU1Cell">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MiRU1Cell.html#torchrecurrent.MiRU1Cell">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MiRU1Cell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A Minion Gated Unit 1 (MiRU1) cell.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""A Minion Gated Unit 1 (MiRU1) cell.</span>
 
 <span class="sd">    [`DOI &lt;https://doi.org/10.1016/j.neucom.2026.132847&gt;`_]</span>
 
@@ -505,9 +505,9 @@
 <span class="sd">        update_coefficient: Mixing hyperparameter controlling the blend between the</span>
 <span class="sd">            previous hidden state and the candidate. Default: ``0.5``.</span>
 <span class="sd">        nonlinearity: Nonlinearity for the candidate hidden state.</span>
-<span class="sd">            Default: ``&quot;tanh&quot;``.</span>
+<span class="sd">            Default: ``"tanh"``.</span>
 <span class="sd">        gate_nonlinearity: Activation for the reset gate.</span>
-<span class="sd">            Default: ``&quot;sigmoid&quot;``.</span>
+<span class="sd">            Default: ``"sigmoid"``.</span>
 <span class="sd">        kernel_init: Initializer for ``W_r`` and ``W_h``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`.</span>
 <span class="sd">        recurrent_kernel_init: Initializer for ``U_r`` and ``U_h``.</span>
@@ -547,14 +547,14 @@
 <span class="sd">        ...     h = cell(x[t], h)</span>
 <span class="sd">        ...     out.append(h)</span>
 <span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;input_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;update_coefficient&quot;</span><span class="p">,</span>
+        <span class="s2">"input_size"</span><span class="p">,</span>
+        <span class="s2">"hidden_size"</span><span class="p">,</span>
+        <span class="s2">"bias"</span><span class="p">,</span>
+        <span class="s2">"recurrent_bias"</span><span class="p">,</span>
+        <span class="s2">"update_coefficient"</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
@@ -571,8 +571,8 @@
         <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">update_coefficient</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">nonlinearity</span><span class="o">=</span><span class="s2">&quot;tanh&quot;</span><span class="p">,</span>
-        <span class="n">gate_nonlinearity</span><span class="o">=</span><span class="s2">&quot;sigmoid&quot;</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="s2">"tanh"</span><span class="p">,</span>
+        <span class="n">gate_nonlinearity</span><span class="o">=</span><span class="s2">"sigmoid"</span><span class="p">,</span>
         <span class="n">kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
         <span class="n">recurrent_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
         <span class="n">bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
@@ -591,13 +591,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_coefficient</span> <span class="o">=</span> <span class="n">update_coefficient</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">resolve_activation</span><span class="p">(</span><span class="n">nonlinearity</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">gate_act</span> <span class="o">=</span> <span class="n">resolve_activation</span><span class="p">(</span><span class="n">gate_nonlinearity</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span><span class="n">ih_mult</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">hh_mult</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
@@ -642,7 +642,7 @@
 <div class="viewcode-block" id="MiRU2">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MiRU2.html#torchrecurrent.MiRU2">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MiRU2</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;Multi-layer Minion Gated Unit 2 (MiRU2) neural network.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Multi-layer Minion Gated Unit 2 (MiRU2) neural network.</span>
 
 <span class="sd">    [`DOI &lt;https://doi.org/10.1016/j.neucom.2026.132847&gt;`_]</span>
 
@@ -674,7 +674,7 @@
 <span class="sd">        update_coefficient: Mixing hyperparameter. Default: 0.5</span>
 <span class="sd">        reset_coefficient: Hidden-state scaling hyperparameter. Default: 0.5</span>
 <span class="sd">        nonlinearity: Nonlinearity for the candidate hidden state.</span>
-<span class="sd">            Default: ``&quot;tanh&quot;``</span>
+<span class="sd">            Default: ``"tanh"``</span>
 <span class="sd">        kernel_init: Initializer for ``W_h``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
 <span class="sd">        recurrent_kernel_init: Initializer for ``U_h``.</span>
@@ -707,7 +707,7 @@
 <span class="sd">        &gt;&gt;&gt; input = torch.randn(5, 3, 10)</span>
 <span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 20)</span>
 <span class="sd">        &gt;&gt;&gt; output, hn = rnn(input, h0)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
 <div class="viewcode-block" id="MiRU2.__init__">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MiRU2.html#torchrecurrent.MiRU2.__init__">[docs]</a>
@@ -731,7 +731,7 @@
 <div class="viewcode-block" id="MiRU2Cell">
 <a class="viewcode-back" href="../../../generated/torchrecurrent.MiRU2Cell.html#torchrecurrent.MiRU2Cell">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MiRU2Cell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">&quot;&quot;&quot;A Minion Gated Unit 2 (MiRU2) cell.</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""A Minion Gated Unit 2 (MiRU2) cell.</span>
 
 <span class="sd">    [`DOI &lt;https://doi.org/10.1016/j.neucom.2026.132847&gt;`_]</span>
 
@@ -757,7 +757,7 @@
 <span class="sd">        update_coefficient: Mixing hyperparameter. Default: ``0.5``.</span>
 <span class="sd">        reset_coefficient: Hidden-state scaling hyperparameter. Default: ``0.5``.</span>
 <span class="sd">        nonlinearity: Nonlinearity for the candidate hidden state.</span>
-<span class="sd">            Default: ``&quot;tanh&quot;``.</span>
+<span class="sd">            Default: ``"tanh"``.</span>
 <span class="sd">        kernel_init: Initializer for ``W_h``.</span>
 <span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`.</span>
 <span class="sd">        recurrent_kernel_init: Initializer for ``U_h``.</span>
@@ -797,15 +797,15 @@
 <span class="sd">        ...     h = cell(x[t], h)</span>
 <span class="sd">        ...     out.append(h)</span>
 <span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
 
     <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span>
-        <span class="s2">&quot;input_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;hidden_size&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;bias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;recurrent_bias&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;update_coefficient&quot;</span><span class="p">,</span>
-        <span class="s2">&quot;reset_coefficient&quot;</span><span class="p">,</span>
+        <span class="s2">"input_size"</span><span class="p">,</span>
+        <span class="s2">"hidden_size"</span><span class="p">,</span>
+        <span class="s2">"bias"</span><span class="p">,</span>
+        <span class="s2">"recurrent_bias"</span><span class="p">,</span>
+        <span class="s2">"update_coefficient"</span><span class="p">,</span>
+        <span class="s2">"reset_coefficient"</span><span class="p">,</span>
     <span class="p">]</span>
 
     <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
@@ -823,7 +823,7 @@
         <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">update_coefficient</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
         <span class="n">reset_coefficient</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span>
-        <span class="n">nonlinearity</span><span class="o">=</span><span class="s2">&quot;tanh&quot;</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="s2">"tanh"</span><span class="p">,</span>
         <span class="n">kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
         <span class="n">recurrent_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
         <span class="n">bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
@@ -842,13 +842,13 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">update_coefficient</span> <span class="o">=</span> <span class="n">update_coefficient</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_coefficient</span> <span class="o">=</span> <span class="n">reset_coefficient</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">resolve_activation</span><span class="p">(</span><span class="n">nonlinearity</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;kernel&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_kernel&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;bias&quot;</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">&quot;recurrent_bias&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span><span class="n">ih_mult</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hh_mult</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -909,8 +909,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -944,7 +944,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

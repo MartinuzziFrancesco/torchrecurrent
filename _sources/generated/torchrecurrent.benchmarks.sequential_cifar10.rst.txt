@@ -1,0 +1,6 @@
+﻿torchrecurrent.benchmarks.sequential\_cifar10
+=============================================
+
+.. currentmodule:: torchrecurrent.benchmarks
+
+.. autofunction:: sequential_cifar10

@@ -1,0 +1,6 @@
+﻿torchrecurrent.benchmarks.sequential\_mnist
+===========================================
+
+.. currentmodule:: torchrecurrent.benchmarks
+
+.. autofunction:: sequential_mnist

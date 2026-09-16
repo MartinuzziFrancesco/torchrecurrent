@@ -26,16 +26,16 @@
   </noscript>
   
   <!-- Loaded before other Sphinx assets -->
-  <link href="../../../_static/styles/theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
-<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=a95f357e85573c9b56d5" rel="stylesheet" />
+  <link href="../../../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../../../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
 
     <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=8f2a1f02" />
   
   <!-- So that users can add custom icons -->
-  <script defer src="../../../_static/scripts/fontawesome.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
   <!-- Pre-loaded scripts that we'll load fully later -->
-  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5" />
-<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5" />
+  <link rel="preload" as="script" href="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
 
     <script src="../../../_static/documentation_options.js?v=1e825a29"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
@@ -369,7 +369,7 @@
                   
   <h1>Source code for torchrecurrent.benchmarks.adding</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">TensorDataset</span><span class="p">,</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span><span class="p">,</span> <span class="n">TensorDataset</span>
 
 
 <div class="viewcode-block" id="adding_problem">
@@ -379,59 +379,94 @@
     <span class="n">n_samples</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="n">return_dataloader</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">64</span><span class="p">,</span>
-    <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">shuffle</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="o">*</span><span class="p">,</span>
+    <span class="n">generator</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">Generator</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">dtype</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">device</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="o">**</span><span class="n">dataloader_kwargs</span><span class="p">,</span>
 <span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Generate data for the adding problem benchmark.</span>
+<span class="w">    </span><span class="sd">"""Generate the adding problem introduced for long-term memory tests.</span>
 
-<span class="sd">    The adding problem is a synthetic task where each input sequence</span>
-<span class="sd">    consists of two features per time step:</span>
+<span class="sd">    Each input contains a uniform random sequence and a binary indicator</span>
+<span class="sd">    sequence. One indicator is sampled from each half of the sequence, and the</span>
+<span class="sd">    regression target is the sum of the two indicated values. This is the</span>
+<span class="sd">    formulation used by Arjovsky et al. (2016), Section 5.2</span>
+<span class="sd">    (https://proceedings.mlr.press/v48/arjovsky16.html).</span>
 
-<span class="sd">      1. A random number sampled uniformly from [0, 1].</span>
-<span class="sd">      2. A binary mask indicating which two positions in the sequence</span>
-<span class="sd">         should be summed.</span>
+<span class="sd">    Args:</span>
+<span class="sd">        sequence_length: Number of time steps. Must be at least 2.</span>
+<span class="sd">        n_samples: Number of independent sequences to generate.</span>
+<span class="sd">        return_dataloader: Return a data loader when true, otherwise tensors.</span>
+<span class="sd">        batch_size: Batch size of the returned data loader.</span>
+<span class="sd">        shuffle: Whether the returned data loader shuffles samples.</span>
+<span class="sd">        generator: Optional random number generator used for reproducibility.</span>
+<span class="sd">            Only forwarded to the returned data loader's shuffling when it is a</span>
+<span class="sd">            CPU generator; a non-CPU generator is still used for tensor</span>
+<span class="sd">            generation but the loader falls back to its own seeding.</span>
+<span class="sd">        dtype: Floating-point dtype of inputs and targets.</span>
+<span class="sd">        device: Device on which to create the tensors.</span>
+<span class="sd">        **dataloader_kwargs: Additional arguments passed to</span>
+<span class="sd">            :class:`torch.utils.data.DataLoader`.</span>
 
-<span class="sd">    The target is the sum of the two masked numbers.</span>
+<span class="sd">    Returns:</span>
+<span class="sd">        A data loader, or ``(inputs, targets)`` when ``return_dataloader=False``.</span>
+<span class="sd">        Inputs have shape ``(n_samples, sequence_length, 2)`` and targets have</span>
+<span class="sd">        shape ``(n_samples, 1)``.</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="n">sequence_length</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"sequence_length must be at least 2"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">n_samples</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"n_samples must be positive"</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">dtype</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">dtype</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">get_default_dtype</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">dtype</span><span class="o">.</span><span class="n">is_floating_point</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="s2">"dtype must be a floating-point dtype"</span><span class="p">)</span>
 
-<span class="sd">    Parameters</span>
-<span class="sd">    ----------</span>
-<span class="sd">    sequence_length : int</span>
-<span class="sd">        Length of each input sequence.</span>
-<span class="sd">    n_samples : int</span>
-<span class="sd">        Number of samples to generate.</span>
-<span class="sd">    return_dataloader : bool, default=True</span>
-<span class="sd">        If True, return a DataLoader wrapping the dataset.</span>
-<span class="sd">        If False, return raw tensors instead.</span>
-<span class="sd">    batch_size : int, default=64</span>
-<span class="sd">        Batch size used when returning a DataLoader.</span>
-<span class="sd">    shuffle : bool, default=True</span>
-<span class="sd">        Whether to shuffle the dataset when returning a DataLoader.</span>
+    <span class="n">random_sequence</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span>
+        <span class="n">n_samples</span><span class="p">,</span>
+        <span class="n">sequence_length</span><span class="p">,</span>
+        <span class="mi">1</span><span class="p">,</span>
+        <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span>
+        <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">first_half</span> <span class="o">=</span> <span class="n">sequence_length</span> <span class="o">//</span> <span class="mi">2</span>
+    <span class="n">first_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+        <span class="n">first_half</span><span class="p">,</span> <span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">device</span>
+    <span class="p">)</span>
+    <span class="n">second_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span>
+        <span class="n">first_half</span><span class="p">,</span>
+        <span class="n">sequence_length</span><span class="p">,</span>
+        <span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">generator</span><span class="o">=</span><span class="n">generator</span><span class="p">,</span>
+        <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">first_indices</span><span class="p">,</span> <span class="n">second_indices</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
-<span class="sd">    Returns</span>
-<span class="sd">    -------</span>
-<span class="sd">    torch.utils.data.DataLoader or tuple of (torch.Tensor, torch.Tensor)</span>
-<span class="sd">        - If ``return_dataloader`` is True: a DataLoader yielding batches of</span>
-<span class="sd">          (inputs, targets).</span>
-<span class="sd">        - If ``return_dataloader`` is False:</span>
-<span class="sd">            * inputs: torch.Tensor of shape (n_samples, sequence_length, 2)</span>
-<span class="sd">            * targets: torch.Tensor of shape (n_samples, 1)</span>
-<span class="sd">    &quot;&quot;&quot;</span>
-    <span class="n">random_sequence</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">sequence_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">mask_sequence</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="n">sequence_length</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="n">targets</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_samples</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">mask_sequence</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">random_sequence</span><span class="p">)</span>
+    <span class="n">mask_sequence</span><span class="o">.</span><span class="n">scatter_</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">targets</span> <span class="o">=</span> <span class="n">random_sequence</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">indices</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">random_sequence</span><span class="p">,</span> <span class="n">mask_sequence</span><span class="p">),</span> <span class="n">dim</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
 
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_samples</span><span class="p">):</span>
-        <span class="n">idx</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randperm</span><span class="p">(</span><span class="n">sequence_length</span><span class="p">)[:</span><span class="mi">2</span><span class="p">]</span>
-        <span class="n">mask_sequence</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
-        <span class="n">targets</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">random_sequence</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_dataloader</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span>
 
-    <span class="n">inputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">((</span><span class="n">random_sequence</span><span class="p">,</span> <span class="n">mask_sequence</span><span class="p">),</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">return_dataloader</span><span class="p">:</span>
-        <span class="n">dataset</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
-        <span class="n">data_loader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">)</span>
+    <span class="c1"># torch.utils.data.DataLoader shuffling always runs its generator on CPU</span>
+    <span class="c1"># (torch.randperm has no device argument), so a generator created for a</span>
+    <span class="c1"># non-CPU generation device cannot also drive the loader's shuffling.</span>
+    <span class="n">loader_generator</span> <span class="o">=</span> <span class="n">generator</span>
+    <span class="k">if</span> <span class="n">generator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">generator</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">type</span> <span class="o">!=</span> <span class="s2">"cpu"</span><span class="p">:</span>
+        <span class="n">loader_generator</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">return</span> <span class="n">data_loader</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span></div>
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">TensorDataset</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">targets</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">DataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="p">,</span>
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span>
+        <span class="n">shuffle</span><span class="o">=</span><span class="n">shuffle</span><span class="p">,</span>
+        <span class="n">generator</span><span class="o">=</span><span class="n">loader_generator</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">dataloader_kwargs</span><span class="p">,</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
@@ -462,8 +497,8 @@
   </div>
   
   <!-- Scripts loaded after <body> so the DOM is not blocked -->
-  <script defer src="../../../_static/scripts/bootstrap.js?digest=a95f357e85573c9b56d5"></script>
-<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=a95f357e85573c9b56d5"></script>
+  <script defer src="../../../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../../../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
 
   <footer class="bd-footer">
 <div class="bd-footer__inner bd-page-width">
@@ -497,7 +532,7 @@
         <div class="footer-item">
 <p class="theme-version">
   <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
-  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.19.0.
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
 </p></div>
       
     </div>

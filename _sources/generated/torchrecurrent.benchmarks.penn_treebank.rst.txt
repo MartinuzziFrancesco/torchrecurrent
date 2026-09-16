@@ -1,0 +1,6 @@
+﻿torchrecurrent.benchmarks.penn\_treebank
+========================================
+
+.. currentmodule:: torchrecurrent.benchmarks
+
+.. autofunction:: penn_treebank

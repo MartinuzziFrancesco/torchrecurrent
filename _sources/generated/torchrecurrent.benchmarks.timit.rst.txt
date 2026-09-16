@@ -1,0 +1,6 @@
+﻿torchrecurrent.benchmarks.timit
+===============================
+
+.. currentmodule:: torchrecurrent.benchmarks
+
+.. autofunction:: timit
