@@ -127,6 +127,13 @@ def test_cell_output_and_state_shapes(Cell, in_size, hid_size, double):
         assert h3.shape == (B, hid_size)
 
 
+@pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
+def test_cell_reset_parameters_after_construction(Cell, in_size, hid_size, double):
+    """reset_parameters() must remain callable after __init__, not just during it."""
+    cell = Cell(in_size, hid_size)
+    cell.reset_parameters()
+
+
 def test_reslstm_cell_parameter_shapes():
     cell = ResLSTMCell(4, 9)
 

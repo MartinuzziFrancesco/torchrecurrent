@@ -62,11 +62,11 @@ class tauGRU(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True``.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})`.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          .
           Defaults to zeros if not provided.
 
     Outputs: output, h_n
