@@ -20,8 +20,10 @@ from torchrecurrent import (
     MGUCell,
     MinimalRNNCell,
     IndRNNCell,
+    IntersectionRNNCell,
     LiGRUCell,
     LightRUCell,
+    MCLSTMCell,
     MultiplicativeLSTMCell,
     MUT1Cell,
     MUT2Cell,
@@ -36,6 +38,9 @@ from torchrecurrent import (
     SGRNCell,
     STARCell,
     tauGRUCell,
+    TRNNCell,
+    TGRUCell,
+    TLSTMCell,
     UGRNNCell,
     UnICORNNCell,
     WMCLSTMCell,
@@ -79,6 +84,7 @@ CELL_CASES = [
     (SGRNCell, 3, 5, False),
     (STARCell, 3, 5, False),
     (tauGRUCell, 3, 5, False),
+    (TRNNCell, 3, 5, False),
     (UGRNNCell, 3, 5, False),
     (UnICORNNCell, 3, 5, True),
     (WMCLSTMCell, 3, 5, True),
@@ -239,6 +245,334 @@ def test_taugru_cell_uses_delayed_state():
     out = cell(x, h, delayed)
 
     assert torch.allclose(out, torch.tanh(delayed), atol=1e-4)
+
+
+def test_trnn_cell_has_no_recurrent_weight():
+    """T-RNN's forget gate depends only on x(t): there is no weight_hh at all."""
+    cell = TRNNCell(4, 9)
+
+    assert cell.weight_ih.shape == (18, 4)
+    assert cell.bias_ih.shape == (18,)
+    assert not hasattr(cell, "weight_hh")
+    assert not hasattr(cell, "bias_hh")
+
+
+def test_trnn_cell_matches_paper_update():
+    cell = TRNNCell(2, 2, bias=False)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.tensor([[0.1, 0.2], [0.3, 0.4], [0.5, 0.6], [0.7, 0.8]]))
+
+    x = torch.tensor([[0.2, -0.3]])
+    h = torch.tensor([[0.4, -0.5]])
+
+    new_h = cell(x, h)
+    latent, forget_pre = (x @ cell.weight_ih.t()).chunk(2, 1)
+    forget_gate = torch.sigmoid(forget_pre)
+    expected = forget_gate * h + (1 - forget_gate) * latent
+
+    assert torch.allclose(new_h, expected)
+
+
+def test_tgru_cell_parameter_shapes():
+    """weight_hh acts on the previous *input*, so it shares weight_ih's shape."""
+    cell = TGRUCell(4, 9)
+
+    assert cell.weight_ih.shape == (27, 4)
+    assert cell.weight_hh.shape == (27, 4)
+    assert cell.bias_ih.shape == (27,)
+    assert cell.bias_hh.shape == (27,)
+
+
+def test_tgru_cell_default_state_uses_input_size_not_hidden_size():
+    """The second state component is x(t-1): shaped like the input, not like h."""
+    cell = TGRUCell(4, 9)
+    x = torch.randn(3, 4)
+
+    h, x_prev = cell(x)
+
+    assert h.shape == (3, 9)
+    assert x_prev.shape == (3, 4)
+    assert torch.equal(x_prev, x)
+
+
+def test_tgru_cell_matches_paper_update():
+    cell = TGRUCell(2, 2, bias=False, recurrent_bias=False)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.arange(12, dtype=torch.float32).reshape(6, 2) * 0.1)
+        cell.weight_hh.copy_(torch.arange(12, dtype=torch.float32).reshape(6, 2) * -0.1)
+
+    x = torch.tensor([[0.2, -0.3]])
+    h = torch.tensor([[0.4, -0.5]])
+    x_prev = torch.tensor([[-0.1, 0.6]])
+
+    new_h, new_x_prev = cell(x, (h, x_prev))
+    gates = x @ cell.weight_ih.t() + x_prev @ cell.weight_hh.t()
+    latent, forget_pre, out_pre = gates.chunk(3, 1)
+    forget_gate = torch.sigmoid(forget_pre)
+    candidate = torch.tanh(out_pre)
+    expected_h = forget_gate * h + latent * candidate
+
+    assert torch.allclose(new_h, expected_h)
+    assert torch.equal(new_x_prev, x)
+
+
+def test_tgru_cell_accepts_per_component_none_state():
+    """Matches the (None, None) sentinel convention every other double-state
+    cell in this library supports (see tests/test_cells.py's CELL_CASES
+    harness), even though TGRU isn't itself in that harness."""
+    cell = TGRUCell(3, 5)
+    x = torch.randn(3)
+
+    h, x_prev = cell(x, (None, None))
+    assert h.shape == (5,)
+    assert x_prev.shape == (3,)
+
+    h2, x_prev2 = cell(x, (h, None))
+    assert h2.shape == (5,)
+    assert x_prev2.shape == (3,)
+
+    x_batched = torch.randn(2, 3)
+    h3, x_prev3 = cell(x_batched, (None, None))
+    assert h3.shape == (2, 5)
+    assert x_prev3.shape == (2, 3)
+
+    h4, x_prev4 = cell(x_batched, (None, x_prev3))
+    assert h4.shape == (2, 5)
+    assert x_prev4.shape == (2, 3)
+
+
+def test_tlstm_cell_parameter_shapes():
+    """weight_hh acts on the previous *input*, so it shares weight_ih's shape."""
+    cell = TLSTMCell(4, 9)
+
+    assert cell.weight_ih.shape == (27, 4)
+    assert cell.weight_hh.shape == (27, 4)
+    assert cell.bias_ih.shape == (27,)
+    assert cell.bias_hh.shape == (27,)
+
+
+def test_tlstm_cell_output_differs_from_state():
+    """h(t) is a pure output: it plays no role in any later computation."""
+    cell = TLSTMCell(4, 4)
+
+    x_unbatched = torch.randn(4)
+    h_u, (c_u, xprev_u) = cell(x_unbatched)
+    assert h_u.shape == c_u.shape == (4,)
+    assert xprev_u.shape == (4,)
+    assert not torch.allclose(h_u, c_u)
+
+    x = torch.randn(3, 4)
+    h, (c, xprev) = cell(x)
+    assert h.shape == c.shape == (3, 4)
+    assert not torch.allclose(h, c)
+
+
+def test_tlstm_cell_accepts_per_component_none_state():
+    cell = TLSTMCell(3, 5)
+    x = torch.randn(3)
+
+    h, (c, xprev) = cell(x, (None, None))
+    assert h.shape == c.shape == (5,)
+    assert xprev.shape == (3,)
+
+    h2, (c2, xprev2) = cell(x, (c, None))
+    assert h2.shape == c2.shape == (5,)
+    assert xprev2.shape == (3,)
+
+    x_batched = torch.randn(2, 3)
+    h3, (c3, xprev3) = cell(x_batched, (None, None))
+    assert h3.shape == c3.shape == (2, 5)
+    assert xprev3.shape == (2, 3)
+
+    h4, (c4, xprev4) = cell(x_batched, (None, xprev3))
+    assert h4.shape == c4.shape == (2, 5)
+    assert xprev4.shape == (2, 3)
+
+
+def test_tlstm_cell_gradients():
+    cell = TLSTMCell(4, 5, bias=False)
+    x = torch.randn(2, 4, requires_grad=True)
+
+    h, (c, xprev) = cell(x)
+    (h.sum() + c.sum()).backward()
+
+    assert x.grad is not None
+    for p in cell.parameters():
+        if p.requires_grad:
+            assert p.grad is not None
+
+
+def test_tlstm_cell_matches_paper_update():
+    cell = TLSTMCell(2, 2, bias=False, recurrent_bias=False)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.arange(12, dtype=torch.float32).reshape(6, 2) * 0.1)
+        cell.weight_hh.copy_(torch.arange(12, dtype=torch.float32).reshape(6, 2) * -0.1)
+
+    x = torch.tensor([[0.2, -0.3]])
+    c = torch.tensor([[0.4, -0.5]])
+    x_prev = torch.tensor([[-0.1, 0.6]])
+
+    h, (new_c, new_x_prev) = cell(x, (c, x_prev))
+    gates = x @ cell.weight_ih.t() + x_prev @ cell.weight_hh.t()
+    latent, forget_pre, out_pre = gates.chunk(3, 1)
+    forget_gate = torch.sigmoid(forget_pre)
+    output_candidate = torch.tanh(out_pre)
+    expected_c = forget_gate * c + (1 - forget_gate) * latent
+    expected_h = expected_c * output_candidate
+
+    assert torch.allclose(new_c, expected_c)
+    assert torch.allclose(h, expected_h)
+    assert torch.equal(new_x_prev, x)
+
+
+def test_intersectionrnn_cell_requires_equal_sizes():
+    with pytest.raises(ValueError, match="input_size == hidden_size"):
+        IntersectionRNNCell(3, 5)
+
+
+def test_intersectionrnn_cell_shapes():
+    cell = IntersectionRNNCell(4, 4)
+
+    assert cell.weight_ih.shape == (16, 4)
+    assert cell.weight_hh.shape == (16, 4)
+    assert cell.bias_ih.shape == (16,)
+    assert cell.bias_hh.shape == (16,)
+
+
+def test_intersectionrnn_cell_output_differs_from_state():
+    """y(t) and h(t) are genuinely different tensors, not aliases."""
+    cell = IntersectionRNNCell(4, 4)
+
+    x_unbatched = torch.randn(4)
+    y_u, h_u = cell(x_unbatched)
+    assert y_u.shape == h_u.shape == (4,)
+    assert not torch.allclose(y_u, h_u)
+
+    x = torch.randn(3, 4)
+    y, h = cell(x)
+
+    assert y.shape == h.shape == (3, 4)
+    assert not torch.allclose(y, h)
+
+
+def test_intersectionrnn_cell_gradients():
+    cell = IntersectionRNNCell(4, 4, bias=False)
+    x = torch.randn(2, 4, requires_grad=True)
+
+    y, h = cell(x)
+    (y.sum() + h.sum()).backward()
+
+    assert x.grad is not None
+    for p in cell.parameters():
+        if p.requires_grad:
+            assert p.grad is not None
+
+
+def test_intersectionrnn_cell_matches_paper_update():
+    cell = IntersectionRNNCell(2, 2, bias=False, recurrent_bias=False)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.arange(16, dtype=torch.float32).reshape(8, 2) * 0.1)
+        cell.weight_hh.copy_(torch.arange(16, dtype=torch.float32).reshape(8, 2) * -0.1)
+
+    x = torch.tensor([[0.2, -0.3]])
+    h = torch.tensor([[0.4, -0.5]])
+
+    y, new_h = cell(x, h)
+    gates = x @ cell.weight_ih.t() + h @ cell.weight_hh.t()
+    depth_pre, recurrent_pre, gy_pre, gh_pre = gates.chunk(4, 1)
+    depth_candidate = torch.relu(depth_pre)
+    recurrent_candidate = torch.tanh(recurrent_pre)
+    gate_y = torch.sigmoid(gy_pre)
+    gate_h = torch.sigmoid(gh_pre)
+    expected_y = gate_y * x + (1 - gate_y) * depth_candidate
+    expected_h = gate_h * h + (1 - gate_h) * recurrent_candidate
+
+    assert torch.allclose(y, expected_y)
+    assert torch.allclose(new_h, expected_h)
+
+
+def test_mclstm_cell_shapes():
+    cell = MCLSTMCell(4, 9)
+
+    assert cell.weight_ih.shape == (45, 4)
+    assert cell.weight_hh.shape == (45, 9)
+    assert cell.bias_ih.shape == (45,)
+    assert cell.bias_hh.shape == (45,)
+
+
+def test_mclstm_cell_output_differs_from_state():
+    """h(t) is a pure output: it must differ from both v(t) and c(t)."""
+    cell = MCLSTMCell(4, 4)
+
+    x_unbatched = torch.randn(4)
+    h_u, (v_u, c_u) = cell(x_unbatched)
+    assert h_u.shape == v_u.shape == c_u.shape == (4,)
+    assert not torch.allclose(h_u, v_u)
+    assert not torch.allclose(h_u, c_u)
+
+    x = torch.randn(3, 4)
+    h, (v, c) = cell(x)
+    assert h.shape == v.shape == c.shape == (3, 4)
+    assert not torch.allclose(h, v)
+
+
+def test_mclstm_cell_accepts_per_component_none_state():
+    cell = MCLSTMCell(3, 5)
+    x = torch.randn(3)
+
+    h, (v, c) = cell(x, (None, None))
+    assert h.shape == v.shape == c.shape == (5,)
+
+    h2, (v2, c2) = cell(x, (v, None))
+    assert h2.shape == v2.shape == c2.shape == (5,)
+
+    x_batched = torch.randn(2, 3)
+    h3, (v3, c3) = cell(x_batched, (None, None))
+    assert h3.shape == v3.shape == c3.shape == (2, 5)
+
+    h4, (v4, c4) = cell(x_batched, (None, c3))
+    assert h4.shape == v4.shape == c4.shape == (2, 5)
+
+
+def test_mclstm_cell_gradients():
+    cell = MCLSTMCell(4, 5, bias=False)
+    x = torch.randn(2, 4, requires_grad=True)
+
+    h, (v, c) = cell(x)
+    (h.sum() + v.sum() + c.sum()).backward()
+
+    assert x.grad is not None
+    for p in cell.parameters():
+        if p.requires_grad:
+            assert p.grad is not None
+
+
+def test_mclstm_cell_matches_paper_update():
+    cell = MCLSTMCell(2, 2, bias=False, recurrent_bias=False)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.arange(20, dtype=torch.float32).reshape(10, 2) * 0.1)
+        cell.weight_hh.copy_(torch.arange(20, dtype=torch.float32).reshape(10, 2) * -0.1)
+
+    x = torch.tensor([[0.2, -0.3]])
+    v = torch.tensor([[0.1, -0.2]])
+    c = torch.tensor([[0.4, -0.5]])
+
+    h, (new_v, new_c) = cell(x, (v, c))
+    gates = x @ cell.weight_ih.t() + v @ cell.weight_hh.t()
+    f_pre, i_pre, o_pre, m_pre, n_pre = gates.chunk(5, 1)
+    forget_gate = torch.sigmoid(f_pre)
+    input_gate = torch.sigmoid(i_pre)
+    output_gate = torch.sigmoid(o_pre)
+    control_gate = torch.sigmoid(m_pre)
+    candidate = torch.tanh(n_pre)
+
+    expected_c = forget_gate * c + input_gate * candidate
+    expected_h = output_gate * torch.tanh(expected_c)
+    expected_v = control_gate * torch.tanh(expected_c)
+
+    assert torch.allclose(new_c, expected_c)
+    assert torch.allclose(h, expected_h)
+    assert torch.allclose(new_v, expected_v)
 
 
 @pytest.mark.parametrize("Cell, in_size, hid_size, _", CELL_CASES)

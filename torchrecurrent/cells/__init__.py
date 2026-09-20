@@ -9,12 +9,14 @@ from .antisymmetricrnn_cell import (
 from .atr_cell import ATRCell, ATR
 from .br_cell import BR, BRCell, NBR, NBRCell
 from .cfn_cell import CFN, CFNCell
+from .mclstm_cell import MCLSTM, MCLSTMCell
 from .mgu_cell import MGU, MGUCell
 from .minimalrnn_cell import MinimalRNN, MinimalRNNCell
 from .miru_cell import MiRU1, MiRU1Cell, MiRU2, MiRU2Cell
 from .cornn_cell import coRNN, coRNNCell
 from .fastrnn_cell import FastRNN, FastRNNCell, FastGRNN, FastGRNNCell
 from .indrnn_cell import IndRNN, IndRNNCell
+from .intersectionrnn_cell import IntersectionRNN, IntersectionRNNCell
 from .janet_cell import JANET, JANETCell
 from .lem_cell import LEM, LEMCell
 from .ligru_cell import LiGRU, LiGRUCell
@@ -31,6 +33,7 @@ from .sgu_cell import DSGU, DSGUCell, SGU, SGUCell
 from .sgrn_cell import SGRN, SGRNCell
 from .star_cell import STAR, STARCell
 from .taugru_cell import tauGRU, tauGRUCell
+from .trnn_cell import TRNN, TRNNCell, TGRU, TGRUCell, TLSTM, TLSTMCell
 from .ugrnn_cell import UGRNN, UGRNNCell
 from .unicornn_cell import UnICORNN, UnICORNNCell
 from .wmclstm_cell import WMCLSTM, WMCLSTMCell
@@ -51,6 +54,8 @@ __all__ = [
     "NBRCell",
     "CFN",
     "CFNCell",
+    "MCLSTM",
+    "MCLSTMCell",
     "MGU",
     "MGUCell",
     "MinimalRNN",
@@ -67,6 +72,8 @@ __all__ = [
     "FastGRNNCell",
     "IndRNN",
     "IndRNNCell",
+    "IntersectionRNN",
+    "IntersectionRNNCell",
     "JANET",
     "JANETCell",
     "LEM",
@@ -105,6 +112,12 @@ __all__ = [
     "STARCell",
     "tauGRU",
     "tauGRUCell",
+    "TRNN",
+    "TRNNCell",
+    "TGRU",
+    "TGRUCell",
+    "TLSTM",
+    "TLSTMCell",
     "UGRNN",
     "UGRNNCell",
     "UnICORNN",

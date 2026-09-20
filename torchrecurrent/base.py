@@ -269,6 +269,38 @@ class DoubleStateCellBase(RecurrentCellBase):
         raise NotImplementedError
 
 
+class DecoupledSingleStateCellBase(RecurrentCellBase):
+    """
+    Interface for cells whose per-step output is not the tensor that recurs
+    in time (e.g. a model with a separate "prediction" and "control" signal):
+      forward(inp, state) -> (output, new_state)
+    Unlike SingleStateCellBase, `output` is returned separately from
+    `new_state` instead of being the same tensor.
+    """
+
+    def uses_double_state(self) -> bool:
+        return False
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tuple[Tensor, Tensor]:
+        raise NotImplementedError
+
+
+class DecoupledDoubleStateCellBase(RecurrentCellBase):
+    """
+    Interface for double-state cells whose per-step output is not either
+    state component:
+      forward(inp, (s1, s2)) -> (output, (new_s1, new_s2))
+    """
+
+    def uses_double_state(self) -> bool:
+        return True
+
+    def forward(
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
+    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
+        raise NotImplementedError
+
+
 # Recurrent layers
 class RecurrentLayerBase(nn.Module):
     __constants__ = ["input_size", "hidden_size", "num_layers", "batch_first", "dropout"]
@@ -396,6 +428,103 @@ class DoubleStateRecurrentLayerBase(RecurrentLayerBase):
                     x = self.dropout_layer(x)
 
             state = (torch.stack(new_h, dim=0), torch.stack(new_c, dim=0))
+            outputs.append(x)
+
+        out = torch.stack(outputs, dim=0)
+        if self.batch_first:
+            out = out.transpose(0, 1)
+        return out, state
+
+
+class DecoupledSingleStateRecurrentLayerBase(RecurrentLayerBase):
+    """
+    Like SingleStateRecurrentLayerBase, but each cell returns (output, new_state)
+    with output distinct from new_state: output feeds the next layer, new_state
+    feeds the same layer's next timestep.
+    """
+
+    def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tuple[Tensor, Tensor]:
+        if self.batch_first:
+            inp = inp.transpose(0, 1)
+
+        seq_len, batch_size, _ = inp.size()
+
+        if state is None:
+            state = torch.zeros(
+                self.num_layers,
+                batch_size,
+                self.hidden_size,
+                dtype=inp.dtype,
+                device=inp.device,
+            )
+
+        outputs = torch.jit.annotate(List[Tensor], [])
+
+        for t in range(seq_len):
+            x = inp[t]
+            new_states = torch.jit.annotate(List[Tensor], [])
+
+            for layer_idx, cell in enumerate(self.cells):
+                s_prev = state[layer_idx]
+                out, s_new = cell(x, s_prev)
+                new_states.append(s_new)
+                x = out
+                if self.dropout_layer is not None and layer_idx < self.num_layers - 1:
+                    x = self.dropout_layer(x)
+
+            state = torch.stack(new_states, dim=0)
+            outputs.append(x)
+
+        out = torch.stack(outputs, dim=0)
+        if self.batch_first:
+            out = out.transpose(0, 1)
+        return out, state
+
+
+class DecoupledDoubleStateRecurrentLayerBase(RecurrentLayerBase):
+    """
+    Like DoubleStateRecurrentLayerBase, but each cell returns
+    (output, (new_s1, new_s2)) with output distinct from either state
+    component: output feeds the next layer, (new_s1, new_s2) feed the same
+    layer's next timestep.
+    """
+
+    def forward(
+        self, inp: Tensor, state: Optional[Tuple[Tensor, Tensor]] = None
+    ) -> Tuple[Tensor, Tuple[Tensor, Tensor]]:
+        if self.batch_first:
+            inp = inp.transpose(0, 1)
+
+        seq_len, batch_size, _ = inp.size()
+
+        if state is None:
+            s1 = torch.zeros(
+                self.num_layers,
+                batch_size,
+                self.hidden_size,
+                dtype=inp.dtype,
+                device=inp.device,
+            )
+            s2 = torch.zeros_like(s1)
+            state = (s1, s2)
+
+        outputs = torch.jit.annotate(List[Tensor], [])
+
+        for t in range(seq_len):
+            x = inp[t]
+            new_s1 = torch.jit.annotate(List[Tensor], [])
+            new_s2 = torch.jit.annotate(List[Tensor], [])
+            s1_prev, s2_prev = state
+
+            for layer_idx, cell in enumerate(self.cells):
+                out, (s1_i, s2_i) = cell(x, (s1_prev[layer_idx], s2_prev[layer_idx]))
+                new_s1.append(s1_i)
+                new_s2.append(s2_i)
+                x = out
+                if self.dropout_layer is not None and layer_idx < self.num_layers - 1:
+                    x = self.dropout_layer(x)
+
+            state = (torch.stack(new_s1, dim=0), torch.stack(new_s2, dim=0))
             outputs.append(x)
 
         out = torch.stack(outputs, dim=0)
