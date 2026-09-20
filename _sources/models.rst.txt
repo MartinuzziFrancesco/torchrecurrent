@@ -47,6 +47,9 @@ references and official implementations where available.
    * - :doc:`IndRNN <generated/torchrecurrent.IndRNN>`
      - `CVPR 2018 <https://arxiv.org/abs/1803.04831>`__
      - `Sunnydreamrain/IndRNN_Theano_Lasagne <https://github.com/Sunnydreamrain/IndRNN_Theano_Lasagne>`__
+   * - :doc:`IntersectionRNN <generated/torchrecurrent.IntersectionRNN>`
+     - `ICLR 2017 <https://arxiv.org/abs/1611.09913>`__
+     - –
    * - :doc:`JANET <generated/torchrecurrent.JANET>`
      - `arXiv 2018 <https://arxiv.org/abs/1804.04849>`__
      - `JosvanderWesthuizen/janet <https://github.com/JosvanderWesthuizen/janet>`__
@@ -58,6 +61,9 @@ references and official implementations where available.
      - `mravanelli/theano-kaldi-rnn <https://github.com/mravanelli/theano-kaldi-rnn/>`__
    * - :doc:`LightRU <generated/torchrecurrent.LightRU>`
      - `MDPI Electronics 2023 <https://www.mdpi.com/2079-9292/13/16/3204>`__
+     - –
+   * - :doc:`MCLSTM <generated/torchrecurrent.MCLSTM>`
+     - `NIPS 2017 workshop <https://www.intel.com/content/dam/www/public/us/en/ai/documents/Sequence-Modeling-NIPS-2017.pdf>`__
      - –
    * - :doc:`MGU <generated/torchrecurrent.MGU>`
      - `IJAC 2016 <https://arxiv.org/abs/1603.09420>`__
@@ -115,6 +121,15 @@ references and official implementations where available.
      - `0zgur0/STAckable-Recurrent-network <https://github.com/0zgur0/STAckable-Recurrent-network>`__
    * - :doc:`tauGRU <generated/torchrecurrent.tauGRU>`
      - `AISTATS 2025 <https://arxiv.org/abs/2212.00228>`__
+     - –
+   * - :doc:`TRNN <generated/torchrecurrent.TRNN>`
+     - `ICML 2016 <https://arxiv.org/abs/1602.02218>`__
+     - –
+   * - :doc:`TGRU <generated/torchrecurrent.TGRU>`
+     - `ICML 2016 <https://arxiv.org/abs/1602.02218>`__
+     - –
+   * - :doc:`TLSTM <generated/torchrecurrent.TLSTM>`
+     - `ICML 2016 <https://arxiv.org/abs/1602.02218>`__
      - –
    * - :doc:`UGRNN <generated/torchrecurrent.UGRNN>`
      - `ICLR 2017 <https://arxiv.org/abs/1611.09913>`__

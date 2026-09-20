@@ -1,0 +1,951 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>torchrecurrent.MCLSTMCell &#8212; torchrecurrent</title>
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=cb8930eaaf36d9849b67" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=8f2a1f02" />
+  
+  <!-- So that users can add custom icons -->
+  <script defer src="../_static/scripts/fontawesome.js?digest=cb8930eaaf36d9849b67"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67" />
+
+    <script src="../_static/documentation_options.js?v=1e825a29"></script>
+    <script src="../_static/doctools.js?v=fd6eb6e6"></script>
+    <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
+    <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.MCLSTMCell';</script>
+    <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
+    <link rel="icon" href="../_static/favicon.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="torchrecurrent.MGUCell" href="torchrecurrent.MGUCell.html" />
+    <link rel="prev" title="torchrecurrent.LiGRUCell" href="torchrecurrent.LiGRUCell.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="" />
+  
+    
+    <script src="../_static/searchtools.js"></script>
+    <script src="../_static/language_data.js"></script>
+    <script src="../searchindex.js"></script>
+  
+  </head>
+  <body data-default-mode="">
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+  
+  
+  
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+    <header id="pst-header" class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+    
+  
+
+<a class="navbar-brand logo" href="../index.html">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/logo-long2.png" class="logo__image only-light" alt="torchrecurrent - Home"/>
+    <img src="../_static/logo-long2.png" class="logo__image only-dark pst-js-only" alt="torchrecurrent - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/MartinuzziFrancesco/torchrecurrent">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+        </div>
+      
+      
+        <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinuzziFrancesco/torchrecurrent" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+
+<button class="btn search-button-field search-button__button pst-js-only" title="Search" aria-label="Search" data-bs-placement="bottom" data-bs-toggle="tooltip">
+ <i class="fa-solid fa-magnifying-glass"></i>
+ <span class="search-button__default-text">Search</span>
+ <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd class="kbd-shortcut__modifier">K</kbd></span>
+</button>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../models.html">
+    Models
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../api/index.html">
+    API Manual
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-external" href="https://github.com/MartinuzziFrancesco/torchrecurrent">
+    GitHub
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+
+<div class="theme-switch-container dropdown pst-js-only" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Color mode">
+  <button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button dropdown-toggle" aria-label="Color mode" data-bs-toggle="dropdown">
+    <i class="theme-switch fa-solid fa-sun fa-lg fa-fw" data-mode="light" title="Light"></i>
+    <i class="theme-switch fa-solid fa-moon fa-lg fa-fw" data-mode="dark" title="Dark"></i>
+    <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg fa-fw" data-mode="auto" title="System Settings"></i>
+  </button>
+  <ul class="dropdown-menu dropdown-menu-end">
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="auto"><i class="fa-solid fa-circle-half-stroke fa-lg fa-fw me-1"></i>System Settings</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="light"><i class="fa-solid fa-sun fa-lg fa-fw me-1"></i>Light</button></li>
+    <li><button class="dropdown-item d-flex align-items-center theme-change-button" data-mode="dark"><i class="fa-solid fa-moon fa-lg fa-fw me-1"></i>Dark</button></li>
+  </ul>
+</div></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/MartinuzziFrancesco/torchrecurrent" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i><span class="visually-hidden">GitHub</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item pst-sidebar-collapse"><button id="pst-collapse-sidebar-button" aria-expanded="true" aria-controls="pst-primary-sidebar">
+  <svg class="pst-icon" role="img" aria-hidden="true" focusable="false" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+    <path fill="currentColor" d="M3 15.5C2.36232 15.5 1.74874 15.2564 1.28478 14.8189C0.820828 14.3815 0.541576 13.7832 0.504167 13.1467L0.5 13L0.5 3C0.499965 2.36232 0.743605 1.74874 1.18107 1.28478C1.61854 0.820828 2.21676 0.541576 2.85333 0.504167L3 0.5L13 0.5C13.6377 0.499965 14.2513 0.743605 14.7152 1.18107C15.1792 1.61854 15.4584 2.21676 15.4958 2.85333L15.5 3L15.5 13C15.5 13.6377 15.2564 14.2513 14.8189 14.7152C14.3815 15.1792 13.7832 15.4584 13.1467 15.4958L13 15.5L3 15.5ZM3 13.8333L10.5 13.8333L10.5 2.16667L3 2.16667C2.79589 2.16669 2.59889 2.24163 2.44636 2.37726C2.29383 2.5129 2.19638 2.69979 2.1725 2.9025L2.16667 3L2.16667 13C2.16669 13.2041 2.24163 13.4011 2.37726 13.5536C2.5129 13.7062 2.69979 13.8036 2.9025 13.8275L3 13.8333ZM6.65583 10.325L6.5775 10.2558L4.91083 8.58917C4.76735 8.44567 4.68116 8.25476 4.66843 8.05223C4.65569 7.84971 4.71729 7.6495 4.84167 7.48917L4.91083 7.41083L6.5775 5.74417C6.72747 5.59471 6.9287 5.50794 7.14032 5.50148C7.35194 5.49502 7.55809 5.56935 7.7169 5.70937C7.8757 5.8494 7.97525 6.04463 7.99533 6.25539C8.01541 6.46616 7.95451 6.67667 7.825 6.84417L7.75583 6.9225L6.67917 8L7.75583 9.0775C7.89931 9.22099 7.98551 9.41191 7.99824 9.61443C8.01097 9.81695 7.94938 10.0172 7.825 10.1775L7.75583 10.2558C7.61234 10.3993 7.42142 10.4855 7.2189 10.4982C7.01638 10.511 6.81617 10.4494 6.65583 10.325Z"/>
+  </svg>
+  <span class="pst-collapse-sidebar-label">Collapse Sidebar</span>
+  <span class="pst-expand-sidebar-label">Expand Sidebar</span>
+</button></div>
+        <div class="sidebar-primary-item">
+
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../api/cells.html">Recurrent Cells Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.AntisymmetricRNNCell.html">torchrecurrent.AntisymmetricRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.GatedAntisymmetricRNNCell.html">torchrecurrent.GatedAntisymmetricRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NBRCell.html">torchrecurrent.NBRCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.BRCell.html">torchrecurrent.BRCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.CFNCell.html">torchrecurrent.CFNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.DSGUCell.html">torchrecurrent.DSGUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.coRNNCell.html">torchrecurrent.coRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastRNNCell.html">torchrecurrent.FastRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastGRNNCell.html">torchrecurrent.FastGRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ATRCell.html">torchrecurrent.ATRCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IndRNNCell.html">torchrecurrent.IndRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IntersectionRNNCell.html">torchrecurrent.IntersectionRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.JANETCell.html">torchrecurrent.JANETCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LEMCell.html">torchrecurrent.LEMCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRUCell.html">torchrecurrent.LightRUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRUCell.html">torchrecurrent.LiGRUCell</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.MCLSTMCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGUCell.html">torchrecurrent.MGUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MinimalRNNCell.html">torchrecurrent.MinimalRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1Cell.html">torchrecurrent.MiRU1Cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2Cell.html">torchrecurrent.MiRU2Cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTMCell.html">torchrecurrent.MultiplicativeLSTMCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT1Cell.html">torchrecurrent.MUT1Cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2Cell.html">torchrecurrent.MUT2Cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT3Cell.html">torchrecurrent.MUT3Cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NASCell.html">torchrecurrent.NASCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.OriginalLSTMCell.html">torchrecurrent.OriginalLSTMCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.PeepholeLSTMCell.html">torchrecurrent.PeepholeLSTMCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.RANCell.html">torchrecurrent.RANCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ResLSTMCell.html">torchrecurrent.ResLSTMCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SCRNCell.html">torchrecurrent.SCRNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGUCell.html">torchrecurrent.SGUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGRNCell.html">torchrecurrent.SGRNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.STARCell.html">torchrecurrent.STARCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.tauGRUCell.html">torchrecurrent.tauGRUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.TRNNCell.html">torchrecurrent.TRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.TGRUCell.html">torchrecurrent.TGRUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.TLSTMCell.html">torchrecurrent.TLSTMCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UGRNNCell.html">torchrecurrent.UGRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UnICORNNCell.html">torchrecurrent.UnICORNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.WMCLSTMCell.html">torchrecurrent.WMCLSTMCell</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/layers.html">Recurrent Layers Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.AntisymmetricRNN.html">torchrecurrent.AntisymmetricRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.GatedAntisymmetricRNN.html">torchrecurrent.GatedAntisymmetricRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NBR.html">torchrecurrent.NBR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.BR.html">torchrecurrent.BR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.CFN.html">torchrecurrent.CFN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.DSGU.html">torchrecurrent.DSGU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.coRNN.html">torchrecurrent.coRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastRNN.html">torchrecurrent.FastRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastGRNN.html">torchrecurrent.FastGRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ATR.html">torchrecurrent.ATR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IndRNN.html">torchrecurrent.IndRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IntersectionRNN.html">torchrecurrent.IntersectionRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.JANET.html">torchrecurrent.JANET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LEM.html">torchrecurrent.LEM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRU.html">torchrecurrent.LightRU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRU.html">torchrecurrent.LiGRU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MCLSTM.html">torchrecurrent.MCLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGU.html">torchrecurrent.MGU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MinimalRNN.html">torchrecurrent.MinimalRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1.html">torchrecurrent.MiRU1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2.html">torchrecurrent.MiRU2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTM.html">torchrecurrent.MultiplicativeLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT1.html">torchrecurrent.MUT1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT2.html">torchrecurrent.MUT2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MUT3.html">torchrecurrent.MUT3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.NAS.html">torchrecurrent.NAS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.OriginalLSTM.html">torchrecurrent.OriginalLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.PeepholeLSTM.html">torchrecurrent.PeepholeLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.RAN.html">torchrecurrent.RAN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ResLSTM.html">torchrecurrent.ResLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SCRN.html">torchrecurrent.SCRN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGU.html">torchrecurrent.SGU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.SGRN.html">torchrecurrent.SGRN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.STAR.html">torchrecurrent.STAR</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.tauGRU.html">torchrecurrent.tauGRU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.TRNN.html">torchrecurrent.TRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.TGRU.html">torchrecurrent.TGRU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.TLSTM.html">torchrecurrent.TLSTM</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UGRNN.html">torchrecurrent.UGRNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.UnICORNN.html">torchrecurrent.UnICORNN</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.WMCLSTM.html">torchrecurrent.WMCLSTM</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1 has-children"><a class="reference internal" href="../api/benchmarks.html">Benchmarks Reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.benchmarks.adding_problem.html">torchrecurrent.benchmarks.adding_problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.benchmarks.copy_memory.html">torchrecurrent.benchmarks.copy_memory</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.benchmarks.penn_treebank.html">torchrecurrent.benchmarks.penn_treebank</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.benchmarks.sequential_cifar10.html">torchrecurrent.benchmarks.sequential_cifar10</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.benchmarks.sequential_mnist.html">torchrecurrent.benchmarks.sequential_mnist</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.benchmarks.timit.html">torchrecurrent.benchmarks.timit</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+
+<nav aria-label="Breadcrumb" class="d-print-none">
+  <ul class="bd-breadcrumbs">
+    
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="../index.html" class="nav-link" aria-label="Home">
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+    
+    <li class="breadcrumb-item"><a href="../api/index.html" class="nav-link">API Manual</a></li>
+    
+    
+    <li class="breadcrumb-item"><a href="../api/cells.html" class="nav-link">Recurrent Cells Reference</a></li>
+    
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.MCLSTMCell</span></li>
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="torchrecurrent-mclstmcell">
+<h1>torchrecurrent.MCLSTMCell<a class="headerlink" href="#torchrecurrent-mclstmcell" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="torchrecurrent.MCLSTMCell">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">MCLSTMCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tanh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/mclstm_cell.html#MCLSTMCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MCLSTMCell" title="Link to this definition">#</a></dt>
+<dd><p>A memory-controller LSTM (MC-LSTM) cell.</p>
+<p>[<a class="reference external" href="https://www.intel.com/content/dam/www/public/us/en/ai/documents/Sequence-Modeling-NIPS-2017.pdf">NIPS 2017 workshop</a>]</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\mathbf{f}(t) &amp;= \sigma\bigl(
+    \mathbf{W}_{ih}^{f}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{f}
+    + \mathbf{W}_{hh}^{f}\,\mathbf{v}(t-1) + \mathbf{b}_{hh}^{f}
+\bigr), \\[4pt]
+\mathbf{i}(t) &amp;= \sigma\bigl(
+    \mathbf{W}_{ih}^{i}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{i}
+    + \mathbf{W}_{hh}^{i}\,\mathbf{v}(t-1) + \mathbf{b}_{hh}^{i}
+\bigr), \\[4pt]
+\mathbf{o}(t) &amp;= \sigma\bigl(
+    \mathbf{W}_{ih}^{o}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{o}
+    + \mathbf{W}_{hh}^{o}\,\mathbf{v}(t-1) + \mathbf{b}_{hh}^{o}
+\bigr), \\[4pt]
+\mathbf{m}(t) &amp;= \sigma\bigl(
+    \mathbf{W}_{ih}^{m}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{m}
+    + \mathbf{W}_{hh}^{m}\,\mathbf{v}(t-1) + \mathbf{b}_{hh}^{m}
+\bigr), \\[4pt]
+\mathbf{n}(t) &amp;= \tanh\bigl(
+    \mathbf{W}_{ih}^{n}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{n}
+    + \mathbf{W}_{hh}^{n}\,\mathbf{v}(t-1) + \mathbf{b}_{hh}^{n}
+\bigr), \\[4pt]
+\mathbf{c}(t) &amp;= \mathbf{f}(t)\circ\mathbf{c}(t-1)
+    + \mathbf{i}(t)\circ\mathbf{n}(t), \\[4pt]
+\mathbf{h}(t) &amp;= \mathbf{o}(t)\circ\tanh\bigl(\mathbf{c}(t)\bigr), \\[4pt]
+\mathbf{v}(t) &amp;= \mathbf{m}(t)\circ\tanh\bigl(\mathbf{c}(t)\bigr),\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\sigma\)</span> is the sigmoid function and <span class="math notranslate nohighlight">\(\circ\)</span> is
+element-wise product. Every gate depends on the <em>control vector</em>
+<span class="math notranslate nohighlight">\(\mathbf{v}(t-1)\)</span>, never on <span class="math notranslate nohighlight">\(\mathbf{h}(t-1)\)</span>. The returned
+output <span class="math notranslate nohighlight">\(\mathbf{h}(t)\)</span> and the recurring state
+<span class="math notranslate nohighlight">\((\mathbf{v}(t), \mathbf{c}(t))\)</span> are different tensors:
+<span class="math notranslate nohighlight">\(\mathbf{h}(t)\)</span> is free to specialize as a pure prediction, since
+it plays no role in the next step’s gating.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_size</strong> – The number of expected features in the input <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>hidden_size</strong> – The number of features in the hidden and control states.</p></li>
+<li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use input-side biases.
+Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use the biases
+paired with <code class="docutils literal notranslate"><span class="pre">W_{hh}</span></code>. Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>gate_nonlinearity</strong> – Activation <span class="math notranslate nohighlight">\(\sigma\)</span> for the four gates.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.sigmoid()</span></code>.</p></li>
+<li><p><strong>cell_nonlinearity</strong> – Activation for the candidate content <code class="docutils literal notranslate"><span class="pre">n</span></code>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.tanh()</span></code>.</p></li>
+<li><p><strong>kernel_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">W_{ih}</span></code>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code>.</p></li>
+<li><p><strong>recurrent_kernel_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">W_{hh}</span></code>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code>.</p></li>
+<li><p><strong>bias_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">b_{ih}</span></code> when <code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code>.</p></li>
+<li><p><strong>recurrent_bias_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">b_{hh}</span></code> when
+<code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>. Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code>.</p></li>
+<li><p><strong>device</strong> – The desired device of parameters.</p></li>
+<li><p><strong>dtype</strong> – The desired floating point type of parameters.</p></li>
+</ul>
+</dd>
+</dl>
+<dl>
+<dt>Inputs: input, (v_0, c_0)</dt><dd><ul class="simple">
+<li><p><strong>input</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">input_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(input_size,)</span></code>:
+Tensor containing input features.</p></li>
+<li><p><strong>v_0</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">hidden_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(hidden_size,)</span></code>:
+Tensor containing the initial control state.</p></li>
+<li><p><strong>c_0</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">hidden_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(hidden_size,)</span></code>:
+Tensor containing the initial cell state.</p></li>
+</ul>
+<p>If not provided, both default to zero.</p>
+</dd>
+<dt>Outputs: h_1, (v_1, c_1)</dt><dd><ul class="simple">
+<li><p><strong>h_1</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">hidden_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(hidden_size,)</span></code>:
+Tensor containing the output (prediction).</p></li>
+<li><p><strong>v_1</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">hidden_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(hidden_size,)</span></code>:
+Tensor containing the next control state.</p></li>
+<li><p><strong>c_1</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">hidden_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(hidden_size,)</span></code>:
+Tensor containing the next cell state.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Variables<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>weight_ih</strong> – The learnable input-hidden weights,
+of shape <code class="docutils literal notranslate"><span class="pre">(5*hidden_size,</span> <span class="pre">input_size)</span></code> (<code class="docutils literal notranslate"><span class="pre">f,</span> <span class="pre">i,</span> <span class="pre">o,</span> <span class="pre">m,</span> <span class="pre">n</span></code> parts).</p></li>
+<li><p><strong>weight_hh</strong> – The learnable weights applied to the control state,
+of shape <code class="docutils literal notranslate"><span class="pre">(5*hidden_size,</span> <span class="pre">hidden_size)</span></code> (<code class="docutils literal notranslate"><span class="pre">f,</span> <span class="pre">i,</span> <span class="pre">o,</span> <span class="pre">m,</span> <span class="pre">n</span></code> parts).</p></li>
+<li><p><strong>bias_ih</strong> – The learnable input-hidden biases,
+of shape <code class="docutils literal notranslate"><span class="pre">(5*hidden_size)</span></code> if <code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.</p></li>
+<li><p><strong>bias_hh</strong> – The learnable biases paired with <code class="docutils literal notranslate"><span class="pre">weight_hh</span></code>,
+of shape <code class="docutils literal notranslate"><span class="pre">(5*hidden_size)</span></code> if <code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Examples:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">MCLSTMCell</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>     <span class="c1"># (time_steps, batch, input_size)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">v</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>        <span class="c1"># (batch, hidden_size)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">c</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)):</span>
+<span class="gp">... </span>    <span class="n">h</span><span class="p">,</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span> <span class="o">=</span> <span class="n">cell</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">t</span><span class="p">],</span> <span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">c</span><span class="p">))</span>
+<span class="gp">... </span>    <span class="n">out</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span> <span class="c1"># (time_steps, batch, hidden_size)</span>
+</pre></div>
+</div>
+<dl class="py method">
+<dt class="sig sig-object py" id="torchrecurrent.MCLSTMCell.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cell_nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tanh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/mclstm_cell.html#MCLSTMCell.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MCLSTMCell.__init__" title="Link to this definition">#</a></dt>
+<dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
+</dd></dl>
+
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.MCLSTMCell.__init__" title="torchrecurrent.MCLSTMCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
+<td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_module</span></code>(name, module)</p></td>
+<td><p>Add a child module to the current module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">apply</span></code>(fn)</p></td>
+<td><p>Apply <code class="docutils literal notranslate"><span class="pre">fn</span></code> recursively to every submodule (as returned by <code class="docutils literal notranslate"><span class="pre">.children()</span></code>) as well as self.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bfloat16</span></code>()</p></td>
+<td><p>Casts all floating point parameters and buffers to <code class="docutils literal notranslate"><span class="pre">bfloat16</span></code> datatype.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">buffers</span></code>([recurse])</p></td>
+<td><p>Return an iterator over module buffers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">children</span></code>()</p></td>
+<td><p>Return an iterator over immediate children modules.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">compile</span></code>(*args, **kwargs)</p></td>
+<td><p>Compile this Module's forward using <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.compile()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cpu</span></code>()</p></td>
+<td><p>Move all model parameters and buffers to the CPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">cuda</span></code>([device])</p></td>
+<td><p>Move all model parameters and buffers to the GPU.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">double</span></code>()</p></td>
+<td><p>Casts all floating point parameters and buffers to <code class="docutils literal notranslate"><span class="pre">double</span></code> datatype.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">eval</span></code>()</p></td>
+<td><p>Set the module in evaluation mode.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">extra_repr</span></code>()</p></td>
+<td><p>Return the extra representation of the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">float</span></code>()</p></td>
+<td><p>Casts all floating point parameters and buffers to <code class="docutils literal notranslate"><span class="pre">float</span></code> datatype.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">forward</span></code>(inp[, state])</p></td>
+<td><p>Define the computation performed at every call.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_buffer</span></code>(target)</p></td>
+<td><p>Return the buffer given by <code class="docutils literal notranslate"><span class="pre">target</span></code> if it exists, otherwise throw an error.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_extra_state</span></code>()</p></td>
+<td><p>Return any extra state to include in the module's state_dict.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_parameter</span></code>(target)</p></td>
+<td><p>Return the parameter given by <code class="docutils literal notranslate"><span class="pre">target</span></code> if it exists, otherwise throw an error.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">get_submodule</span></code>(target)</p></td>
+<td><p>Return the submodule given by <code class="docutils literal notranslate"><span class="pre">target</span></code> if it exists, otherwise throw an error.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">half</span></code>()</p></td>
+<td><p>Casts all floating point parameters and buffers to <code class="docutils literal notranslate"><span class="pre">half</span></code> datatype.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">ipu</span></code>([device])</p></td>
+<td><p>Move all model parameters and buffers to the IPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">load_state_dict</span></code>(state_dict[, strict, assign])</p></td>
+<td><p>Copy parameters and buffers from <code class="xref py py-attr docutils literal notranslate"><span class="pre">state_dict</span></code> into this module and its descendants.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">modules</span></code>([remove_duplicate])</p></td>
+<td><p>Return an iterator over all modules in the network.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">mtia</span></code>([device])</p></td>
+<td><p>Move all model parameters and buffers to the MTIA.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">named_buffers</span></code>([prefix, recurse, ...])</p></td>
+<td><p>Return an iterator over module buffers, yielding both the name of the buffer as well as the buffer itself.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">named_children</span></code>()</p></td>
+<td><p>Return an iterator over immediate children modules, yielding both the name of the module as well as the module itself.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">named_modules</span></code>([memo, prefix, remove_duplicate])</p></td>
+<td><p>Return an iterator over all modules in the network, yielding both the name of the module as well as the module itself.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">named_parameters</span></code>([prefix, recurse, ...])</p></td>
+<td><p>Return an iterator over module parameters, yielding both the name of the parameter as well as the parameter itself.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">parameters</span></code>([recurse])</p></td>
+<td><p>Return an iterator over module parameters.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_backward_hook</span></code>(hook)</p></td>
+<td><p>Register a backward hook on the module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_buffer</span></code>(name, tensor[, persistent])</p></td>
+<td><p>Add a buffer to the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_forward_hook</span></code>(hook, *[, prepend, ...])</p></td>
+<td><p>Register a forward hook on the module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_forward_pre_hook</span></code>(hook, *[, ...])</p></td>
+<td><p>Register a forward pre-hook on the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_full_backward_hook</span></code>(hook[, prepend])</p></td>
+<td><p>Register a backward hook on the module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_full_backward_pre_hook</span></code>(hook[, prepend])</p></td>
+<td><p>Register a backward pre-hook on the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_load_state_dict_post_hook</span></code>(hook)</p></td>
+<td><p>Register a post-hook to be run after module's <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code> is called.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_load_state_dict_pre_hook</span></code>(hook)</p></td>
+<td><p>Register a pre-hook to be run before module's <code class="xref py py-meth docutils literal notranslate"><span class="pre">load_state_dict()</span></code> is called.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_module</span></code>(name, module)</p></td>
+<td><p>Alias for <code class="xref py py-func docutils literal notranslate"><span class="pre">add_module()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_parameter</span></code>(name, param)</p></td>
+<td><p>Add a parameter to the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_state_dict_post_hook</span></code>(hook)</p></td>
+<td><p>Register a post-hook for the <code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code> method.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">register_state_dict_pre_hook</span></code>(hook)</p></td>
+<td><p>Register a pre-hook for the <code class="xref py py-meth docutils literal notranslate"><span class="pre">state_dict()</span></code> method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">requires_grad_</span></code>([requires_grad])</p></td>
+<td><p>Change if autograd should record operations on parameters in this module.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">reset_parameters</span></code>()</p></td>
+<td><p>Default initializer behavior by naming convention.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_extra_state</span></code>(state)</p></td>
+<td><p>Set extra state contained in the loaded <cite>state_dict</cite>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">set_submodule</span></code>(target, module[, strict])</p></td>
+<td><p>Set the submodule given by <code class="docutils literal notranslate"><span class="pre">target</span></code> if it exists, otherwise throw an error.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">share_memory</span></code>()</p></td>
+<td><p>See <code class="xref py py-meth docutils literal notranslate"><span class="pre">torch.Tensor.share_memory_()</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">state_dict</span></code>(*args[, destination, prefix, ...])</p></td>
+<td><p>Return a dictionary containing references to the whole state of the module.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code>(*args, **kwargs)</p></td>
+<td><p>Move and/or cast the parameters and buffers.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_empty</span></code>(*, device[, recurse])</p></td>
+<td><p>Move the parameters and buffers to the specified device without copying storage.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">train</span></code>([mode])</p></td>
+<td><p>Set the module in training mode.</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code>(dst_type)</p></td>
+<td><p>Casts all parameters and buffers to <code class="xref py py-attr docutils literal notranslate"><span class="pre">dst_type</span></code>.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">uses_double_state</span></code>()</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">xpu</span></code>([device])</p></td>
+<td><p>Move all model parameters and buffers to the XPU.</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">zero_grad</span></code>([set_to_none])</p></td>
+<td><p>Reset gradients of all model parameters.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table">
+<tbody>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">T_destination</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">call_super_init</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">dump_patches</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hidden_size</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">recurrent_bias</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+                <footer class="prev-next-footer d-print-none">
+                  
+<div class="prev-next-area">
+    <a class="left-prev"
+       href="torchrecurrent.LiGRUCell.html"
+       title="previous page">
+      <i class="fa-solid fa-angle-left"></i>
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">previous</p>
+        <p class="prev-next-title">torchrecurrent.LiGRUCell</p>
+      </div>
+    </a>
+    <a class="right-next"
+       href="torchrecurrent.MGUCell.html"
+       title="next page">
+      <div class="prev-next-info">
+        <p class="prev-next-subtitle">next</p>
+        <p class="prev-next-title">torchrecurrent.MGUCell</p>
+      </div>
+      <i class="fa-solid fa-angle-right"></i>
+    </a>
+</div>
+                </footer>
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="pst-show_toc_level nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.MCLSTMCell"><code class="docutils literal notranslate"><span class="pre">MCLSTMCell</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.MCLSTMCell.__init__"><code class="docutils literal notranslate"><span class="pre">MCLSTMCell.__init__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+  
+  <div class="tocsection editthispage">
+    <a href="https://github.com/MartinuzziFrancesco/torchrecurrent/edit/main/docs/generated/torchrecurrent.MCLSTMCell.rst">
+      <i class="fa-solid fa-pencil"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </div>
+</div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=cb8930eaaf36d9849b67"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=cb8930eaaf36d9849b67"></script>
+
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright 2025, Francesco Martinuzzi.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 9.1.0.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<p class="theme-version">
+  <!-- # L10n: Setting the PST URL as an argument as this does not need to be localized -->
+  Built with the <a href="https://pydata-sphinx-theme.readthedocs.io/en/stable/index.html">PyData Sphinx Theme</a> 0.21.0.
+</p></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

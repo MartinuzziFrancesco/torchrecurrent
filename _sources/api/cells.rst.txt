@@ -18,10 +18,12 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.FastGRNNCell
    torchrecurrent.ATRCell
    torchrecurrent.IndRNNCell
+   torchrecurrent.IntersectionRNNCell
    torchrecurrent.JANETCell
    torchrecurrent.LEMCell
    torchrecurrent.LightRUCell
    torchrecurrent.LiGRUCell
+   torchrecurrent.MCLSTMCell
    torchrecurrent.MGUCell
    torchrecurrent.MinimalRNNCell
    torchrecurrent.MiRU1Cell
@@ -40,6 +42,9 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.SGRNCell
    torchrecurrent.STARCell
    torchrecurrent.tauGRUCell
+   torchrecurrent.TRNNCell
+   torchrecurrent.TGRUCell
+   torchrecurrent.TLSTMCell
    torchrecurrent.UGRNNCell
    torchrecurrent.UnICORNNCell
    torchrecurrent.WMCLSTMCell

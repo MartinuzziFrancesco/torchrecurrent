@@ -18,10 +18,12 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.FastGRNN
    torchrecurrent.ATR
    torchrecurrent.IndRNN
+   torchrecurrent.IntersectionRNN
    torchrecurrent.JANET
    torchrecurrent.LEM
    torchrecurrent.LightRU
    torchrecurrent.LiGRU
+   torchrecurrent.MCLSTM
    torchrecurrent.MGU
    torchrecurrent.MinimalRNN
    torchrecurrent.MiRU1
@@ -40,6 +42,9 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.SGRN
    torchrecurrent.STAR
    torchrecurrent.tauGRU
+   torchrecurrent.TRNN
+   torchrecurrent.TGRU
+   torchrecurrent.TLSTM
    torchrecurrent.UGRNN
    torchrecurrent.UnICORNN
    torchrecurrent.WMCLSTM
