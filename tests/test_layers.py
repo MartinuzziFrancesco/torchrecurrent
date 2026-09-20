@@ -31,6 +31,8 @@ from torchrecurrent import (
     SGRN,
     STAR,
     tauGRU,
+    TRNN,
+    TGRU,
     UGRNN,
     UnICORNN,
     WMCLSTM,
@@ -65,6 +67,8 @@ LAYER_CLASSES = [
     SGRN,
     STAR,
     tauGRU,
+    TRNN,
+    TGRU,
     UGRNN,
     UnICORNN,
     WMCLSTM,
@@ -100,6 +104,7 @@ LAYER_CASES = [
     (SGRN, False),
     (STAR, False),
     (tauGRU, False),
+    (TRNN, False),
     (UGRNN, False),
     (UnICORNN, True),
     (WMCLSTM, True),
@@ -198,6 +203,99 @@ def test_layer_runs_on_device(Layer, is_double, device):
         if p.requires_grad:
             assert p.grad is not None
             assert p.grad.device.type == device.type
+
+
+def test_tgru_single_layer_supports_differing_sizes():
+    """TGRU's second state (x(t-1)) is input_size-shaped, not hidden_size-shaped:
+    a single layer works fine even when input_size != hidden_size."""
+    input_size, hidden_size = 5, 7
+    seq_len, batch_size = 4, 3
+
+    layer = TGRU(input_size, hidden_size, bias=False)
+    x = torch.randn(seq_len, batch_size, input_size)
+    out, (hn, xn) = layer(x)
+
+    assert out.shape == (seq_len, batch_size, hidden_size)
+    assert hn.shape == (1, batch_size, hidden_size)
+    assert isinstance(xn, tuple) and len(xn) == 1
+    assert xn[0].shape == (batch_size, input_size)
+
+
+def test_tgru_stacked_layers_have_per_layer_previous_input_shapes():
+    """Layer 0's previous-input state is input_size-shaped; every later layer's
+    is hidden_size-shaped, since it receives the previous layer's output."""
+    input_size, hidden_size = 5, 7
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = TGRU(input_size, hidden_size, num_layers=num_layers, bias=False)
+    x = torch.randn(seq_len, batch_size, input_size)
+    out, (hn, xn) = layer(x)
+
+    assert out.shape == (seq_len, batch_size, hidden_size)
+    assert hn.shape == (num_layers, batch_size, hidden_size)
+    assert isinstance(xn, tuple) and len(xn) == num_layers
+    assert xn[0].shape == (batch_size, input_size)
+    assert xn[1].shape == (batch_size, hidden_size)
+
+
+def test_tgru_previous_input_state_holds_last_seen_input():
+    """x_n[k] should be the actual last input layer k saw, not just correctly shaped."""
+    input_size, hidden_size = 5, 7
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = TGRU(input_size, hidden_size, num_layers=num_layers, bias=False)
+    x = torch.randn(seq_len, batch_size, input_size)
+    out, (hn, xn) = layer(x)
+
+    assert torch.equal(xn[0], x[-1])
+
+    # layer 1's own input at each timestep is layer 0's output at that timestep;
+    # recompute layer 0's per-timestep outputs manually to check xn[1].
+    h0 = torch.zeros(batch_size, hidden_size)
+    x0_prev = torch.zeros(batch_size, input_size)
+    for t in range(seq_len):
+        h0, x0_prev = layer.cells[0](x[t], (h0, x0_prev))
+    assert torch.allclose(xn[1], h0)
+
+
+def test_tgru_state_continuity_matches_single_call():
+    """Splitting a sequence in two and carrying state across calls must match
+    running the whole sequence in one call."""
+    input_size, hidden_size = 5, 7
+    seq_len, batch_size, num_layers = 6, 3, 2
+    split = 2
+
+    layer = TGRU(input_size, hidden_size, num_layers=num_layers, bias=False)
+    x = torch.randn(seq_len, batch_size, input_size)
+
+    out_full, _ = layer(x)
+
+    out1, state1 = layer(x[:split])
+    out2, _ = layer(x[split:], state1)
+    out_chunked = torch.cat([out1, out2], dim=0)
+
+    assert torch.allclose(out_chunked, out_full, atol=1e-6)
+
+
+def test_tgru_batch_first_matches_seq_first():
+    input_size, hidden_size = 5, 7
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = TGRU(input_size, hidden_size, num_layers=num_layers, bias=False)
+    layer_bf = TGRU(
+        input_size, hidden_size, num_layers=num_layers, bias=False, batch_first=True
+    )
+    layer_bf.load_state_dict(layer.state_dict())
+
+    x = torch.randn(seq_len, batch_size, input_size)
+    out, (hn, xn) = layer(x)
+    out_bf, (hn_bf, xn_bf) = layer_bf(x.transpose(0, 1))
+
+    assert torch.allclose(out_bf, out.transpose(0, 1))
+    assert torch.allclose(hn_bf, hn)
+    for a, b in zip(xn_bf, xn):
+        assert torch.allclose(a, b)
+    assert xn[1].shape == (batch_size, hidden_size)
 
 
 @pytest.mark.parametrize("Layer", LAYER_CLASSES)

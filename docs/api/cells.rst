@@ -39,6 +39,8 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.SGRNCell
    torchrecurrent.STARCell
    torchrecurrent.tauGRUCell
+   torchrecurrent.TRNNCell
+   torchrecurrent.TGRUCell
    torchrecurrent.UGRNNCell
    torchrecurrent.UnICORNNCell
    torchrecurrent.WMCLSTMCell

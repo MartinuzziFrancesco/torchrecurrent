@@ -39,6 +39,8 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.SGRN
    torchrecurrent.STAR
    torchrecurrent.tauGRU
+   torchrecurrent.TRNN
+   torchrecurrent.TGRU
    torchrecurrent.UGRNN
    torchrecurrent.UnICORNN
    torchrecurrent.WMCLSTM

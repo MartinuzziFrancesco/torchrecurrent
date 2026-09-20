@@ -113,6 +113,12 @@ references and official implementations where available.
    * - :doc:`tauGRU <generated/torchrecurrent.tauGRU>`
      - `AISTATS 2025 <https://arxiv.org/abs/2212.00228>`__
      - –
+   * - :doc:`TRNN <generated/torchrecurrent.TRNN>`
+     - `ICML 2016 <https://arxiv.org/abs/1602.02218>`__
+     - –
+   * - :doc:`TGRU <generated/torchrecurrent.TGRU>`
+     - `ICML 2016 <https://arxiv.org/abs/1602.02218>`__
+     - –
    * - :doc:`UGRNN <generated/torchrecurrent.UGRNN>`
      - `ICLR 2017 <https://arxiv.org/abs/1611.09913>`__
      - –
