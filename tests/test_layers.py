@@ -14,6 +14,7 @@ from torchrecurrent import (
     FastGRNN,
     GatedAntisymmetricRNN,
     IndRNN,
+    IntersectionRNN,
     LiGRU,
     LightRU,
     MGU,
@@ -296,6 +297,132 @@ def test_tgru_batch_first_matches_seq_first():
     for a, b in zip(xn_bf, xn):
         assert torch.allclose(a, b)
     assert xn[1].shape == (batch_size, hidden_size)
+
+
+def test_intersectionrnn_requires_equal_sizes():
+    with pytest.raises(ValueError, match="input_size == hidden_size"):
+        IntersectionRNN(3, 5)
+
+
+def test_intersectionrnn_shapes_and_state():
+    size = 6
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = IntersectionRNN(size, size, num_layers=num_layers, bias=False)
+    x = torch.randn(seq_len, batch_size, size)
+    out, hn = layer(x)
+
+    assert out.shape == (seq_len, batch_size, size)
+    assert isinstance(hn, Tensor)
+    assert hn.shape == (num_layers, batch_size, size)
+    # output and recurrent state are genuinely different tensors
+    assert not torch.allclose(out[-1], hn[-1])
+
+
+def test_intersectionrnn_batch_first_matches_seq_first():
+    size = 6
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = IntersectionRNN(size, size, num_layers=num_layers, bias=False)
+    layer_bf = IntersectionRNN(
+        size, size, num_layers=num_layers, bias=False, batch_first=True
+    )
+    layer_bf.load_state_dict(layer.state_dict())
+
+    x = torch.randn(seq_len, batch_size, size)
+    out, hn = layer(x)
+    out_bf, hn_bf = layer_bf(x.transpose(0, 1))
+
+    assert torch.allclose(out_bf, out.transpose(0, 1))
+    assert torch.allclose(hn_bf, hn)
+
+
+def test_intersectionrnn_state_continuity_matches_single_call():
+    size = 6
+    seq_len, batch_size, num_layers = 6, 3, 2
+    split = 2
+
+    layer = IntersectionRNN(size, size, num_layers=num_layers, bias=False)
+    x = torch.randn(seq_len, batch_size, size)
+
+    out_full, _ = layer(x)
+
+    out1, state1 = layer(x[:split])
+    out2, _ = layer(x[split:], state1)
+    out_chunked = torch.cat([out1, out2], dim=0)
+
+    assert torch.allclose(out_chunked, out_full, atol=1e-6)
+
+
+def test_intersectionrnn_stacking_forwards_output_not_state():
+    """Layer k+1 must receive layer k's y(t) (output), not its h(t) (state)."""
+    size = 5
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = IntersectionRNN(size, size, num_layers=num_layers, bias=False)
+    x = torch.randn(seq_len, batch_size, size)
+
+    out, hn = layer(x)
+
+    h_prev = [torch.zeros(batch_size, size) for _ in range(num_layers)]
+    expected_out = None
+    for t in range(seq_len):
+        layer_inp = x[t]
+        for layer_idx, cell in enumerate(layer.cells):
+            y, h_new = cell(layer_inp, h_prev[layer_idx])
+            h_prev[layer_idx] = h_new
+            layer_inp = y
+        expected_out = layer_inp
+
+    assert torch.allclose(out[-1], expected_out, atol=1e-6)
+    assert torch.allclose(hn[0], h_prev[0], atol=1e-6)
+    assert torch.allclose(hn[1], h_prev[1], atol=1e-6)
+
+
+def test_intersectionrnn_dropout_only_between_layers():
+    size = 5
+    seq_len, batch_size = 4, 3
+
+    # num_layers=1: dropout is never applied (no "next layer" to drop before),
+    # so output must be bit-identical regardless of the dropout probability.
+    torch.manual_seed(0)
+    layer_no_drop = IntersectionRNN(size, size, dropout=0.0, bias=False)
+    torch.manual_seed(0)
+    layer_high_drop = IntersectionRNN(size, size, dropout=0.9, bias=False)
+
+    x = torch.randn(seq_len, batch_size, size)
+    out_no_drop, _ = layer_no_drop(x)
+    out_high_drop, _ = layer_high_drop(x)
+
+    assert torch.equal(out_no_drop, out_high_drop)
+
+    # num_layers=2: dropout between layers must actually change the output.
+    torch.manual_seed(0)
+    stacked_no_drop = IntersectionRNN(size, size, num_layers=2, dropout=0.0, bias=False)
+    torch.manual_seed(0)
+    stacked_drop = IntersectionRNN(size, size, num_layers=2, dropout=0.9, bias=False)
+    stacked_drop.load_state_dict(stacked_no_drop.state_dict())
+
+    torch.manual_seed(1)
+    out_stacked_no_drop, _ = stacked_no_drop(x)
+    torch.manual_seed(1)
+    out_stacked_drop, _ = stacked_drop(x)
+
+    assert not torch.allclose(out_stacked_no_drop, out_stacked_drop)
+
+
+def test_intersectionrnn_repr():
+    r = repr(IntersectionRNN(5, 5))
+    assert r == "IntersectionRNN(5, 5)"
+
+    r = repr(IntersectionRNN(5, 5, num_layers=2))
+    assert "num_layers=2" in r
+
+    r = repr(IntersectionRNN(5, 5, dropout=0.5))
+    assert "dropout=0.5" in r
+
+    r = repr(IntersectionRNN(5, 5, batch_first=True))
+    assert "batch_first=True" in r
 
 
 @pytest.mark.parametrize("Layer", LAYER_CLASSES)

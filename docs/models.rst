@@ -47,6 +47,9 @@ references and official implementations where available.
    * - :doc:`IndRNN <generated/torchrecurrent.IndRNN>`
      - `CVPR 2018 <https://arxiv.org/abs/1803.04831>`__
      - `Sunnydreamrain/IndRNN_Theano_Lasagne <https://github.com/Sunnydreamrain/IndRNN_Theano_Lasagne>`__
+   * - :doc:`IntersectionRNN <generated/torchrecurrent.IntersectionRNN>`
+     - `ICLR 2017 <https://arxiv.org/abs/1611.09913>`__
+     - –
    * - :doc:`JANET <generated/torchrecurrent.JANET>`
      - `arXiv 2018 <https://arxiv.org/abs/1804.04849>`__
      - `JosvanderWesthuizen/janet <https://github.com/JosvanderWesthuizen/janet>`__

@@ -18,6 +18,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.FastGRNNCell
    torchrecurrent.ATRCell
    torchrecurrent.IndRNNCell
+   torchrecurrent.IntersectionRNNCell
    torchrecurrent.JANETCell
    torchrecurrent.LEMCell
    torchrecurrent.LightRUCell

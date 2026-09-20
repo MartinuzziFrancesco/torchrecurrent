@@ -19,6 +19,7 @@ from torchrecurrent import (
     GatedAntisymmetricRNNCell,
     MGUCell,
     IndRNNCell,
+    IntersectionRNNCell,
     LiGRUCell,
     LightRUCell,
     MultiplicativeLSTMCell,
@@ -302,6 +303,72 @@ def test_tgru_cell_matches_paper_update():
 
     assert torch.allclose(new_h, expected_h)
     assert torch.equal(new_x_prev, x)
+
+
+def test_intersectionrnn_cell_requires_equal_sizes():
+    with pytest.raises(ValueError, match="input_size == hidden_size"):
+        IntersectionRNNCell(3, 5)
+
+
+def test_intersectionrnn_cell_shapes():
+    cell = IntersectionRNNCell(4, 4)
+
+    assert cell.weight_ih.shape == (16, 4)
+    assert cell.weight_hh.shape == (16, 4)
+    assert cell.bias_ih.shape == (16,)
+    assert cell.bias_hh.shape == (16,)
+
+
+def test_intersectionrnn_cell_output_differs_from_state():
+    """y(t) and h(t) are genuinely different tensors, not aliases."""
+    cell = IntersectionRNNCell(4, 4)
+
+    x_unbatched = torch.randn(4)
+    y_u, h_u = cell(x_unbatched)
+    assert y_u.shape == h_u.shape == (4,)
+    assert not torch.allclose(y_u, h_u)
+
+    x = torch.randn(3, 4)
+    y, h = cell(x)
+
+    assert y.shape == h.shape == (3, 4)
+    assert not torch.allclose(y, h)
+
+
+def test_intersectionrnn_cell_gradients():
+    cell = IntersectionRNNCell(4, 4, bias=False)
+    x = torch.randn(2, 4, requires_grad=True)
+
+    y, h = cell(x)
+    (y.sum() + h.sum()).backward()
+
+    assert x.grad is not None
+    for p in cell.parameters():
+        if p.requires_grad:
+            assert p.grad is not None
+
+
+def test_intersectionrnn_cell_matches_paper_update():
+    cell = IntersectionRNNCell(2, 2, bias=False, recurrent_bias=False)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.arange(16, dtype=torch.float32).reshape(8, 2) * 0.1)
+        cell.weight_hh.copy_(torch.arange(16, dtype=torch.float32).reshape(8, 2) * -0.1)
+
+    x = torch.tensor([[0.2, -0.3]])
+    h = torch.tensor([[0.4, -0.5]])
+
+    y, new_h = cell(x, h)
+    gates = x @ cell.weight_ih.t() + h @ cell.weight_hh.t()
+    depth_pre, recurrent_pre, gy_pre, gh_pre = gates.chunk(4, 1)
+    depth_candidate = torch.relu(depth_pre)
+    recurrent_candidate = torch.tanh(recurrent_pre)
+    gate_y = torch.sigmoid(gy_pre)
+    gate_h = torch.sigmoid(gh_pre)
+    expected_y = gate_y * x + (1 - gate_y) * depth_candidate
+    expected_h = gate_h * h + (1 - gate_h) * recurrent_candidate
+
+    assert torch.allclose(y, expected_y)
+    assert torch.allclose(new_h, expected_h)
 
 
 @pytest.mark.parametrize("Cell, in_size, hid_size, _", CELL_CASES)

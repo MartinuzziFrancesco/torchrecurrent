@@ -14,6 +14,7 @@ from .miru_cell import MiRU1, MiRU1Cell, MiRU2, MiRU2Cell
 from .cornn_cell import coRNN, coRNNCell
 from .fastrnn_cell import FastRNN, FastRNNCell, FastGRNN, FastGRNNCell
 from .indrnn_cell import IndRNN, IndRNNCell
+from .intersectionrnn_cell import IntersectionRNN, IntersectionRNNCell
 from .janet_cell import JANET, JANETCell
 from .lem_cell import LEM, LEMCell
 from .ligru_cell import LiGRU, LiGRUCell
@@ -65,6 +66,8 @@ __all__ = [
     "FastGRNNCell",
     "IndRNN",
     "IndRNNCell",
+    "IntersectionRNN",
+    "IntersectionRNNCell",
     "JANET",
     "JANETCell",
     "LEM",
