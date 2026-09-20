@@ -2,7 +2,13 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from typing import Optional, Tuple
-from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_activation, resolve_init_name, apply_init_
+from ..base import (
+    DoubleStateRecurrentLayerBase,
+    DoubleStateCellBase,
+    resolve_activation,
+    resolve_init_name,
+    apply_init_,
+)
 
 
 class PeepholeLSTM(DoubleStateRecurrentLayerBase):
@@ -68,15 +74,15 @@ class PeepholeLSTM(DoubleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, (h_0, c_0)
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the
           features of the input sequence.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the initial hidden state. Defaults to zeros if not provided.
-        - **c_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **c_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the initial cell state. Defaults to zeros if not provided.
 
         where:
@@ -90,15 +96,15 @@ class PeepholeLSTM(DoubleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, (h_n, c_n)
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the
           output features from the last layer, for each timestep.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the final hidden state for each element in the sequence.
-        - **c_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **c_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the final cell state for each element in the sequence.
 
     Attributes:
@@ -287,9 +293,7 @@ class PeepholeLSTMCell(DoubleStateCellBase):
         self.init_cfg["recurrent_bias"] = resolve_init_name(
             recurrent_bias_init, self.init_cfg["recurrent_bias"]
         )
-        self.init_cfg["peephole_kernel"] = resolve_init_name(
-            peephole_kernel_init, "normal"
-        )
+        self.init_cfg["peephole_kernel"] = resolve_init_name(peephole_kernel_init, "normal")
 
         self._register_tensors(
             {
@@ -323,8 +327,16 @@ class PeepholeLSTMCell(DoubleStateCellBase):
             b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
         else:
             h, c = state
-            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
-            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            b_h = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if h is None
+                else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            )
+            b_c = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if c is None
+                else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            )
 
         weight_ih_i, weight_ih_f, weight_ih_c, weight_ih_o = self.weight_ih.chunk(4, 0)
         weight_hh_i, weight_hh_f, weight_hh_c, weight_hh_o = self.weight_hh.chunk(4, 0)

@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+import torch.nn as nn
 from torch import Tensor
 from typing import Optional
 from ..base import (
@@ -7,43 +7,43 @@ from ..base import (
     SingleStateCellBase,
     resolve_activation,
     resolve_init_name,
+    apply_init_,
 )
 
 
-class LiGRU(SingleStateRecurrentLayerBase):
-    r"""Multi-layer light gated recurrent unit neural network.
+class MinimalRNN(SingleStateRecurrentLayerBase):
+    r"""Multi-layer minimal recurrent neural network.
 
-    [`arXiv <https://arxiv.org/abs/1803.10225>`_]
+    [`arXiv <https://arxiv.org/abs/1711.06788>`_]
 
-    Each layer consists of a :class:`LiGRUCell`, which updates the hidden
+    Each layer consists of an :class:`MinimalRNNCell`, which updates the hidden
     state according to:
 
     .. math::
         \begin{aligned}
-        z_t &= \sigma(W_{ih}^z x_t + b_{ih}^z
-               + W_{hh}^z h_{t-1} + b_{hh}^z), \\
-        \tilde{h}_t &= \mathrm{ReLU}(W_{ih}^h x_t + b_{ih}^h
-                    + W_{hh}^h h_{t-1} + b_{hh}^h), \\
-        h_t &= z_t \circ h_{t-1} + (1 - z_t) \circ \tilde{h}_t
+        z_t &= \phi(W_{ih} x_t + b_{ih}), \\
+        u_t &= \sigma(W_{hh} h_{t-1} + W_{mm} z_t + b_{hh}), \\
+        h_t &= u_t \circ h_{t-1} + (1 - u_t) \circ z_t
         \end{aligned}
 
     where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the
-    input at time `t`, :math:`\sigma` is the sigmoid function,
-    :math:`\mathrm{ReLU}` is the rectified linear unit, and :math:`\circ`
-    denotes elementwise multiplication.
+    input at time `t`, :math:`z_t` is the latent representation of the input,
+    :math:`\sigma` is the sigmoid function, :math:`\phi` is a pointwise
+    nonlinearity (e.g., tanh), and :math:`\circ` denotes elementwise
+    multiplication.
 
-    In a multilayer LiGRU, the input :math:`x^{(l)}_t` of the :math:`l`-th
-    layer (:math:`l \ge 2`) is the hidden state :math:`h^{(l-1)}_t` of the
-    previous layer multiplied by dropout :math:`\delta^{(l-1)}_t`, where each
-    :math:`\delta^{(l-1)}_t` is a Bernoulli random variable which is 0 with
-    probability :attr:`dropout`.
+    In a multilayer MinimalRNN, the input :math:`x^{(l)}_t` of the
+    :math:`l`-th layer (:math:`l \ge 2`) is the hidden state
+    :math:`h^{(l-1)}_t` of the previous layer multiplied by dropout
+    :math:`\delta^{(l-1)}_t`, where each :math:`\delta^{(l-1)}_t` is a
+    Bernoulli random variable which is 0 with probability :attr:`dropout`.
 
     Args:
         input_size: The number of expected features in the input `x`.
         hidden_size: The number of features in the hidden state `h`.
         num_layers: Number of recurrent layers. E.g., setting ``num_layers=2`` would
-            mean stacking two LiGRU layers, with the second receiving the outputs of
-            the first. Default: 1
+            mean stacking two MinimalRNN layers, with the second receiving the outputs
+            of the first. Default: 1
         dropout: If non-zero, introduces a `Dropout` layer on the outputs of each
             layer except the last layer, with dropout probability equal to
             :attr:`dropout`. Default: 0
@@ -53,16 +53,19 @@ class LiGRU(SingleStateRecurrentLayerBase):
             Default: True
         recurrent_bias: If ``False``, then the layer does not use recurrent biases.
             Default: True
-        nonlinearity: Activation for the candidate :math:`\tilde{h}`. Default:
-            :func:`torch.relu`
-        gate_nonlinearity: Activation for the update gate :math:`z`. Default:
+        nonlinearity: Nonlinearity :math:`\phi` for the input encoder. Default:
+            :func:`torch.tanh`
+        gate_nonlinearity: Activation for the update gate. Default:
             :func:`torch.sigmoid`
         kernel_init: Initializer for `W_{ih}`. Default:
             :func:`torch.nn.init.xavier_uniform_`
         recurrent_kernel_init: Initializer for `W_{hh}`. Default:
             :func:`torch.nn.init.xavier_uniform_`
-        bias_init: Initializer for `b_{ih}`. Default: :func:`torch.nn.init.zeros_`
-        recurrent_bias_init: Initializer for `b_{hh}`. Default:
+        memory_kernel_init: Initializer for `W_{mm}`. Default:
+            :func:`torch.nn.init.xavier_uniform_`
+        bias_init: Initializer for input-side biases. Default:
+            :func:`torch.nn.init.zeros_`
+        recurrent_bias_init: Initializer for recurrent biases. Default:
             :func:`torch.nn.init.zeros_`
         device: The desired device of parameters.
         dtype: The desired floating point type of parameters.
@@ -91,32 +94,34 @@ class LiGRU(SingleStateRecurrentLayerBase):
         - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
-          features `(h_t)` from the last layer of the LiGRU, for each `t`.
+          features `(h_t)` from the last layer of the MinimalRNN, for each `t`.
         - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
           containing the final
           hidden state for each element in the sequence.
 
     Attributes:
         cells.{k}.weight_ih : the learnable input-hidden weights of the :math:`k`-th
-            layer, of shape `(2*hidden_size, input_size)` for `k = 0`. Otherwise, the
-            shape is `(2*hidden_size, hidden_size)`.
+            layer, of shape `(hidden_size, input_size)` for `k = 0`. Otherwise, the
+            shape is `(hidden_size, hidden_size)`.
         cells.{k}.weight_hh : the learnable hidden-hidden weights of the :math:`k`-th
-            layer, of shape `(2*hidden_size, hidden_size)`.
+            layer, of shape `(hidden_size, hidden_size)`.
+        cells.{k}.weight_mm : the learnable latent-hidden weights of the :math:`k`-th
+            layer, of shape `(hidden_size, hidden_size)`.
         cells.{k}.bias_ih : the learnable input-hidden biases of the :math:`k`-th
-            layer, of shape `(2*hidden_size)`. Only present when ``bias=True``.
+            layer, of shape `(hidden_size)`. Only present when ``bias=True``.
         cells.{k}.bias_hh : the learnable hidden-hidden biases of the :math:`k`-th
-            layer, of shape `(2*hidden_size)`. Only present when ``recurrent_bias=True``.
+            layer, of shape `(hidden_size)`. Only present when ``recurrent_bias=True``.
 
     .. note::
         All the weights and biases are initialized according to the provided
         initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
 
     .. seealso::
-        :class:`LiGRUCell`
+        :class:`MinimalRNNCell`
 
     Examples::
 
-        >>> rnn = LiGRU(10, 20, num_layers=2, dropout=0.1)
+        >>> rnn = MinimalRNN(10, 20, num_layers=2, dropout=0.1)
         >>> input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)
         >>> h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)
         >>> output, hn = rnn(input, h0)
@@ -131,35 +136,34 @@ class LiGRU(SingleStateRecurrentLayerBase):
         batch_first: bool = False,
         **kwargs,
     ):
-        super(LiGRU, self).__init__(
+        super(MinimalRNN, self).__init__(
             input_size, hidden_size, num_layers, dropout, batch_first
         )
-        self.initialize_cells(LiGRUCell, **kwargs)
+        self.initialize_cells(MinimalRNNCell, **kwargs)
 
 
-class LiGRUCell(SingleStateCellBase):
-    r"""A Light Gated Recurrent Unit (LiGRU) cell.
+class MinimalRNNCell(SingleStateCellBase):
+    r"""A Minimal recurrent neural network (MinimalRNN) cell.
 
-    [`arXiv <https://arxiv.org/abs/1803.10225>`_]
+    [`arXiv <https://arxiv.org/abs/1711.06788>`_]
 
     .. math::
 
-        \mathbf{z}(t) &= \sigma\bigl(
-            \mathbf{W}_{ih}^{z}\,\mathbf{x}(t)
-            + \mathbf{b}_{ih}^{z}
-            + \mathbf{W}_{hh}^{z}\,\mathbf{h}(t-1)
-            + \mathbf{b}_{hh}^{z}
+        \mathbf{z}(t) &= \phi\bigl(
+            \mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}
         \bigr), \\[6pt]
-        \tilde{\mathbf{h}}(t) &= \mathrm{ReLU}\bigl(
-            \mathbf{W}_{ih}^{h}\,\mathbf{x}(t)
-            + \mathbf{b}_{ih}^{h}
-            + \mathbf{W}_{hh}^{h}\,\mathbf{h}(t-1)
-            + \mathbf{b}_{hh}^{h}
+        \mathbf{u}(t) &= \sigma\bigl(
+            \mathbf{W}_{hh}\,\mathbf{h}(t-1)
+            + \mathbf{W}_{mm}\,\mathbf{z}(t)
+            + \mathbf{b}_{hh}
         \bigr), \\[6pt]
-        \mathbf{h}(t) &= \mathbf{z}(t)\,\circ\,\mathbf{h}(t-1)
-            \;+\;\bigl(1 - \mathbf{z}(t)\bigr)\,\circ\,\tilde{\mathbf{h}}(t),
+        \mathbf{h}(t) &= \mathbf{u}(t)\circ\mathbf{h}(t-1)
+            \;+\;\bigl(1 - \mathbf{u}(t)\bigr)\circ\mathbf{z}(t),
 
-    where :math:`\circ` denotes element‐wise multiplication.
+    where :math:`\circ` is element-wise product, :math:`\phi` is a pointwise
+    nonlinearity (e.g., tanh) mapping the input into the latent space of the
+    hidden state, and :math:`\mathbf{z}(t)` is recomputed from the current
+    input at every step (it is not part of the recurrent state).
 
     Args:
         input_size: The number of expected features in the input ``x``.
@@ -168,17 +172,19 @@ class LiGRUCell(SingleStateCellBase):
             Default: ``True``.
         recurrent_bias: If ``False``, the layer does not use recurrent biases.
             Default: ``True``.
-        nonlinearity: Activation for the candidate :math:`\tilde{h}`.
-            Default: :func:`torch.relu`.
-        gate_nonlinearity: Activation for the update gate :math:`z`.
+        nonlinearity: Nonlinearity :math:`\phi` for the input encoder.
+            Default: :func:`torch.tanh`.
+        gate_nonlinearity: Activation for the update gate.
             Default: :func:`torch.sigmoid`.
         kernel_init: Initializer for ``W_{ih}``.
             Default: :func:`torch.nn.init.xavier_uniform_`.
         recurrent_kernel_init: Initializer for ``W_{hh}``.
             Default: :func:`torch.nn.init.xavier_uniform_`.
-        bias_init: Initializer for ``b_{ih}`` when ``bias=True``.
+        memory_kernel_init: Initializer for ``W_{mm}``.
+            Default: :func:`torch.nn.init.xavier_uniform_`.
+        bias_init: Initializer for input-side biases when ``bias=True``.
             Default: :func:`torch.nn.init.zeros_`.
-        recurrent_bias_init: Initializer for ``b_{hh}`` when
+        recurrent_bias_init: Initializer for recurrent biases when
             ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`.
         device: The desired device of parameters.
         dtype: The desired floating point type of parameters.
@@ -196,31 +202,34 @@ class LiGRUCell(SingleStateCellBase):
           Tensor containing the next hidden state.
 
     Variables:
-        weight_ih: The learnable input–hidden weights,
-            of shape ``(2*hidden_size, input_size)``.
-        weight_hh: The learnable hidden–hidden weights,
-            of shape ``(2*hidden_size, hidden_size)``.
-        bias_ih: The learnable input–hidden biases,
-            of shape ``(2*hidden_size)`` if ``bias=True``.
-        bias_hh: The learnable hidden–hidden biases,
-            of shape ``(2*hidden_size)`` if ``recurrent_bias=True``.
+        weight_ih: The learnable input-hidden weights,
+            of shape ``(hidden_size, input_size)``.
+        weight_hh: The learnable hidden-hidden weights,
+            of shape ``(hidden_size, hidden_size)``.
+        weight_mm: The learnable latent-hidden weights,
+            of shape ``(hidden_size, hidden_size)``.
+        bias_ih: The learnable input-hidden biases,
+            of shape ``(hidden_size)`` if ``bias=True``.
+        bias_hh: The learnable hidden-hidden biases,
+            of shape ``(hidden_size)`` if ``recurrent_bias=True``.
 
     Examples::
 
-        >>> cell = LiGRUCell(10, 20)
-        >>> x = torch.randn(5, 3, 10)    # (time_steps, batch, input_size)
-        >>> h = torch.zeros(3, 20)       # (batch, hidden_size)
+        >>> cell = MinimalRNNCell(10, 20)
+        >>> x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)
+        >>> h = torch.zeros(3, 20)        # (batch, hidden_size)
         >>> out = []
         >>> for t in range(x.size(0)):
         ...     h = cell(x[t], h)
         ...     out.append(h)
-        >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
+        >>> out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)
     """
 
     __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias"]
 
     weight_ih: Tensor
     weight_hh: Tensor
+    weight_mm: Tensor
     bias_ih: Tensor
     bias_hh: Tensor
 
@@ -230,10 +239,11 @@ class LiGRUCell(SingleStateCellBase):
         hidden_size: int,
         bias: bool = True,
         recurrent_bias: bool = True,
-        nonlinearity="relu",
+        nonlinearity="tanh",
         gate_nonlinearity="sigmoid",
         kernel_init=nn.init.xavier_uniform_,
         recurrent_kernel_init=nn.init.xavier_uniform_,
+        memory_kernel_init=nn.init.xavier_uniform_,
         bias_init=nn.init.zeros_,
         recurrent_bias_init=nn.init.zeros_,
         device: Optional[torch.device] = None,
@@ -253,14 +263,29 @@ class LiGRUCell(SingleStateCellBase):
         self.init_cfg["recurrent_kernel"] = resolve_init_name(
             recurrent_kernel_init, self.init_cfg["recurrent_kernel"]
         )
+        self.init_cfg["memory_kernel"] = resolve_init_name(
+            memory_kernel_init, "xavier_uniform"
+        )
         self.init_cfg["bias"] = resolve_init_name(bias_init, self.init_cfg["bias"])
         self.init_cfg["recurrent_bias"] = resolve_init_name(
             recurrent_bias_init, self.init_cfg["recurrent_bias"]
         )
 
-        self._default_register_tensors(ih_mult=2, hh_mult=2)
+        self._default_register_tensors(ih_mult=1, hh_mult=1)
+        self.weight_mm = nn.Parameter(
+            torch.empty(
+                self.hidden_size,
+                self.hidden_size,
+                device=self._init_device,
+                dtype=self._init_dtype,
+            )
+        )
         self.reset_parameters()
         self._cleanup_non_scriptable()
+
+    def reset_parameters(self) -> None:
+        super().reset_parameters()
+        apply_init_(self.weight_mm, self.init_cfg["memory_kernel"])
 
     def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
         self._validate_input(inp)
@@ -271,17 +296,11 @@ class LiGRUCell(SingleStateCellBase):
         else:
             b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
 
-        gates = (
-            b_inp @ self.weight_ih.t()
-            + self.bias_ih
-            + b_state @ self.weight_hh.t()
-            + self.bias_hh
+        latent = self.act(b_inp @ self.weight_ih.t() + self.bias_ih)
+        update_gate = self.gate_act(
+            b_state @ self.weight_hh.t() + latent @ self.weight_mm.t() + self.bias_hh
         )
-        ug, cg = gates.chunk(2, 1)
-
-        update_gate = self.gate_act(ug)
-        candidate_state = self.act(cg)
-        new_state = (1.0 - update_gate) * candidate_state + update_gate * b_state
+        new_state = update_gate * b_state + (1.0 - update_gate) * latent
 
         if not is_batched:
             new_state = new_state.squeeze(0)

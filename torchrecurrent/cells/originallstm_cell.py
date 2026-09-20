@@ -2,7 +2,11 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from typing import Optional, Tuple
-from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
+from ..base import (
+    DoubleStateRecurrentLayerBase,
+    DoubleStateCellBase,
+    resolve_init_name,
+)
 
 
 class OriginalLSTM(DoubleStateRecurrentLayerBase):
@@ -54,18 +58,15 @@ class OriginalLSTM(DoubleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, (h_0, c_0)
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the
-          features of the input sequence. The input can also be a packed
-          variable length sequence. See
-          :func:`torch.nn.utils.rnn.pack_padded_sequence` or
-          :func:`torch.nn.utils.rnn.pack_sequence` for details.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+          features of the input sequence.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the initial hidden state. Defaults to zeros if not provided.
-        - **c_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **c_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the initial cell state. Defaults to zeros if not provided.
 
         where:
@@ -79,17 +80,15 @@ class OriginalLSTM(DoubleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, (h_n, c_n)
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the
           output features `(h_t)` from the last layer of the LSTM, for each `t`.
-          If a :class:`torch.nn.utils.rnn.PackedSequence` has been given as
-          the input, the output will also be a packed sequence.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the final hidden state for each element in the sequence.
-        - **c_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **c_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the final cell state for each element in the sequence.
 
     Attributes:
@@ -108,9 +107,6 @@ class OriginalLSTM(DoubleStateRecurrentLayerBase):
     .. note::
         All the weights and biases are initialized according to the provided
         initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
-
-    .. note::
-        ``batch_first`` argument is ignored for unbatched inputs.
 
     .. seealso::
         :class:`OriginalLSTMCell`
@@ -263,8 +259,16 @@ class OriginalLSTMCell(DoubleStateCellBase):
             b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
         else:
             h, c = state
-            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
-            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            b_h = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if h is None
+                else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            )
+            b_c = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if c is None
+                else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            )
 
         gates = (
             b_inp @ self.weight_ih.t()

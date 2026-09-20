@@ -1,7 +1,7 @@
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Optional, Tuple
+from typing import Optional
 from ..base import (
     SingleStateRecurrentLayerBase,
     SingleStateCellBase,
@@ -67,14 +67,12 @@ class FastRNN(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
-          the input sequence. The input can also be a packed variable length
-          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
-          :func:`torch.nn.utils.rnn.pack_sequence` for details.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          the input sequence.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the initial
           hidden state for each element in the input sequence. Defaults to zeros if
           not provided.
 
@@ -89,14 +87,12 @@ class FastRNN(SingleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
-          features `(h_t)` from the last layer of the FastRNN, for each `t`. If a
-          :class:`torch.nn.utils.rnn.PackedSequence` has been given as the input,
-          the output will also be a packed sequence.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          features `(h_t)` from the last layer of the FastRNN, for each `t`.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the final
           hidden state for each element in the sequence.
 
     Attributes:
@@ -119,9 +115,6 @@ class FastRNN(SingleStateRecurrentLayerBase):
         initializers (`kernel_init`, `recurrent_kernel_init`, etc.). Scalars
         :math:`\alpha` and :math:`\beta` are initialized from `alpha_init` and
         `beta_init`.
-
-    .. note::
-        ``batch_first`` argument is ignored for unbatched inputs.
 
     .. seealso::
         :class:`FastRNNCell`
@@ -378,11 +371,9 @@ class FastGRNN(SingleStateRecurrentLayerBase):
         dtype: Desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape `(L, H_in)` for unbatched input,
-          `(L, N, H_in)` when ``batch_first=False``, or `(N, L, H_in)` when
-          ``batch_first=True``.
-        - **h_0**: tensor of shape `(num_layers, H_out)` for unbatched input,
-          or `(num_layers, N, H_out)` when batched. Defaults to zeros.
+        - **input**: tensor of shape `(L, N, H_in)` when ``batch_first=False``,
+          or `(N, L, H_in)` when ``batch_first=True``.
+        - **h_0**: tensor of shape `(num_layers, N, H_out)`. Defaults to zeros.
 
         Where:
 
@@ -395,11 +386,11 @@ class FastGRNN(SingleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, h_n
-        - **output**: tensor of shape `(L, H_out)` for unbatched input,
-          `(L, N, H_out)` when ``batch_first=False``, or `(N, L, H_out)` when
-          ``batch_first=True``, containing hidden states from the last layer.
-        - **h_n**: tensor of shape `(num_layers, H_out)` (unbatched) or
-          `(num_layers, N, H_out)` with the final hidden state.
+        - **output**: tensor of shape `(L, N, H_out)` when ``batch_first=False``,
+          or `(N, L, H_out)` when ``batch_first=True``, containing hidden states
+          from the last layer.
+        - **h_n**: tensor of shape `(num_layers, N, H_out)` with the final
+          hidden state.
 
     Attributes:
         cells.{k}.weight_ih : input–hidden weights of the :math:`k`-th layer,

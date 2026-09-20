@@ -59,12 +59,11 @@ class UnICORNN(DoubleStateRecurrentLayerBase):
         dtype: Desired floating point type of parameters.
 
     Inputs: input, (h_0, z_0)
-        - **input**: tensor of shape `(L, H_in)` for unbatched input,
-          `(L, N, H_in)` when ``batch_first=False``, or `(N, L, H_in)` when
-          ``batch_first=True`` containing input sequence features.
-        - **h_0**: tensor of shape `(num_layers, H_out)` for unbatched input or
-          `(num_layers, N, H_out)` containing the initial hidden state. Defaults
-          to zeros if not provided.
+        - **input**: tensor of shape `(L, N, H_in)` when ``batch_first=False``,
+          or `(N, L, H_in)` when ``batch_first=True`` containing input sequence
+          features.
+        - **h_0**: tensor of shape `(num_layers, N, H_out)` containing the
+          initial hidden state. Defaults to zeros if not provided.
         - **z_0**: tensor of the same shape as `h_0`, containing the initial
           control state. Defaults to zeros if not provided.
 
@@ -79,12 +78,10 @@ class UnICORNN(DoubleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, (h_n, z_n)
-        - **output**: tensor of shape `(L, H_out)` for unbatched input,
-          `(L, N, H_out)` when ``batch_first=False``, or `(N, L, H_out)` when
-          ``batch_first=True`` containing the hidden states from the last layer
-          at each timestep.
-        - **h_n**: final hidden state for each layer,
-          shape `(num_layers, H_out)` (unbatched) or `(num_layers, N, H_out)`.
+        - **output**: tensor of shape `(L, N, H_out)` when ``batch_first=False``,
+          or `(N, L, H_out)` when ``batch_first=True`` containing the hidden
+          states from the last layer at each timestep.
+        - **h_n**: final hidden state for each layer, shape `(num_layers, N, H_out)`.
         - **z_n**: final control state for each layer, same shape as `h_n`.
 
     Attributes:

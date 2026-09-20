@@ -1,13 +1,12 @@
 import torch
 import torch.nn as nn
 from torch import Tensor
-from typing import Optional, Tuple
+from typing import Optional
 from ..base import (
     SingleStateRecurrentLayerBase,
     SingleStateCellBase,
     resolve_activation,
     resolve_init_name,
-    apply_init_,
 )
 
 
@@ -60,19 +59,16 @@ class MiRU1(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True``.
-        - **h_0**: tensor of shape :math:`(\text{num\_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num\_layers}, N, H_{out})`.
+        - **h_0**: tensor of shape :math:`(\text{num\_layers}, N, H_{out})`.
           Defaults to zeros if not provided.
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched
-          input, :math:`(L, N, H_{out})` when ``batch_first=False`` or
+        - **output**: tensor of shape :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True``.
-        - **h_n**: tensor of shape :math:`(\text{num\_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num\_layers}, N, H_{out})`.
+        - **h_n**: tensor of shape :math:`(\text{num\_layers}, N, H_{out})`.
 
     Examples::
 
@@ -249,7 +245,9 @@ class MiRU1Cell(SingleStateCellBase):
         )
         candidate = self.act(ch)
 
-        new_state = self.update_coefficient * b_state + (1.0 - self.update_coefficient) * candidate
+        new_state = (
+            self.update_coefficient * b_state + (1.0 - self.update_coefficient) * candidate
+        )
 
         if not is_batched:
             new_state = new_state.squeeze(0)
@@ -303,19 +301,16 @@ class MiRU2(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True``.
-        - **h_0**: tensor of shape :math:`(\text{num\_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num\_layers}, N, H_{out})`.
+        - **h_0**: tensor of shape :math:`(\text{num\_layers}, N, H_{out})`.
           Defaults to zeros if not provided.
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched
-          input, :math:`(L, N, H_{out})` when ``batch_first=False`` or
+        - **output**: tensor of shape :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True``.
-        - **h_n**: tensor of shape :math:`(\text{num\_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num\_layers}, N, H_{out})`.
+        - **h_n**: tensor of shape :math:`(\text{num\_layers}, N, H_{out})`.
 
     Examples::
 
@@ -480,7 +475,9 @@ class MiRU2Cell(SingleStateCellBase):
         )
         candidate = self.act(ch)
 
-        new_state = self.update_coefficient * b_state + (1.0 - self.update_coefficient) * candidate
+        new_state = (
+            self.update_coefficient * b_state + (1.0 - self.update_coefficient) * candidate
+        )
 
         if not is_batched:
             new_state = new_state.squeeze(0)

@@ -235,9 +235,10 @@ class RecurrentCellBase(nn.Module):
                 apply_init_(p, self.init_cfg["recurrent_bias"])
 
     def _cleanup_non_scriptable(self) -> None:
+        # init_cfg is kept: reset_parameters() must remain callable after
+        # construction, and a Dict[str, str] is TorchScript-compatible.
         del self._init_device
         del self._init_dtype
-        del self.init_cfg
 
 
 class SingleStateCellBase(RecurrentCellBase):
