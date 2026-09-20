@@ -23,6 +23,7 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.LightRU
    torchrecurrent.LiGRU
    torchrecurrent.MGU
+   torchrecurrent.MinimalRNN
    torchrecurrent.MiRU1
    torchrecurrent.MiRU2
    torchrecurrent.MultiplicativeLSTM
