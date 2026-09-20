@@ -10,6 +10,7 @@ from .atr_cell import ATRCell, ATR
 from .br_cell import BR, BRCell, NBR, NBRCell
 from .cfn_cell import CFN, CFNCell
 from .mgu_cell import MGU, MGUCell
+from .minimalrnn_cell import MinimalRNN, MinimalRNNCell
 from .miru_cell import MiRU1, MiRU1Cell, MiRU2, MiRU2Cell
 from .cornn_cell import coRNN, coRNNCell
 from .fastrnn_cell import FastRNN, FastRNNCell, FastGRNN, FastGRNNCell
@@ -52,6 +53,8 @@ __all__ = [
     "CFNCell",
     "MGU",
     "MGUCell",
+    "MinimalRNN",
+    "MinimalRNNCell",
     "MiRU1",
     "MiRU1Cell",
     "MiRU2",

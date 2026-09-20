@@ -65,22 +65,22 @@ class DSGU(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
           the input sequence.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing the
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the
           initial hidden state for each element in the input sequence. Defaults to
           zeros if not provided.
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
           features `(h_t)` from the last layer of the DSGU, for each `t`.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing the
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the
           final hidden state for each element in the sequence.
 
     .. seealso::
@@ -163,22 +163,22 @@ class SGU(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
           the input sequence.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing the
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the
           initial hidden state for each element in the input sequence. Defaults to
           zeros if not provided.
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
           features `(h_t)` from the last layer of the SGU, for each `t`.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing the
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the
           final hidden state for each element in the sequence.
 
     .. seealso::

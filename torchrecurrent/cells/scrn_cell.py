@@ -2,7 +2,12 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from typing import Optional, Tuple
-from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
+from ..base import (
+    DoubleStateRecurrentLayerBase,
+    DoubleStateCellBase,
+    resolve_init_name,
+    apply_init_,
+)
 
 
 class SCRN(DoubleStateRecurrentLayerBase):
@@ -63,15 +68,15 @@ class SCRN(DoubleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, (h_0, s_0)
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the
           features of the input sequence.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})`
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+
           containing the initial hidden state. Defaults to zeros if not provided.
-        - **s_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})`
+        - **s_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+
           containing the initial context state. Defaults to zeros if not provided.
 
         where:
@@ -85,15 +90,15 @@ class SCRN(DoubleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, (h_n, s_n)
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the
           output features from the last layer, for each timestep.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the final hidden state for each element in the sequence.
-        - **s_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **s_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the final context state for each element in the sequence.
 
     Attributes:
@@ -319,8 +324,16 @@ class SCRNCell(DoubleStateCellBase):
             b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
         else:
             h, c = state
-            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
-            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            b_h = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if h is None
+                else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            )
+            b_c = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if c is None
+                else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            )
 
         inp_expanded = b_inp @ self.weight_ih.t() + self.bias_ih
         gxs1, gxs2 = inp_expanded.chunk(2, 1)

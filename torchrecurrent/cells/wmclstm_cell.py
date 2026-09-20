@@ -2,7 +2,12 @@ import torch
 from torch import Tensor
 import torch.nn as nn
 from typing import Optional, Tuple
-from ..base import DoubleStateRecurrentLayerBase, DoubleStateCellBase, resolve_init_name, apply_init_
+from ..base import (
+    DoubleStateRecurrentLayerBase,
+    DoubleStateCellBase,
+    resolve_init_name,
+    apply_init_,
+)
 
 
 class WMCLSTM(DoubleStateRecurrentLayerBase):
@@ -62,12 +67,10 @@ class WMCLSTM(DoubleStateRecurrentLayerBase):
         dtype: Desired floating point type of parameters.
 
     Inputs: input, (h_0, c_0)
-        - **input**: tensor of shape `(L, H_in)` for unbatched input,
-          `(L, N, H_in)` when ``batch_first=False``, or `(N, L, H_in)` when
-          ``batch_first=True``.
-        - **h_0**: tensor of shape `(num_layers, H_out)` (unbatched) or
-          `(num_layers, N, H_out)` containing initial hidden state. Defaults to
-          zeros if not provided.
+        - **input**: tensor of shape `(L, N, H_in)` when ``batch_first=False``,
+          or `(N, L, H_in)` when ``batch_first=True``.
+        - **h_0**: tensor of shape `(num_layers, N, H_out)` containing initial
+          hidden state. Defaults to zeros if not provided.
         - **c_0**: tensor of same shape as `h_0`, containing initial cell state.
           Defaults to zeros if not provided.
 
@@ -82,12 +85,10 @@ class WMCLSTM(DoubleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, (h_n, c_n)
-        - **output**: tensor of shape `(L, H_out)` for unbatched input,
-          `(L, N, H_out)` when ``batch_first=False``, or `(N, L, H_out)` when
-          ``batch_first=True`` containing hidden states from the last layer at
-          each timestep.
-        - **h_n**: final hidden state for each layer,
-          shape `(num_layers, H_out)` (unbatched) or `(num_layers, N, H_out)`.
+        - **output**: tensor of shape `(L, N, H_out)` when ``batch_first=False``,
+          or `(N, L, H_out)` when ``batch_first=True`` containing hidden states
+          from the last layer at each timestep.
+        - **h_n**: final hidden state for each layer, shape `(num_layers, N, H_out)`.
         - **c_n**: final cell state for each layer, same shape as `h_n`.
 
     Attributes:
@@ -316,8 +317,16 @@ class WMCLSTMCell(DoubleStateCellBase):
             b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
         else:
             h, c = state
-            b_h = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if h is None else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
-            b_c = self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype) if c is None else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            b_h = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if h is None
+                else (h.unsqueeze(0) if (not is_batched and h.dim() == 1) else h)
+            )
+            b_c = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if c is None
+                else (c.unsqueeze(0) if (not is_batched and c.dim() == 1) else c)
+            )
 
         gates = (
             b_inp @ self.weight_ih.t()

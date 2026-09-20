@@ -1,0 +1,86 @@
+torchrecurrent.MinimalRNN
+==========================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MinimalRNN
+
+
+   .. automethod:: __init__
+
+
+   .. rubric:: Methods
+
+   .. autosummary::
+
+      ~MinimalRNN.__init__
+      ~MinimalRNN.add_module
+      ~MinimalRNN.apply
+      ~MinimalRNN.bfloat16
+      ~MinimalRNN.buffers
+      ~MinimalRNN.children
+      ~MinimalRNN.compile
+      ~MinimalRNN.cpu
+      ~MinimalRNN.cuda
+      ~MinimalRNN.double
+      ~MinimalRNN.eval
+      ~MinimalRNN.extra_repr
+      ~MinimalRNN.float
+      ~MinimalRNN.forward
+      ~MinimalRNN.get_buffer
+      ~MinimalRNN.get_extra_state
+      ~MinimalRNN.get_parameter
+      ~MinimalRNN.get_submodule
+      ~MinimalRNN.half
+      ~MinimalRNN.initialize_cells
+      ~MinimalRNN.ipu
+      ~MinimalRNN.load_state_dict
+      ~MinimalRNN.modules
+      ~MinimalRNN.mtia
+      ~MinimalRNN.named_buffers
+      ~MinimalRNN.named_children
+      ~MinimalRNN.named_modules
+      ~MinimalRNN.named_parameters
+      ~MinimalRNN.parameters
+      ~MinimalRNN.register_backward_hook
+      ~MinimalRNN.register_buffer
+      ~MinimalRNN.register_forward_hook
+      ~MinimalRNN.register_forward_pre_hook
+      ~MinimalRNN.register_full_backward_hook
+      ~MinimalRNN.register_full_backward_pre_hook
+      ~MinimalRNN.register_load_state_dict_post_hook
+      ~MinimalRNN.register_load_state_dict_pre_hook
+      ~MinimalRNN.register_module
+      ~MinimalRNN.register_parameter
+      ~MinimalRNN.register_state_dict_post_hook
+      ~MinimalRNN.register_state_dict_pre_hook
+      ~MinimalRNN.requires_grad_
+      ~MinimalRNN.set_extra_state
+      ~MinimalRNN.set_submodule
+      ~MinimalRNN.share_memory
+      ~MinimalRNN.state_dict
+      ~MinimalRNN.to
+      ~MinimalRNN.to_empty
+      ~MinimalRNN.train
+      ~MinimalRNN.type
+      ~MinimalRNN.xpu
+      ~MinimalRNN.zero_grad
+
+
+
+
+
+   .. rubric:: Attributes
+
+   .. autosummary::
+
+      ~MinimalRNN.T_destination
+      ~MinimalRNN.call_super_init
+      ~MinimalRNN.dump_patches
+      ~MinimalRNN.input_size
+      ~MinimalRNN.hidden_size
+      ~MinimalRNN.bias
+      ~MinimalRNN.dropout
+      ~MinimalRNN.batch_first
+      ~MinimalRNN.training
+

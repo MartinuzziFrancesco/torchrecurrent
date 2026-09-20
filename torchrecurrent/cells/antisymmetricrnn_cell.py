@@ -2,7 +2,13 @@ from typing import Optional
 import torch
 import torch.nn as nn
 from torch import Tensor
-from ..base import SingleStateCellBase, SingleStateRecurrentLayerBase, resolve_activation, resolve_init_name, apply_init_
+from ..base import (
+    SingleStateCellBase,
+    SingleStateRecurrentLayerBase,
+    resolve_activation,
+    resolve_init_name,
+    apply_init_,
+)
 
 
 class AntisymmetricRNN(SingleStateRecurrentLayerBase):
@@ -62,14 +68,12 @@ class AntisymmetricRNN(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
-          the input sequence. The input can also be a packed variable length
-          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
-          :func:`torch.nn.utils.rnn.pack_sequence` for details.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          the input sequence.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the initial
           hidden state for each element in the input sequence. Defaults to zeros if
           not provided.
 
@@ -84,14 +88,13 @@ class AntisymmetricRNN(SingleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
           features `(h_t)` from the last layer of the AntisymmetricRNN, for each
-          `t`. If a :class:`torch.nn.utils.rnn.PackedSequence` has been given as the
-          input, the output will also be a packed sequence.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          `t`.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the final
           hidden state for each element in the sequence.
 
     Attributes:
@@ -108,9 +111,6 @@ class AntisymmetricRNN(SingleStateRecurrentLayerBase):
     .. note::
         All the weights and biases are initialized according to the provided
         initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
-
-    .. note::
-        ``batch_first`` argument is ignored for unbatched inputs.
 
     .. seealso::
         :class:`AntisymmetricRNNCell`
@@ -213,7 +213,14 @@ class AntisymmetricRNNCell(SingleStateCellBase):
         >>> out = torch.stack(out, dim=0)       # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias", "epsilon", "gamma"]
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "recurrent_bias",
+        "epsilon",
+        "gamma",
+    ]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -279,7 +286,12 @@ class AntisymmetricRNNCell(SingleStateCellBase):
             b_state = state.unsqueeze(0) if (not is_batched and state.dim() == 1) else state
 
         recurrent_matrix = _compute_asym(self.weight_hh, self.gamma)
-        pre_act = b_inp @ self.weight_ih.t() + self.bias_ih + b_state @ recurrent_matrix.t() + self.bias_hh
+        pre_act = (
+            b_inp @ self.weight_ih.t()
+            + self.bias_ih
+            + b_state @ recurrent_matrix.t()
+            + self.bias_hh
+        )
         h_new = b_state + self.epsilon * self.act(pre_act)
 
         if not is_batched:
@@ -348,14 +360,12 @@ class GatedAntisymmetricRNN(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
-          the input sequence. The input can also be a packed variable length
-          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
-          :func:`torch.nn.utils.rnn.pack_sequence` for details.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          the input sequence.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the initial
           hidden state for each element in the input sequence. Defaults to zeros if
           not provided.
 
@@ -370,14 +380,13 @@ class GatedAntisymmetricRNN(SingleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
           features `(h_t)` from the last layer of the GatedAntisymmetricRNN, for each
-          `t`. If a :class:`torch.nn.utils.rnn.PackedSequence` has been given as the
-          input, the output will also be a packed sequence.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          `t`.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the final
           hidden state for each element in the sequence.
 
     Attributes:
@@ -394,9 +403,6 @@ class GatedAntisymmetricRNN(SingleStateRecurrentLayerBase):
     .. note::
         All the weights and biases are initialized according to the provided
         initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
-
-    .. note::
-        ``batch_first`` argument is ignored for unbatched inputs.
 
     .. seealso::
         :class:`GatedAntisymmetricRNNCell`
@@ -506,7 +512,14 @@ class GatedAntisymmetricRNNCell(SingleStateCellBase):
         >>> out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)
     """
 
-    __constants__ = ["input_size", "hidden_size", "bias", "recurrent_bias", "epsilon", "gamma"]
+    __constants__ = [
+        "input_size",
+        "hidden_size",
+        "bias",
+        "recurrent_bias",
+        "epsilon",
+        "gamma",
+    ]
 
     weight_ih: Tensor
     weight_hh: Tensor
@@ -584,5 +597,5 @@ class GatedAntisymmetricRNNCell(SingleStateCellBase):
 
 def _compute_asym(W_hh: Tensor, gamma: float) -> Tensor:
     n = W_hh.size(0)
-    I = torch.eye(n, device=W_hh.device, dtype=W_hh.dtype)
-    return W_hh - W_hh.transpose(0, 1) - gamma * I
+    identity = torch.eye(n, device=W_hh.device, dtype=W_hh.dtype)
+    return W_hh - W_hh.transpose(0, 1) - gamma * identity

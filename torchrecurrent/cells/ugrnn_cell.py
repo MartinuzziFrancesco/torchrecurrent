@@ -1,8 +1,12 @@
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Optional, Tuple
-from ..base import SingleStateRecurrentLayerBase, SingleStateCellBase, resolve_init_name, apply_init_
+from typing import Optional
+from ..base import (
+    SingleStateRecurrentLayerBase,
+    SingleStateCellBase,
+    resolve_init_name,
+)
 
 
 class UGRNN(SingleStateRecurrentLayerBase):
@@ -53,12 +57,12 @@ class UGRNN(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the
           features of the input sequence.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the initial hidden state. Defaults to zeros if not provided.
 
         where:
@@ -72,12 +76,12 @@ class UGRNN(SingleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the
           output features from the last layer, for each timestep.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for
-          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing
           the final hidden state for each element in the sequence.
 
     Attributes:

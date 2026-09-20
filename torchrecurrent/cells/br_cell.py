@@ -1,8 +1,13 @@
 import torch
 from torch import nn
 from torch import Tensor
-from typing import Optional, Tuple
-from ..base import SingleStateRecurrentLayerBase, SingleStateCellBase, resolve_init_name, apply_init_
+from typing import Optional
+from ..base import (
+    SingleStateRecurrentLayerBase,
+    SingleStateCellBase,
+    resolve_init_name,
+    apply_init_,
+)
 
 
 class BR(SingleStateRecurrentLayerBase):
@@ -60,14 +65,12 @@ class BR(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
-          the input sequence. The input can also be a packed variable length
-          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
-          :func:`torch.nn.utils.rnn.pack_sequence` for details.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          the input sequence.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the initial
           hidden state for each element in the input sequence. Defaults to zeros if
           not provided.
 
@@ -82,14 +85,12 @@ class BR(SingleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
-          features `(h_t)` from the last layer of the BR, for each `t`. If a
-          :class:`torch.nn.utils.rnn.PackedSequence` has been given as the input,
-          the output will also be a packed sequence.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          features `(h_t)` from the last layer of the BR, for each `t`.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the final
           hidden state for each element in the sequence.
 
     Attributes:
@@ -106,9 +107,6 @@ class BR(SingleStateRecurrentLayerBase):
     .. note::
         All the weights and biases are initialized according to the provided
         initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
-
-    .. note::
-        ``batch_first`` argument is ignored for unbatched inputs.
 
     .. seealso::
         :class:`BRCell`
@@ -347,14 +345,12 @@ class NBR(SingleStateRecurrentLayerBase):
         dtype: The desired floating point type of parameters.
 
     Inputs: input, h_0
-        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,
+        - **input**: tensor of shape
           :math:`(L, N, H_{in})` when ``batch_first=False`` or
           :math:`(N, L, H_{in})` when ``batch_first=True`` containing the features of
-          the input sequence. The input can also be a packed variable length
-          sequence. See :func:`torch.nn.utils.rnn.pack_padded_sequence` or
-          :func:`torch.nn.utils.rnn.pack_sequence` for details.
-        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the initial
+          the input sequence.
+        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the initial
           hidden state for each element in the input sequence. Defaults to zeros if
           not provided.
 
@@ -369,14 +365,12 @@ class NBR(SingleStateRecurrentLayerBase):
             \end{aligned}
 
     Outputs: output, h_n
-        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,
+        - **output**: tensor of shape
           :math:`(L, N, H_{out})` when ``batch_first=False`` or
           :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output
-          features `(h_t)` from the last layer of the NBR, for each `t`. If a
-          :class:`torch.nn.utils.rnn.PackedSequence` has been given as the input,
-          the output will also be a packed sequence.
-        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for unbatched
-          input or :math:`(\text{num_layers}, N, H_{out})` containing the final
+          features `(h_t)` from the last layer of the NBR, for each `t`.
+        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`
+          containing the final
           hidden state for each element in the sequence.
 
     Attributes:
@@ -393,9 +387,6 @@ class NBR(SingleStateRecurrentLayerBase):
     .. note::
         All the weights and biases are initialized according to the provided
         initializers (`kernel_init`, `recurrent_kernel_init`, etc.).
-
-    .. note::
-        ``batch_first`` argument is ignored for unbatched inputs.
 
     .. seealso::
         :class:`NBRCell`

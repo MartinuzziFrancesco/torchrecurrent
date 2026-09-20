@@ -4,10 +4,6 @@ import pytest
 import torch
 from torch import Tensor
 
-skip_windows = pytest.mark.skipif(
-    sys.platform == "win32",
-    reason="torch.compile requires Triton, which is not supported on Windows",
-)
 from torchrecurrent import (
     AntisymmetricRNNCell,
     ATRCell,
@@ -22,6 +18,7 @@ from torchrecurrent import (
     LEMCell,
     GatedAntisymmetricRNNCell,
     MGUCell,
+    MinimalRNNCell,
     IndRNNCell,
     LiGRUCell,
     LightRUCell,
@@ -44,6 +41,11 @@ from torchrecurrent import (
     WMCLSTMCell,
 )
 
+skip_windows = pytest.mark.skipif(
+    sys.platform == "win32",
+    reason="torch.compile requires Triton, which is not supported on Windows",
+)
+
 CELL_CASES = [
     # (CellClass, input_size, hidden_size, uses_double_state)
     (AntisymmetricRNNCell, 3, 5, False),
@@ -59,6 +61,7 @@ CELL_CASES = [
     (JANETCell, 3, 5, True),
     (LEMCell, 3, 5, True),
     (MGUCell, 4, 8, False),
+    (MinimalRNNCell, 3, 5, False),
     (IndRNNCell, 3, 5, False),
     (LiGRUCell, 6, 12, False),
     (LightRUCell, 3, 5, False),
@@ -122,6 +125,13 @@ def test_cell_output_and_state_shapes(Cell, in_size, hid_size, double):
     else:
         h3 = cell(x2, h2)
         assert h3.shape == (B, hid_size)
+
+
+@pytest.mark.parametrize("Cell, in_size, hid_size, double", CELL_CASES)
+def test_cell_reset_parameters_after_construction(Cell, in_size, hid_size, double):
+    """reset_parameters() must remain callable after __init__, not just during it."""
+    cell = Cell(in_size, hid_size)
+    cell.reset_parameters()
 
 
 def test_reslstm_cell_parameter_shapes():
