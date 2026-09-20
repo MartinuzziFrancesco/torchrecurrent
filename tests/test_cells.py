@@ -22,6 +22,7 @@ from torchrecurrent import (
     IntersectionRNNCell,
     LiGRUCell,
     LightRUCell,
+    MCLSTMCell,
     MultiplicativeLSTMCell,
     MUT1Cell,
     MUT2Cell,
@@ -305,6 +306,31 @@ def test_tgru_cell_matches_paper_update():
     assert torch.equal(new_x_prev, x)
 
 
+def test_tgru_cell_accepts_per_component_none_state():
+    """Matches the (None, None) sentinel convention every other double-state
+    cell in this library supports (see tests/test_cells.py's CELL_CASES
+    harness), even though TGRU isn't itself in that harness."""
+    cell = TGRUCell(3, 5)
+    x = torch.randn(3)
+
+    h, x_prev = cell(x, (None, None))
+    assert h.shape == (5,)
+    assert x_prev.shape == (3,)
+
+    h2, x_prev2 = cell(x, (h, None))
+    assert h2.shape == (5,)
+    assert x_prev2.shape == (3,)
+
+    x_batched = torch.randn(2, 3)
+    h3, x_prev3 = cell(x_batched, (None, None))
+    assert h3.shape == (2, 5)
+    assert x_prev3.shape == (2, 3)
+
+    h4, x_prev4 = cell(x_batched, (None, x_prev3))
+    assert h4.shape == (2, 5)
+    assert x_prev4.shape == (2, 3)
+
+
 def test_intersectionrnn_cell_requires_equal_sizes():
     with pytest.raises(ValueError, match="input_size == hidden_size"):
         IntersectionRNNCell(3, 5)
@@ -369,6 +395,90 @@ def test_intersectionrnn_cell_matches_paper_update():
 
     assert torch.allclose(y, expected_y)
     assert torch.allclose(new_h, expected_h)
+
+
+def test_mclstm_cell_shapes():
+    cell = MCLSTMCell(4, 9)
+
+    assert cell.weight_ih.shape == (45, 4)
+    assert cell.weight_hh.shape == (45, 9)
+    assert cell.bias_ih.shape == (45,)
+    assert cell.bias_hh.shape == (45,)
+
+
+def test_mclstm_cell_output_differs_from_state():
+    """h(t) is a pure output: it must differ from both v(t) and c(t)."""
+    cell = MCLSTMCell(4, 4)
+
+    x_unbatched = torch.randn(4)
+    h_u, (v_u, c_u) = cell(x_unbatched)
+    assert h_u.shape == v_u.shape == c_u.shape == (4,)
+    assert not torch.allclose(h_u, v_u)
+    assert not torch.allclose(h_u, c_u)
+
+    x = torch.randn(3, 4)
+    h, (v, c) = cell(x)
+    assert h.shape == v.shape == c.shape == (3, 4)
+    assert not torch.allclose(h, v)
+
+
+def test_mclstm_cell_accepts_per_component_none_state():
+    cell = MCLSTMCell(3, 5)
+    x = torch.randn(3)
+
+    h, (v, c) = cell(x, (None, None))
+    assert h.shape == v.shape == c.shape == (5,)
+
+    h2, (v2, c2) = cell(x, (v, None))
+    assert h2.shape == v2.shape == c2.shape == (5,)
+
+    x_batched = torch.randn(2, 3)
+    h3, (v3, c3) = cell(x_batched, (None, None))
+    assert h3.shape == v3.shape == c3.shape == (2, 5)
+
+    h4, (v4, c4) = cell(x_batched, (None, c3))
+    assert h4.shape == v4.shape == c4.shape == (2, 5)
+
+
+def test_mclstm_cell_gradients():
+    cell = MCLSTMCell(4, 5, bias=False)
+    x = torch.randn(2, 4, requires_grad=True)
+
+    h, (v, c) = cell(x)
+    (h.sum() + v.sum() + c.sum()).backward()
+
+    assert x.grad is not None
+    for p in cell.parameters():
+        if p.requires_grad:
+            assert p.grad is not None
+
+
+def test_mclstm_cell_matches_paper_update():
+    cell = MCLSTMCell(2, 2, bias=False, recurrent_bias=False)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.arange(20, dtype=torch.float32).reshape(10, 2) * 0.1)
+        cell.weight_hh.copy_(torch.arange(20, dtype=torch.float32).reshape(10, 2) * -0.1)
+
+    x = torch.tensor([[0.2, -0.3]])
+    v = torch.tensor([[0.1, -0.2]])
+    c = torch.tensor([[0.4, -0.5]])
+
+    h, (new_v, new_c) = cell(x, (v, c))
+    gates = x @ cell.weight_ih.t() + v @ cell.weight_hh.t()
+    f_pre, i_pre, o_pre, m_pre, n_pre = gates.chunk(5, 1)
+    forget_gate = torch.sigmoid(f_pre)
+    input_gate = torch.sigmoid(i_pre)
+    output_gate = torch.sigmoid(o_pre)
+    control_gate = torch.sigmoid(m_pre)
+    candidate = torch.tanh(n_pre)
+
+    expected_c = forget_gate * c + input_gate * candidate
+    expected_h = output_gate * torch.tanh(expected_c)
+    expected_v = control_gate * torch.tanh(expected_c)
+
+    assert torch.allclose(new_c, expected_c)
+    assert torch.allclose(h, expected_h)
+    assert torch.allclose(new_v, expected_v)
 
 
 @pytest.mark.parametrize("Cell, in_size, hid_size, _", CELL_CASES)

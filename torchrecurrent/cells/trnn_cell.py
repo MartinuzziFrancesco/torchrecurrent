@@ -596,11 +596,21 @@ class TGRUCell(DoubleStateCellBase):
             )
         else:
             h0, prev_inp0 = state
-            b_state = h0.unsqueeze(0) if (not is_batched and h0.dim() == 1) else h0
+            b_state = (
+                self._zeros_state(b_inp.size(0), b_inp.device, b_inp.dtype)
+                if h0 is None
+                else (h0.unsqueeze(0) if (not is_batched and h0.dim() == 1) else h0)
+            )
             b_prev_inp = (
-                prev_inp0.unsqueeze(0)
-                if (not is_batched and prev_inp0.dim() == 1)
-                else prev_inp0
+                torch.zeros(
+                    b_inp.size(0), self.input_size, device=b_inp.device, dtype=b_inp.dtype
+                )
+                if prev_inp0 is None
+                else (
+                    prev_inp0.unsqueeze(0)
+                    if (not is_batched and prev_inp0.dim() == 1)
+                    else prev_inp0
+                )
             )
 
         gates_ih = b_inp @ self.weight_ih.t() + self.bias_ih

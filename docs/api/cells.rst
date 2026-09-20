@@ -23,6 +23,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.LEMCell
    torchrecurrent.LightRUCell
    torchrecurrent.LiGRUCell
+   torchrecurrent.MCLSTMCell
    torchrecurrent.MGUCell
    torchrecurrent.MiRU1Cell
    torchrecurrent.MiRU2Cell

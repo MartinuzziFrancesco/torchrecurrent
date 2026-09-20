@@ -17,6 +17,7 @@ from torchrecurrent import (
     IntersectionRNN,
     LiGRU,
     LightRU,
+    MCLSTM,
     MGU,
     MultiplicativeLSTM,
     MUT1,
@@ -53,6 +54,7 @@ LAYER_CLASSES = [
     IndRNN,
     LiGRU,
     LightRU,
+    MCLSTM,
     MGU,
     MultiplicativeLSTM,
     MUT1,
@@ -90,6 +92,7 @@ LAYER_CASES = [
     (IndRNN, False),
     (LiGRU, False),
     (LightRU, False),
+    (MCLSTM, True),
     (MGU, False),
     (MultiplicativeLSTM, True),
     (MUT1, False),
@@ -423,6 +426,85 @@ def test_intersectionrnn_repr():
 
     r = repr(IntersectionRNN(5, 5, batch_first=True))
     assert "batch_first=True" in r
+
+
+def test_mclstm_state_continuity_matches_single_call():
+    input_size, hidden_size = 5, 7
+    seq_len, batch_size, num_layers = 6, 3, 2
+    split = 2
+
+    layer = MCLSTM(input_size, hidden_size, num_layers=num_layers, bias=False)
+    x = torch.randn(seq_len, batch_size, input_size)
+
+    out_full, (v_full, c_full) = layer(x)
+
+    out1, state1 = layer(x[:split])
+    out2, (v2, c2) = layer(x[split:], state1)
+    out_chunked = torch.cat([out1, out2], dim=0)
+
+    assert torch.allclose(out_chunked, out_full, atol=1e-6)
+    assert torch.allclose(v2, v_full, atol=1e-6)
+    assert torch.allclose(c2, c_full, atol=1e-6)
+
+
+def test_mclstm_stacking_forwards_output_not_control_state():
+    """Layer k+1 must receive layer k's h(t) (output), not its v(t)/c(t)."""
+    input_size, hidden_size = 5, 7
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = MCLSTM(input_size, hidden_size, num_layers=num_layers, bias=False)
+    x = torch.randn(seq_len, batch_size, input_size)
+
+    out, (vn, cn) = layer(x)
+
+    v_prev = [torch.zeros(batch_size, hidden_size) for _ in range(num_layers)]
+    c_prev = [torch.zeros(batch_size, hidden_size) for _ in range(num_layers)]
+    expected_outputs = []
+    for t in range(seq_len):
+        layer_inp = x[t]
+        for layer_idx, cell in enumerate(layer.cells):
+            h, (v_new, c_new) = cell(layer_inp, (v_prev[layer_idx], c_prev[layer_idx]))
+            v_prev[layer_idx] = v_new
+            c_prev[layer_idx] = c_new
+            layer_inp = h
+        expected_outputs.append(layer_inp)
+
+    assert torch.allclose(out, torch.stack(expected_outputs, dim=0), atol=1e-6)
+    for layer_idx in range(num_layers):
+        assert torch.allclose(vn[layer_idx], v_prev[layer_idx], atol=1e-6)
+        assert torch.allclose(cn[layer_idx], c_prev[layer_idx], atol=1e-6)
+
+
+def test_mclstm_dropout_only_between_layers():
+    input_size, hidden_size = 5, 5
+    seq_len, batch_size = 4, 3
+
+    # num_layers=1: dropout is never applied, so the output must be
+    # bit-identical regardless of the dropout probability.
+    torch.manual_seed(0)
+    layer_no_drop = MCLSTM(input_size, hidden_size, dropout=0.0, bias=False)
+    torch.manual_seed(0)
+    layer_high_drop = MCLSTM(input_size, hidden_size, dropout=0.9, bias=False)
+
+    x = torch.randn(seq_len, batch_size, input_size)
+    out_no_drop, _ = layer_no_drop(x)
+    out_high_drop, _ = layer_high_drop(x)
+
+    assert torch.equal(out_no_drop, out_high_drop)
+
+    # num_layers=2: dropout between layers must actually change the output.
+    torch.manual_seed(0)
+    stacked_no_drop = MCLSTM(input_size, hidden_size, num_layers=2, dropout=0.0, bias=False)
+    torch.manual_seed(0)
+    stacked_drop = MCLSTM(input_size, hidden_size, num_layers=2, dropout=0.9, bias=False)
+    stacked_drop.load_state_dict(stacked_no_drop.state_dict())
+
+    torch.manual_seed(1)
+    out_stacked_no_drop, _ = stacked_no_drop(x)
+    torch.manual_seed(1)
+    out_stacked_drop, _ = stacked_drop(x)
+
+    assert not torch.allclose(out_stacked_no_drop, out_stacked_drop)
 
 
 @pytest.mark.parametrize("Layer", LAYER_CLASSES)

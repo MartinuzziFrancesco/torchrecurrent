@@ -62,6 +62,9 @@ references and official implementations where available.
    * - :doc:`LightRU <generated/torchrecurrent.LightRU>`
      - `MDPI Electronics 2023 <https://www.mdpi.com/2079-9292/13/16/3204>`__
      - –
+   * - :doc:`MCLSTM <generated/torchrecurrent.MCLSTM>`
+     - `NIPS 2017 workshop <https://www.intel.com/content/dam/www/public/us/en/ai/documents/Sequence-Modeling-NIPS-2017.pdf>`__
+     - –
    * - :doc:`MGU <generated/torchrecurrent.MGU>`
      - `IJAC 2016 <https://arxiv.org/abs/1603.09420>`__
      - –
