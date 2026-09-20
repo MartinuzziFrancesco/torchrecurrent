@@ -43,6 +43,7 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.tauGRU
    torchrecurrent.TRNN
    torchrecurrent.TGRU
+   torchrecurrent.TLSTM
    torchrecurrent.UGRNN
    torchrecurrent.UnICORNN
    torchrecurrent.WMCLSTM

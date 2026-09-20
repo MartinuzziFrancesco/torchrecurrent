@@ -39,6 +39,7 @@ from torchrecurrent import (
     tauGRUCell,
     TRNNCell,
     TGRUCell,
+    TLSTMCell,
     UGRNNCell,
     UnICORNNCell,
     WMCLSTMCell,
@@ -329,6 +330,90 @@ def test_tgru_cell_accepts_per_component_none_state():
     h4, x_prev4 = cell(x_batched, (None, x_prev3))
     assert h4.shape == (2, 5)
     assert x_prev4.shape == (2, 3)
+
+
+def test_tlstm_cell_parameter_shapes():
+    """weight_hh acts on the previous *input*, so it shares weight_ih's shape."""
+    cell = TLSTMCell(4, 9)
+
+    assert cell.weight_ih.shape == (27, 4)
+    assert cell.weight_hh.shape == (27, 4)
+    assert cell.bias_ih.shape == (27,)
+    assert cell.bias_hh.shape == (27,)
+
+
+def test_tlstm_cell_output_differs_from_state():
+    """h(t) is a pure output: it plays no role in any later computation."""
+    cell = TLSTMCell(4, 4)
+
+    x_unbatched = torch.randn(4)
+    h_u, (c_u, xprev_u) = cell(x_unbatched)
+    assert h_u.shape == c_u.shape == (4,)
+    assert xprev_u.shape == (4,)
+    assert not torch.allclose(h_u, c_u)
+
+    x = torch.randn(3, 4)
+    h, (c, xprev) = cell(x)
+    assert h.shape == c.shape == (3, 4)
+    assert not torch.allclose(h, c)
+
+
+def test_tlstm_cell_accepts_per_component_none_state():
+    cell = TLSTMCell(3, 5)
+    x = torch.randn(3)
+
+    h, (c, xprev) = cell(x, (None, None))
+    assert h.shape == c.shape == (5,)
+    assert xprev.shape == (3,)
+
+    h2, (c2, xprev2) = cell(x, (c, None))
+    assert h2.shape == c2.shape == (5,)
+    assert xprev2.shape == (3,)
+
+    x_batched = torch.randn(2, 3)
+    h3, (c3, xprev3) = cell(x_batched, (None, None))
+    assert h3.shape == c3.shape == (2, 5)
+    assert xprev3.shape == (2, 3)
+
+    h4, (c4, xprev4) = cell(x_batched, (None, xprev3))
+    assert h4.shape == c4.shape == (2, 5)
+    assert xprev4.shape == (2, 3)
+
+
+def test_tlstm_cell_gradients():
+    cell = TLSTMCell(4, 5, bias=False)
+    x = torch.randn(2, 4, requires_grad=True)
+
+    h, (c, xprev) = cell(x)
+    (h.sum() + c.sum()).backward()
+
+    assert x.grad is not None
+    for p in cell.parameters():
+        if p.requires_grad:
+            assert p.grad is not None
+
+
+def test_tlstm_cell_matches_paper_update():
+    cell = TLSTMCell(2, 2, bias=False, recurrent_bias=False)
+    with torch.no_grad():
+        cell.weight_ih.copy_(torch.arange(12, dtype=torch.float32).reshape(6, 2) * 0.1)
+        cell.weight_hh.copy_(torch.arange(12, dtype=torch.float32).reshape(6, 2) * -0.1)
+
+    x = torch.tensor([[0.2, -0.3]])
+    c = torch.tensor([[0.4, -0.5]])
+    x_prev = torch.tensor([[-0.1, 0.6]])
+
+    h, (new_c, new_x_prev) = cell(x, (c, x_prev))
+    gates = x @ cell.weight_ih.t() + x_prev @ cell.weight_hh.t()
+    latent, forget_pre, out_pre = gates.chunk(3, 1)
+    forget_gate = torch.sigmoid(forget_pre)
+    output_candidate = torch.tanh(out_pre)
+    expected_c = forget_gate * c + (1 - forget_gate) * latent
+    expected_h = expected_c * output_candidate
+
+    assert torch.allclose(new_c, expected_c)
+    assert torch.allclose(h, expected_h)
+    assert torch.equal(new_x_prev, x)
 
 
 def test_intersectionrnn_cell_requires_equal_sizes():

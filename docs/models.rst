@@ -125,6 +125,9 @@ references and official implementations where available.
    * - :doc:`TGRU <generated/torchrecurrent.TGRU>`
      - `ICML 2016 <https://arxiv.org/abs/1602.02218>`__
      - –
+   * - :doc:`TLSTM <generated/torchrecurrent.TLSTM>`
+     - `ICML 2016 <https://arxiv.org/abs/1602.02218>`__
+     - –
    * - :doc:`UGRNN <generated/torchrecurrent.UGRNN>`
      - `ICLR 2017 <https://arxiv.org/abs/1611.09913>`__
      - –

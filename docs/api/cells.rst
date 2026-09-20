@@ -43,6 +43,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.tauGRUCell
    torchrecurrent.TRNNCell
    torchrecurrent.TGRUCell
+   torchrecurrent.TLSTMCell
    torchrecurrent.UGRNNCell
    torchrecurrent.UnICORNNCell
    torchrecurrent.WMCLSTMCell
