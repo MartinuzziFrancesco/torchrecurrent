@@ -371,8 +371,12 @@
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">SingleStateRecurrentLayerBase</span><span class="p">,</span> <span class="n">SingleStateCellBase</span><span class="p">,</span> <span class="n">resolve_init_name</span><span class="p">,</span> <span class="n">apply_init_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">SingleStateRecurrentLayerBase</span><span class="p">,</span>
+    <span class="n">SingleStateCellBase</span><span class="p">,</span>
+    <span class="n">resolve_init_name</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="SGRN">
@@ -425,12 +429,12 @@
 <span class="sd">        dtype: The desired floating point type of parameters</span>
 
 <span class="sd">    Inputs: input, h_0</span>
-<span class="sd">        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,</span>
+<span class="sd">        - **input**: tensor of shape</span>
 <span class="sd">          :math:`(L, N, H_{in})` when ``batch_first=False`` or</span>
 <span class="sd">          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the</span>
 <span class="sd">          features of the input sequence.</span>
-<span class="sd">        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
-<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`</span>
+<span class="sd">          containing</span>
 <span class="sd">          the initial hidden state. Defaults to zeros if not provided.</span>
 
 <span class="sd">        where:</span>
@@ -444,12 +448,12 @@
 <span class="sd">            \end{aligned}</span>
 
 <span class="sd">    Outputs: output, h_n</span>
-<span class="sd">        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,</span>
+<span class="sd">        - **output**: tensor of shape</span>
 <span class="sd">          :math:`(L, N, H_{out})` when ``batch_first=False`` or</span>
 <span class="sd">          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the</span>
 <span class="sd">          output features from the last layer, for each timestep.</span>
-<span class="sd">        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
-<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`</span>
+<span class="sd">          containing</span>
 <span class="sd">          the final hidden state for each element in the sequence.</span>
 
 <span class="sd">    Attributes:</span>

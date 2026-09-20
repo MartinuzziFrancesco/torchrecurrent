@@ -62,6 +62,9 @@ references and official implementations where available.
    * - :doc:`MGU <generated/torchrecurrent.MGU>`
      - `IJAC 2016 <https://arxiv.org/abs/1603.09420>`__
      - –
+   * - :doc:`MinimalRNN <generated/torchrecurrent.MinimalRNN>`
+     - `NeurIPS 2017 Workshop <https://arxiv.org/abs/1711.06788>`__
+     - –
    * - :doc:`MiRU1 <generated/torchrecurrent.MiRU1>`
      - `Neurocomputing 2026 <https://doi.org/10.1016/j.neucom.2026.132847>`__
      - –

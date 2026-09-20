@@ -349,6 +349,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRUCell.html">torchrecurrent.LightRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRUCell.html">torchrecurrent.LiGRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGUCell.html">torchrecurrent.MGUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MinimalRNNCell.html">torchrecurrent.MinimalRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1Cell.html">torchrecurrent.MiRU1Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2Cell.html">torchrecurrent.MiRU2Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTMCell.html">torchrecurrent.MultiplicativeLSTMCell</a></li>
@@ -387,6 +388,7 @@
 <li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.LightRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRU.html">torchrecurrent.LiGRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGU.html">torchrecurrent.MGU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MinimalRNN.html">torchrecurrent.MinimalRNN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1.html">torchrecurrent.MiRU1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2.html">torchrecurrent.MiRU2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTM.html">torchrecurrent.MultiplicativeLSTM</a></li>
@@ -535,14 +537,12 @@ Default: True</p></li>
 </dl>
 <dl>
 <dt>Inputs: input, h_0</dt><dd><ul class="simple">
-<li><p><strong>input</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{in})\)</span> for unbatched input,
+<li><p><strong>input</strong>: tensor of shape
 <span class="math notranslate nohighlight">\((L, N, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
 <span class="math notranslate nohighlight">\((N, L, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code> containing the features of
-the input sequence. The input can also be a packed variable length
-sequence. See <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.pack_padded_sequence()</span></code> or
-<code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.pack_sequence()</span></code> for details.</p></li>
-<li><p><strong>h_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for unbatched
-input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing the initial
+the input sequence.</p></li>
+<li><p><strong>h_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span>
+containing the initial
 hidden state for each element in the input sequence. Defaults to zeros if
 not provided.</p></li>
 </ul>
@@ -556,14 +556,12 @@ not provided.</p></li>
 \end{aligned}\end{split}\]</div>
 </dd>
 <dt>Outputs: output, h_n</dt><dd><ul class="simple">
-<li><p><strong>output</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{out})\)</span> for unbatched input,
+<li><p><strong>output</strong>: tensor of shape
 <span class="math notranslate nohighlight">\((L, N, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
 <span class="math notranslate nohighlight">\((N, L, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code> containing the output
-features <cite>(h_t)</cite> from the last layer of the LightRU, for each <cite>t</cite>. If a
-<code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.utils.rnn.PackedSequence</span></code> has been given as the input,
-the output will also be a packed sequence.</p></li>
-<li><p><strong>h_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for unbatched
-input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing the final
+features <cite>(h_t)</cite> from the last layer of the LightRU, for each <cite>t</cite>.</p></li>
+<li><p><strong>h_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span>
+containing the final
 hidden state for each element in the sequence.</p></li>
 </ul>
 </dd>
@@ -601,10 +599,6 @@ layer, of shape <cite>(hidden_size)</cite>. Only present when <code class="docut
 <p class="admonition-title">Note</p>
 <p>All the weights and biases are initialized according to the provided
 initializers (<cite>kernel_init</cite>, <cite>recurrent_kernel_init</cite>, etc.).</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code class="docutils literal notranslate"><span class="pre">batch_first</span></code> argument is ignored for unbatched inputs.</p>
 </div>
 <div class="admonition seealso">
 <p class="admonition-title">See also</p>

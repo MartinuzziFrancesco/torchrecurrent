@@ -434,11 +434,11 @@
 <span class="sd">        dtype: The desired floating point type of parameters.</span>
 
 <span class="sd">    Inputs: input, h_0</span>
-<span class="sd">        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,</span>
+<span class="sd">        - **input**: tensor of shape</span>
 <span class="sd">          :math:`(L, N, H_{in})` when ``batch_first=False`` or</span>
 <span class="sd">          :math:`(N, L, H_{in})` when ``batch_first=True``.</span>
-<span class="sd">        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
-<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})`.</span>
+<span class="sd">        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`</span>
+<span class="sd">          .</span>
 <span class="sd">          Defaults to zeros if not provided.</span>
 
 <span class="sd">    Outputs: output, h_n</span>

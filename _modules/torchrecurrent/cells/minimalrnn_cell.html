@@ -7,7 +7,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>torchrecurrent.cells.lightru_cell &#8212; torchrecurrent</title>
+    <title>torchrecurrent.cells.minimalrnn_cell &#8212; torchrecurrent</title>
   
   
   
@@ -40,7 +40,7 @@
     <script src="../../../_static/documentation_options.js?v=1e825a29"></script>
     <script src="../../../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../../../_static/sphinx_highlight.js?v=6ffebe34"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchrecurrent/cells/lightru_cell';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = '_modules/torchrecurrent/cells/minimalrnn_cell';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="icon" href="../../../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -350,7 +350,7 @@
     
     <li class="breadcrumb-item"><a href="../../index.html" class="nav-link">Module code</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.cells.lightru_cell</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.cells.minimalrnn_cell</span></li>
   </ul>
 </nav>
 </div>
@@ -367,67 +367,77 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <h1>Source code for torchrecurrent.cells.lightru_cell</h1><div class="highlight"><pre>
+  <h1>Source code for torchrecurrent.cells.minimalrnn_cell</h1><div class="highlight"><pre>
 <span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">SingleStateRecurrentLayerBase</span><span class="p">,</span>
     <span class="n">SingleStateCellBase</span><span class="p">,</span>
+    <span class="n">resolve_activation</span><span class="p">,</span>
     <span class="n">resolve_init_name</span><span class="p">,</span>
+    <span class="n">apply_init_</span><span class="p">,</span>
 <span class="p">)</span>
 
 
-<div class="viewcode-block" id="LightRU">
-<a class="viewcode-back" href="../../../generated/torchrecurrent.LightRU.html#torchrecurrent.LightRU">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">LightRU</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">"""Multi-layer light recurrent unit neural network.</span>
+<div class="viewcode-block" id="MinimalRNN">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.MinimalRNN.html#torchrecurrent.MinimalRNN">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MinimalRNN</span><span class="p">(</span><span class="n">SingleStateRecurrentLayerBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""Multi-layer minimal recurrent neural network.</span>
 
-<span class="sd">    [`pub &lt;https://www.mdpi.com/2079-9292/13/16/3204&gt;`_]</span>
+<span class="sd">    [`arXiv &lt;https://arxiv.org/abs/1711.06788&gt;`_]</span>
 
-<span class="sd">    Each layer consists of a :class:`LightRUCell`, which updates the hidden</span>
+<span class="sd">    Each layer consists of an :class:`MinimalRNNCell`, which updates the hidden</span>
 <span class="sd">    state according to:</span>
 
 <span class="sd">    .. math::</span>
 <span class="sd">        \begin{aligned}</span>
-<span class="sd">            \tilde{h}_t &amp;= \tanh(W_{ih}^h x_t + b_{ih}^h), \\</span>
-<span class="sd">            f_t &amp;= \sigma(W_{ih}^f x_t + b_{ih}^f</span>
-<span class="sd">                   + W_{hh}^f h_{t-1} + b_{hh}^f), \\</span>
-<span class="sd">            h_t &amp;= (1 - f_t) \circ h_{t-1} + f_t \circ \tilde{h}_t</span>
+<span class="sd">        z_t &amp;= \phi(W_{ih} x_t + b_{ih}), \\</span>
+<span class="sd">        u_t &amp;= \sigma(W_{hh} h_{t-1} + W_{mm} z_t + b_{hh}), \\</span>
+<span class="sd">        h_t &amp;= u_t \circ h_{t-1} + (1 - u_t) \circ z_t</span>
 <span class="sd">        \end{aligned}</span>
 
-<span class="sd">    where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the input</span>
-<span class="sd">    at time `t`, :math:`\sigma` is the sigmoid function, and :math:`\circ`</span>
-<span class="sd">    denotes elementwise multiplication.</span>
+<span class="sd">    where :math:`h_t` is the hidden state at time `t`, :math:`x_t` is the</span>
+<span class="sd">    input at time `t`, :math:`z_t` is the latent representation of the input,</span>
+<span class="sd">    :math:`\sigma` is the sigmoid function, :math:`\phi` is a pointwise</span>
+<span class="sd">    nonlinearity (e.g., tanh), and :math:`\circ` denotes elementwise</span>
+<span class="sd">    multiplication.</span>
 
-<span class="sd">    In a multilayer LightRU, the input :math:`x^{(l)}_t` of the :math:`l`-th</span>
-<span class="sd">    layer (:math:`l \ge 2`) is the hidden state :math:`h^{(l-1)}_t` of the</span>
-<span class="sd">    previous layer multiplied by dropout :math:`\delta^{(l-1)}_t`, where each</span>
-<span class="sd">    :math:`\delta^{(l-1)}_t` is a Bernoulli random variable which is 0 with</span>
-<span class="sd">    probability :attr:`dropout`.</span>
+<span class="sd">    In a multilayer MinimalRNN, the input :math:`x^{(l)}_t` of the</span>
+<span class="sd">    :math:`l`-th layer (:math:`l \ge 2`) is the hidden state</span>
+<span class="sd">    :math:`h^{(l-1)}_t` of the previous layer multiplied by dropout</span>
+<span class="sd">    :math:`\delta^{(l-1)}_t`, where each :math:`\delta^{(l-1)}_t` is a</span>
+<span class="sd">    Bernoulli random variable which is 0 with probability :attr:`dropout`.</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        input_size: The number of expected features in the input `x`.</span>
 <span class="sd">        hidden_size: The number of features in the hidden state `h`.</span>
 <span class="sd">        num_layers: Number of recurrent layers. E.g., setting ``num_layers=2`` would</span>
-<span class="sd">            mean stacking two LightRU layers, with the second receiving the outputs</span>
+<span class="sd">            mean stacking two MinimalRNN layers, with the second receiving the outputs</span>
 <span class="sd">            of the first. Default: 1</span>
 <span class="sd">        dropout: If non-zero, introduces a `Dropout` layer on the outputs of each</span>
 <span class="sd">            layer except the last layer, with dropout probability equal to</span>
 <span class="sd">            :attr:`dropout`. Default: 0</span>
 <span class="sd">        batch_first: If ``True``, then the input and output tensors are provided as</span>
 <span class="sd">            `(batch, seq, feature)` instead of `(seq, batch, feature)`. Default: False</span>
-<span class="sd">        bias: If ``False``, then the layer does not use input-side bias `b_ih`.</span>
+<span class="sd">        bias: If ``False``, then the layer does not use input-side biases.</span>
 <span class="sd">            Default: True</span>
-<span class="sd">        recurrent_bias: If ``False``, then the layer does not use recurrent bias</span>
-<span class="sd">            `b_hh`. Default: True</span>
+<span class="sd">        recurrent_bias: If ``False``, then the layer does not use recurrent biases.</span>
+<span class="sd">            Default: True</span>
+<span class="sd">        nonlinearity: Nonlinearity :math:`\phi` for the input encoder. Default:</span>
+<span class="sd">            :func:`torch.tanh`</span>
+<span class="sd">        gate_nonlinearity: Activation for the update gate. Default:</span>
+<span class="sd">            :func:`torch.sigmoid`</span>
 <span class="sd">        kernel_init: Initializer for `W_{ih}`. Default:</span>
 <span class="sd">            :func:`torch.nn.init.xavier_uniform_`</span>
 <span class="sd">        recurrent_kernel_init: Initializer for `W_{hh}`. Default:</span>
 <span class="sd">            :func:`torch.nn.init.xavier_uniform_`</span>
-<span class="sd">        bias_init: Initializer for `b_{ih}`. Default: :func:`torch.nn.init.zeros_`</span>
-<span class="sd">        recurrent_bias_init: Initializer for `b_{hh}`. Default:</span>
+<span class="sd">        memory_kernel_init: Initializer for `W_{mm}`. Default:</span>
+<span class="sd">            :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">        bias_init: Initializer for input-side biases. Default:</span>
+<span class="sd">            :func:`torch.nn.init.zeros_`</span>
+<span class="sd">        recurrent_bias_init: Initializer for recurrent biases. Default:</span>
 <span class="sd">            :func:`torch.nn.init.zeros_`</span>
 <span class="sd">        device: The desired device of parameters.</span>
 <span class="sd">        dtype: The desired floating point type of parameters.</span>
@@ -456,19 +466,21 @@
 <span class="sd">        - **output**: tensor of shape</span>
 <span class="sd">          :math:`(L, N, H_{out})` when ``batch_first=False`` or</span>
 <span class="sd">          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the output</span>
-<span class="sd">          features `(h_t)` from the last layer of the LightRU, for each `t`.</span>
+<span class="sd">          features `(h_t)` from the last layer of the MinimalRNN, for each `t`.</span>
 <span class="sd">        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`</span>
 <span class="sd">          containing the final</span>
 <span class="sd">          hidden state for each element in the sequence.</span>
 
 <span class="sd">    Attributes:</span>
 <span class="sd">        cells.{k}.weight_ih : the learnable input-hidden weights of the :math:`k`-th</span>
-<span class="sd">            layer, of shape `(2*hidden_size, input_size)` for `k = 0`. Otherwise, the</span>
-<span class="sd">            shape is `(2*hidden_size, hidden_size)`.</span>
+<span class="sd">            layer, of shape `(hidden_size, input_size)` for `k = 0`. Otherwise, the</span>
+<span class="sd">            shape is `(hidden_size, hidden_size)`.</span>
 <span class="sd">        cells.{k}.weight_hh : the learnable hidden-hidden weights of the :math:`k`-th</span>
 <span class="sd">            layer, of shape `(hidden_size, hidden_size)`.</span>
+<span class="sd">        cells.{k}.weight_mm : the learnable latent-hidden weights of the :math:`k`-th</span>
+<span class="sd">            layer, of shape `(hidden_size, hidden_size)`.</span>
 <span class="sd">        cells.{k}.bias_ih : the learnable input-hidden biases of the :math:`k`-th</span>
-<span class="sd">            layer, of shape `(2*hidden_size)`. Only present when ``bias=True``.</span>
+<span class="sd">            layer, of shape `(hidden_size)`. Only present when ``bias=True``.</span>
 <span class="sd">        cells.{k}.bias_hh : the learnable hidden-hidden biases of the :math:`k`-th</span>
 <span class="sd">            layer, of shape `(hidden_size)`. Only present when ``recurrent_bias=True``.</span>
 
@@ -477,18 +489,18 @@
 <span class="sd">        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).</span>
 
 <span class="sd">    .. seealso::</span>
-<span class="sd">        :class:`LightRUCell`</span>
+<span class="sd">        :class:`MinimalRNNCell`</span>
 
 <span class="sd">    Examples::</span>
 
-<span class="sd">        &gt;&gt;&gt; rnn = LightRU(8, 16, num_layers=2, dropout=0.1)</span>
-<span class="sd">        &gt;&gt;&gt; input = torch.randn(5, 3, 8)    # (seq_len, batch, input_size)</span>
-<span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 16)      # (num_layers, batch, hidden_size)</span>
+<span class="sd">        &gt;&gt;&gt; rnn = MinimalRNN(10, 20, num_layers=2, dropout=0.1)</span>
+<span class="sd">        &gt;&gt;&gt; input = torch.randn(5, 3, 10)   # (seq_len, batch, input_size)</span>
+<span class="sd">        &gt;&gt;&gt; h0 = torch.zeros(2, 3, 20)      # (num_layers, batch, hidden_size)</span>
 <span class="sd">        &gt;&gt;&gt; output, hn = rnn(input, h0)</span>
 <span class="sd">    """</span>
 
-<div class="viewcode-block" id="LightRU.__init__">
-<a class="viewcode-back" href="../../../generated/torchrecurrent.LightRU.html#torchrecurrent.LightRU.__init__">[docs]</a>
+<div class="viewcode-block" id="MinimalRNN.__init__">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.MinimalRNN.html#torchrecurrent.MinimalRNN.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">input_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -498,107 +510,120 @@
         <span class="n">batch_first</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>
     <span class="p">):</span>
-        <span class="nb">super</span><span class="p">(</span><span class="n">LightRU</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">MinimalRNN</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
             <span class="n">input_size</span><span class="p">,</span> <span class="n">hidden_size</span><span class="p">,</span> <span class="n">num_layers</span><span class="p">,</span> <span class="n">dropout</span><span class="p">,</span> <span class="n">batch_first</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_cells</span><span class="p">(</span><span class="n">LightRUCell</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">initialize_cells</span><span class="p">(</span><span class="n">MinimalRNNCell</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 </div>
 
 
 
-<div class="viewcode-block" id="LightRUCell">
-<a class="viewcode-back" href="../../../generated/torchrecurrent.LightRUCell.html#torchrecurrent.LightRUCell">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">LightRUCell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
-<span class="w">    </span><span class="sa">r</span><span class="sd">"""A Light Recurrent Unit (LightRU) cell.</span>
+<div class="viewcode-block" id="MinimalRNNCell">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.MinimalRNNCell.html#torchrecurrent.MinimalRNNCell">[docs]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">MinimalRNNCell</span><span class="p">(</span><span class="n">SingleStateCellBase</span><span class="p">):</span>
+<span class="w">    </span><span class="sa">r</span><span class="sd">"""A Minimal recurrent neural network (MinimalRNN) cell.</span>
 
-<span class="sd">    [`pub &lt;https://www.mdpi.com/2079-9292/13/16/3204&gt;`_]</span>
+<span class="sd">    [`arXiv &lt;https://arxiv.org/abs/1711.06788&gt;`_]</span>
 
 <span class="sd">    .. math::</span>
 
-<span class="sd">        \begin{aligned}</span>
-<span class="sd">        \tilde{\mathbf{h}}(t) &amp;= \tanh\bigl(</span>
-<span class="sd">            \mathbf{W}_{ih}^{h}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{h}</span>
-<span class="sd">        \bigr), \\</span>
-<span class="sd">            \mathbf{f}(t) &amp;= \sigma\bigl(</span>
-<span class="sd">            \mathbf{W}_{ih}^{f}\,\mathbf{x}(t) + \mathbf{b}_{ih}^{f}</span>
-<span class="sd">            + \mathbf{W}_{hh}^{f}\,\mathbf{h}(t-1) + \mathbf{b}_{hh}^{f}</span>
-<span class="sd">        \bigr), \\</span>
-<span class="sd">            \mathbf{h}(t) &amp;= \bigl(1 - \mathbf{f}(t)\bigr)\circ \mathbf{h}(t-1)</span>
-<span class="sd">            \;+\; \mathbf{f}(t)\circ \tilde{\mathbf{h}}(t),</span>
-<span class="sd">        \end{aligned}</span>
+<span class="sd">        \mathbf{z}(t) &amp;= \phi\bigl(</span>
+<span class="sd">            \mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}</span>
+<span class="sd">        \bigr), \\[6pt]</span>
+<span class="sd">        \mathbf{u}(t) &amp;= \sigma\bigl(</span>
+<span class="sd">            \mathbf{W}_{hh}\,\mathbf{h}(t-1)</span>
+<span class="sd">            + \mathbf{W}_{mm}\,\mathbf{z}(t)</span>
+<span class="sd">            + \mathbf{b}_{hh}</span>
+<span class="sd">        \bigr), \\[6pt]</span>
+<span class="sd">        \mathbf{h}(t) &amp;= \mathbf{u}(t)\circ\mathbf{h}(t-1)</span>
+<span class="sd">            \;+\;\bigl(1 - \mathbf{u}(t)\bigr)\circ\mathbf{z}(t),</span>
 
-<span class="sd">    where :math:`\sigma` is the sigmoid function and</span>
-<span class="sd">    :math:`\circ` denotes element-wise multiplication.</span>
+<span class="sd">    where :math:`\circ` is element-wise product, :math:`\phi` is a pointwise</span>
+<span class="sd">    nonlinearity (e.g., tanh) mapping the input into the latent space of the</span>
+<span class="sd">    hidden state, and :math:`\mathbf{z}(t)` is recomputed from the current</span>
+<span class="sd">    input at every step (it is not part of the recurrent state).</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        input_size: The number of expected features in the input ``x``</span>
-<span class="sd">        hidden_size: The number of features in the hidden state ``h``</span>
-<span class="sd">        bias: If ``False``, the layer does not use input-side bias ``b_{ih}``.</span>
-<span class="sd">            Default: ``True``</span>
-<span class="sd">        recurrent_bias: If ``False``, the layer does not use recurrent bias ``b_{hh}``.</span>
-<span class="sd">            Default: ``True``</span>
+<span class="sd">        input_size: The number of expected features in the input ``x``.</span>
+<span class="sd">        hidden_size: The number of features in the hidden state ``h``.</span>
+<span class="sd">        bias: If ``False``, the layer does not use input-side biases.</span>
+<span class="sd">            Default: ``True``.</span>
+<span class="sd">        recurrent_bias: If ``False``, the layer does not use recurrent biases.</span>
+<span class="sd">            Default: ``True``.</span>
+<span class="sd">        nonlinearity: Nonlinearity :math:`\phi` for the input encoder.</span>
+<span class="sd">            Default: :func:`torch.tanh`.</span>
+<span class="sd">        gate_nonlinearity: Activation for the update gate.</span>
+<span class="sd">            Default: :func:`torch.sigmoid`.</span>
 <span class="sd">        kernel_init: Initializer for ``W_{ih}``.</span>
-<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
+<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`.</span>
 <span class="sd">        recurrent_kernel_init: Initializer for ``W_{hh}``.</span>
-<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`</span>
-<span class="sd">        bias_init: Initializer for ``b_{ih}`` when ``bias=True``.</span>
-<span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
-<span class="sd">        recurrent_bias_init: Initializer for ``b_{hh}`` when ``recurrent_bias=True``.</span>
-<span class="sd">            Default: :func:`torch.nn.init.zeros_`</span>
+<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`.</span>
+<span class="sd">        memory_kernel_init: Initializer for ``W_{mm}``.</span>
+<span class="sd">            Default: :func:`torch.nn.init.xavier_uniform_`.</span>
+<span class="sd">        bias_init: Initializer for input-side biases when ``bias=True``.</span>
+<span class="sd">            Default: :func:`torch.nn.init.zeros_`.</span>
+<span class="sd">        recurrent_bias_init: Initializer for recurrent biases when</span>
+<span class="sd">            ``recurrent_bias=True``. Default: :func:`torch.nn.init.zeros_`.</span>
 <span class="sd">        device: The desired device of parameters.</span>
 <span class="sd">        dtype: The desired floating point type of parameters.</span>
 
 <span class="sd">    Inputs: input, h_0</span>
 <span class="sd">        - **input** of shape ``(batch, input_size)`` or ``(input_size,)``:</span>
-<span class="sd">          tensor containing input features</span>
+<span class="sd">          Tensor containing input features.</span>
 <span class="sd">        - **h_0** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
-<span class="sd">          tensor containing the initial hidden state</span>
+<span class="sd">          Tensor containing the initial hidden state.</span>
 
 <span class="sd">        If **h_0** is not provided, it defaults to zero.</span>
 
 <span class="sd">    Outputs: h_1</span>
 <span class="sd">        - **h_1** of shape ``(batch, hidden_size)`` or ``(hidden_size,)``:</span>
-<span class="sd">          tensor containing the next hidden state</span>
+<span class="sd">          Tensor containing the next hidden state.</span>
 
 <span class="sd">    Variables:</span>
-<span class="sd">        weight_ih: the learnable input–hidden weights,</span>
-<span class="sd">            of shape ``(2*hidden_size, input_size)``</span>
-<span class="sd">        weight_hh: the learnable hidden–hidden weights,</span>
-<span class="sd">            of shape ``(hidden_size, hidden_size)``</span>
-<span class="sd">        bias_ih: the learnable input–hidden biases,</span>
-<span class="sd">            of shape ``(2*hidden_size)``</span>
-<span class="sd">        bias_hh: the learnable hidden–hidden bias,</span>
-<span class="sd">            of shape ``(hidden_size)``</span>
+<span class="sd">        weight_ih: The learnable input-hidden weights,</span>
+<span class="sd">            of shape ``(hidden_size, input_size)``.</span>
+<span class="sd">        weight_hh: The learnable hidden-hidden weights,</span>
+<span class="sd">            of shape ``(hidden_size, hidden_size)``.</span>
+<span class="sd">        weight_mm: The learnable latent-hidden weights,</span>
+<span class="sd">            of shape ``(hidden_size, hidden_size)``.</span>
+<span class="sd">        bias_ih: The learnable input-hidden biases,</span>
+<span class="sd">            of shape ``(hidden_size)`` if ``bias=True``.</span>
+<span class="sd">        bias_hh: The learnable hidden-hidden biases,</span>
+<span class="sd">            of shape ``(hidden_size)`` if ``recurrent_bias=True``.</span>
 
 <span class="sd">    Examples::</span>
 
-<span class="sd">        &gt;&gt;&gt; cell = LightRUCell(8, 16)</span>
-<span class="sd">        &gt;&gt;&gt; x = torch.randn(5, 3, 8)     # (time_steps, batch, input_size)</span>
-<span class="sd">        &gt;&gt;&gt; h = torch.zeros(3, 16)       # (batch, hidden_size)</span>
+<span class="sd">        &gt;&gt;&gt; cell = MinimalRNNCell(10, 20)</span>
+<span class="sd">        &gt;&gt;&gt; x = torch.randn(5, 3, 10)     # (time_steps, batch, input_size)</span>
+<span class="sd">        &gt;&gt;&gt; h = torch.zeros(3, 20)        # (batch, hidden_size)</span>
 <span class="sd">        &gt;&gt;&gt; out = []</span>
 <span class="sd">        &gt;&gt;&gt; for t in range(x.size(0)):</span>
 <span class="sd">        ...     h = cell(x[t], h)</span>
 <span class="sd">        ...     out.append(h)</span>
-<span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0)  # (time_steps, batch, hidden_size)</span>
+<span class="sd">        &gt;&gt;&gt; out = torch.stack(out, dim=0) # (time_steps, batch, hidden_size)</span>
 <span class="sd">    """</span>
 
     <span class="n">__constants__</span> <span class="o">=</span> <span class="p">[</span><span class="s2">"input_size"</span><span class="p">,</span> <span class="s2">"hidden_size"</span><span class="p">,</span> <span class="s2">"bias"</span><span class="p">,</span> <span class="s2">"recurrent_bias"</span><span class="p">]</span>
 
     <span class="n">weight_ih</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="n">weight_hh</span><span class="p">:</span> <span class="n">Tensor</span>
+    <span class="n">weight_mm</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="n">bias_ih</span><span class="p">:</span> <span class="n">Tensor</span>
     <span class="n">bias_hh</span><span class="p">:</span> <span class="n">Tensor</span>
 
-<div class="viewcode-block" id="LightRUCell.__init__">
-<a class="viewcode-back" href="../../../generated/torchrecurrent.LightRUCell.html#torchrecurrent.LightRUCell.__init__">[docs]</a>
+<div class="viewcode-block" id="MinimalRNNCell.__init__">
+<a class="viewcode-back" href="../../../generated/torchrecurrent.MinimalRNNCell.html#torchrecurrent.MinimalRNNCell.__init__">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">input_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">hidden_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">recurrent_bias</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">nonlinearity</span><span class="o">=</span><span class="s2">"tanh"</span><span class="p">,</span>
+        <span class="n">gate_nonlinearity</span><span class="o">=</span><span class="s2">"sigmoid"</span><span class="p">,</span>
         <span class="n">kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
         <span class="n">recurrent_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
+        <span class="n">memory_kernel_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">xavier_uniform_</span><span class="p">,</span>
         <span class="n">bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
         <span class="n">recurrent_bias_init</span><span class="o">=</span><span class="n">nn</span><span class="o">.</span><span class="n">init</span><span class="o">.</span><span class="n">zeros_</span><span class="p">,</span>
         <span class="n">device</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -612,19 +637,36 @@
             <span class="n">device</span><span class="o">=</span><span class="n">device</span><span class="p">,</span>
             <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">act</span> <span class="o">=</span> <span class="n">resolve_activation</span><span class="p">(</span><span class="n">nonlinearity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">gate_act</span> <span class="o">=</span> <span class="n">resolve_activation</span><span class="p">(</span><span class="n">gate_nonlinearity</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"kernel"</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
             <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"memory_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
+            <span class="n">memory_kernel_init</span><span class="p">,</span> <span class="s2">"xavier_uniform"</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
             <span class="n">recurrent_bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_bias"</span><span class="p">]</span>
         <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span><span class="n">ih_mult</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">hh_mult</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_default_register_tensors</span><span class="p">(</span><span class="n">ih_mult</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">hh_mult</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">weight_mm</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Parameter</span><span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">hidden_size</span><span class="p">,</span>
+                <span class="n">device</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_device</span><span class="p">,</span>
+                <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_init_dtype</span><span class="p">,</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_cleanup_non_scriptable</span><span class="p">()</span></div>
 
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">reset_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">reset_parameters</span><span class="p">()</span>
+        <span class="n">apply_init_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">weight_mm</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"memory_kernel"</span><span class="p">])</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">inp</span><span class="p">:</span> <span class="n">Tensor</span><span class="p">,</span> <span class="n">state</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Tensor</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tensor</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_validate_input</span><span class="p">(</span><span class="n">inp</span><span class="p">)</span>
@@ -635,12 +677,11 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">b_state</span> <span class="o">=</span> <span class="n">state</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">state</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">state</span>
 
-        <span class="n">inp_expanded</span> <span class="o">=</span> <span class="n">b_inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span>
-        <span class="n">gxs1</span><span class="p">,</span> <span class="n">gxs2</span> <span class="o">=</span> <span class="n">inp_expanded</span><span class="o">.</span><span class="n">chunk</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-
-        <span class="n">candidate_state</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="n">gxs1</span><span class="p">)</span>
-        <span class="n">forget_gate</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">sigmoid</span><span class="p">(</span><span class="n">gxs2</span> <span class="o">+</span> <span class="n">b_state</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span><span class="p">)</span>
-        <span class="n">new_state</span> <span class="o">=</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">forget_gate</span><span class="p">)</span> <span class="o">*</span> <span class="n">b_state</span> <span class="o">+</span> <span class="n">forget_gate</span> <span class="o">*</span> <span class="n">candidate_state</span>
+        <span class="n">latent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">act</span><span class="p">(</span><span class="n">b_inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_ih</span><span class="p">)</span>
+        <span class="n">update_gate</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">gate_act</span><span class="p">(</span>
+            <span class="n">b_state</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_hh</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="n">latent</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_mm</span><span class="o">.</span><span class="n">t</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">bias_hh</span>
+        <span class="p">)</span>
+        <span class="n">new_state</span> <span class="o">=</span> <span class="n">update_gate</span> <span class="o">*</span> <span class="n">b_state</span> <span class="o">+</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">update_gate</span><span class="p">)</span> <span class="o">*</span> <span class="n">latent</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">is_batched</span><span class="p">:</span>
             <span class="n">new_state</span> <span class="o">=</span> <span class="n">new_state</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>

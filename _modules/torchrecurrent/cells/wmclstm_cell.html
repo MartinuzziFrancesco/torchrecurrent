@@ -372,7 +372,12 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">Tensor</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="n">DoubleStateRecurrentLayerBase</span><span class="p">,</span> <span class="n">DoubleStateCellBase</span><span class="p">,</span> <span class="n">resolve_init_name</span><span class="p">,</span> <span class="n">apply_init_</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">..base</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+    <span class="n">DoubleStateRecurrentLayerBase</span><span class="p">,</span>
+    <span class="n">DoubleStateCellBase</span><span class="p">,</span>
+    <span class="n">resolve_init_name</span><span class="p">,</span>
+    <span class="n">apply_init_</span><span class="p">,</span>
+<span class="p">)</span>
 
 
 <div class="viewcode-block" id="WMCLSTM">
@@ -434,12 +439,10 @@
 <span class="sd">        dtype: Desired floating point type of parameters.</span>
 
 <span class="sd">    Inputs: input, (h_0, c_0)</span>
-<span class="sd">        - **input**: tensor of shape `(L, H_in)` for unbatched input,</span>
-<span class="sd">          `(L, N, H_in)` when ``batch_first=False``, or `(N, L, H_in)` when</span>
-<span class="sd">          ``batch_first=True``.</span>
-<span class="sd">        - **h_0**: tensor of shape `(num_layers, H_out)` (unbatched) or</span>
-<span class="sd">          `(num_layers, N, H_out)` containing initial hidden state. Defaults to</span>
-<span class="sd">          zeros if not provided.</span>
+<span class="sd">        - **input**: tensor of shape `(L, N, H_in)` when ``batch_first=False``,</span>
+<span class="sd">          or `(N, L, H_in)` when ``batch_first=True``.</span>
+<span class="sd">        - **h_0**: tensor of shape `(num_layers, N, H_out)` containing initial</span>
+<span class="sd">          hidden state. Defaults to zeros if not provided.</span>
 <span class="sd">        - **c_0**: tensor of same shape as `h_0`, containing initial cell state.</span>
 <span class="sd">          Defaults to zeros if not provided.</span>
 
@@ -454,12 +457,10 @@
 <span class="sd">            \end{aligned}</span>
 
 <span class="sd">    Outputs: output, (h_n, c_n)</span>
-<span class="sd">        - **output**: tensor of shape `(L, H_out)` for unbatched input,</span>
-<span class="sd">          `(L, N, H_out)` when ``batch_first=False``, or `(N, L, H_out)` when</span>
-<span class="sd">          ``batch_first=True`` containing hidden states from the last layer at</span>
-<span class="sd">          each timestep.</span>
-<span class="sd">        - **h_n**: final hidden state for each layer,</span>
-<span class="sd">          shape `(num_layers, H_out)` (unbatched) or `(num_layers, N, H_out)`.</span>
+<span class="sd">        - **output**: tensor of shape `(L, N, H_out)` when ``batch_first=False``,</span>
+<span class="sd">          or `(N, L, H_out)` when ``batch_first=True`` containing hidden states</span>
+<span class="sd">          from the last layer at each timestep.</span>
+<span class="sd">        - **h_n**: final hidden state for each layer, shape `(num_layers, N, H_out)`.</span>
 <span class="sd">        - **c_n**: final cell state for each layer, same shape as `h_n`.</span>
 
 <span class="sd">    Attributes:</span>
@@ -697,8 +698,16 @@
             <span class="n">b_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">h</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">state</span>
-            <span class="n">b_h</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">h</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">h</span><span class="p">)</span>
-            <span class="n">b_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span> <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">c</span><span class="p">)</span>
+            <span class="n">b_h</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">h</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="p">(</span><span class="n">h</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">h</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">h</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">b_c</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_zeros_state</span><span class="p">(</span><span class="n">b_inp</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">device</span><span class="p">,</span> <span class="n">b_inp</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">c</span> <span class="ow">is</span> <span class="kc">None</span>
+                <span class="k">else</span> <span class="p">(</span><span class="n">c</span><span class="o">.</span><span class="n">unsqueeze</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="k">if</span> <span class="p">(</span><span class="ow">not</span> <span class="n">is_batched</span> <span class="ow">and</span> <span class="n">c</span><span class="o">.</span><span class="n">dim</span><span class="p">()</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="k">else</span> <span class="n">c</span><span class="p">)</span>
+            <span class="p">)</span>
 
         <span class="n">gates</span> <span class="o">=</span> <span class="p">(</span>
             <span class="n">b_inp</span> <span class="o">@</span> <span class="bp">self</span><span class="o">.</span><span class="n">weight_ih</span><span class="o">.</span><span class="n">t</span><span class="p">()</span>

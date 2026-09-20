@@ -349,6 +349,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRUCell.html">torchrecurrent.LightRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRUCell.html">torchrecurrent.LiGRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGUCell.html">torchrecurrent.MGUCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MinimalRNNCell.html">torchrecurrent.MinimalRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1Cell.html">torchrecurrent.MiRU1Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2Cell.html">torchrecurrent.MiRU2Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTMCell.html">torchrecurrent.MultiplicativeLSTMCell</a></li>
@@ -387,6 +388,7 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRU.html">torchrecurrent.LightRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRU.html">torchrecurrent.LiGRU</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGU.html">torchrecurrent.MGU</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MinimalRNN.html">torchrecurrent.MinimalRNN</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1.html">torchrecurrent.MiRU1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2.html">torchrecurrent.MiRU2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTM.html">torchrecurrent.MultiplicativeLSTM</a></li>
@@ -538,23 +540,23 @@ Default: <code class="xref py py-class docutils literal notranslate"><span class
 </dl>
 <dl class="simple">
 <dt>Inputs: input, h_0</dt><dd><ul class="simple">
-<li><p><strong>input</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{in})\)</span> for unbatched input,
+<li><p><strong>input</strong>: tensor of shape
 <span class="math notranslate nohighlight">\((L, N, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
 <span class="math notranslate nohighlight">\((N, L, H_{in})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code> containing the features of
 the input sequence.</p></li>
-<li><p><strong>h_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for
-unbatched input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing the
+<li><p><strong>h_0</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span>
+containing the
 initial hidden state for each element in the input sequence. Defaults to
 zeros if not provided.</p></li>
 </ul>
 </dd>
 <dt>Outputs: output, h_n</dt><dd><ul class="simple">
-<li><p><strong>output</strong>: tensor of shape <span class="math notranslate nohighlight">\((L, H_{out})\)</span> for unbatched input,
+<li><p><strong>output</strong>: tensor of shape
 <span class="math notranslate nohighlight">\((L, N, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=False</span></code> or
 <span class="math notranslate nohighlight">\((N, L, H_{out})\)</span> when <code class="docutils literal notranslate"><span class="pre">batch_first=True</span></code> containing the output
 features <cite>(h_t)</cite> from the last layer of the SGU, for each <cite>t</cite>.</p></li>
-<li><p><strong>h_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, H_{out})\)</span> for
-unbatched input or <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span> containing the
+<li><p><strong>h_n</strong>: tensor of shape <span class="math notranslate nohighlight">\((\text{num_layers}, N, H_{out})\)</span>
+containing the
 final hidden state for each element in the sequence.</p></li>
 </ul>
 </dd>

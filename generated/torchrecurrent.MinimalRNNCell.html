@@ -8,7 +8,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
-    <title>torchrecurrent.IndRNNCell &#8212; torchrecurrent</title>
+    <title>torchrecurrent.MinimalRNNCell &#8212; torchrecurrent</title>
   
   
   
@@ -42,13 +42,13 @@
     <script src="../_static/doctools.js?v=fd6eb6e6"></script>
     <script src="../_static/sphinx_highlight.js?v=6ffebe34"></script>
     <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@4/tex-mml-chtml.js"></script>
-    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.IndRNNCell';</script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'generated/torchrecurrent.MinimalRNNCell';</script>
     <script>DOCUMENTATION_OPTIONS.search_as_you_type = false;</script>
     <link rel="icon" href="../_static/favicon.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="torchrecurrent.JANETCell" href="torchrecurrent.JANETCell.html" />
-    <link rel="prev" title="torchrecurrent.ATRCell" href="torchrecurrent.ATRCell.html" />
+    <link rel="next" title="torchrecurrent.MiRU1Cell" href="torchrecurrent.MiRU1Cell.html" />
+    <link rel="prev" title="torchrecurrent.MGUCell" href="torchrecurrent.MGUCell.html" />
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <meta name="docsearch:language" content="en"/>
   <meta name="docsearch:version" content="" />
@@ -343,13 +343,13 @@
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastRNNCell.html">torchrecurrent.FastRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.FastGRNNCell.html">torchrecurrent.FastGRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.ATRCell.html">torchrecurrent.ATRCell</a></li>
-<li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.IndRNNCell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.IndRNNCell.html">torchrecurrent.IndRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.JANETCell.html">torchrecurrent.JANETCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LEMCell.html">torchrecurrent.LEMCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LightRUCell.html">torchrecurrent.LightRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.LiGRUCell.html">torchrecurrent.LiGRUCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MGUCell.html">torchrecurrent.MGUCell</a></li>
-<li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MinimalRNNCell.html">torchrecurrent.MinimalRNNCell</a></li>
+<li class="toctree-l2 current active"><a class="current reference internal" href="#">torchrecurrent.MinimalRNNCell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU1Cell.html">torchrecurrent.MiRU1Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MiRU2Cell.html">torchrecurrent.MiRU2Cell</a></li>
 <li class="toctree-l2"><a class="reference internal" href="torchrecurrent.MultiplicativeLSTMCell.html">torchrecurrent.MultiplicativeLSTMCell</a></li>
@@ -465,7 +465,7 @@
     
     <li class="breadcrumb-item"><a href="../api/cells.html" class="nav-link">Recurrent Cells Reference</a></li>
     
-    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.IndRNNCell</span></li>
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">torchrecurrent.MinimalRNNCell</span></li>
   </ul>
 </nav>
 </div>
@@ -482,36 +482,51 @@
 <div id="searchbox"></div>
                 <article class="bd-article">
                   
-  <section id="torchrecurrent-indrnncell">
-<h1>torchrecurrent.IndRNNCell<a class="headerlink" href="#torchrecurrent-indrnncell" title="Link to this heading">#</a></h1>
+  <section id="torchrecurrent-minimalrnncell">
+<h1>torchrecurrent.MinimalRNNCell<a class="headerlink" href="#torchrecurrent-minimalrnncell" title="Link to this heading">#</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="torchrecurrent.IndRNNCell">
-<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">IndRNNCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tanh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/indrnn_cell.html#IndRNNCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.IndRNNCell" title="Link to this definition">#</a></dt>
-<dd><p>An Independently Recurrent Neural Network (IndRNN) cell.</p>
-<p>[<a class="reference external" href="https://arxiv.org/abs/1803.04831">arXiv</a>]</p>
+<dt class="sig sig-object py" id="torchrecurrent.MinimalRNNCell">
+<span class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></span><span class="sig-prename descclassname"><span class="pre">torchrecurrent.</span></span><span class="sig-name descname"><span class="pre">MinimalRNNCell</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tanh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/minimalrnn_cell.html#MinimalRNNCell"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MinimalRNNCell" title="Link to this definition">#</a></dt>
+<dd><p>A Minimal recurrent neural network (MinimalRNN) cell.</p>
+<p>[<a class="reference external" href="https://arxiv.org/abs/1711.06788">arXiv</a>]</p>
 <div class="math notranslate nohighlight">
-\[\mathbf{h}(t) = \phi\bigl(\mathbf{W}_{ih}\,\mathbf{x}(t)
-    + \mathbf{b}_{ih}
-    + \mathbf{w}_{hh}\,\circ\,\mathbf{h}(t-1)\bigr)\]</div>
-<p>where <span class="math notranslate nohighlight">\(\circ\)</span> denotes element‐wise (Hadamard) product and
-<span class="math notranslate nohighlight">\(\phi\)</span> is a pointwise nonlinearity (e.g., tanh).</p>
+\[\begin{split}\mathbf{z}(t) &amp;= \phi\bigl(
+    \mathbf{W}_{ih}\,\mathbf{x}(t) + \mathbf{b}_{ih}
+\bigr), \\[6pt]
+\mathbf{u}(t) &amp;= \sigma\bigl(
+    \mathbf{W}_{hh}\,\mathbf{h}(t-1)
+    + \mathbf{W}_{mm}\,\mathbf{z}(t)
+    + \mathbf{b}_{hh}
+\bigr), \\[6pt]
+\mathbf{h}(t) &amp;= \mathbf{u}(t)\circ\mathbf{h}(t-1)
+    \;+\;\bigl(1 - \mathbf{u}(t)\bigr)\circ\mathbf{z}(t),\end{split}\]</div>
+<p>where <span class="math notranslate nohighlight">\(\circ\)</span> is element-wise product, <span class="math notranslate nohighlight">\(\phi\)</span> is a pointwise
+nonlinearity (e.g., tanh) mapping the input into the latent space of the
+hidden state, and <span class="math notranslate nohighlight">\(\mathbf{z}(t)\)</span> is recomputed from the current
+input at every step (it is not part of the recurrent state).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>input_size</strong> – The number of expected features in the input <code class="docutils literal notranslate"><span class="pre">x</span></code></p></li>
-<li><p><strong>hidden_size</strong> – The number of features in the hidden state <code class="docutils literal notranslate"><span class="pre">h</span></code></p></li>
-<li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use input-side bias <code class="docutils literal notranslate"><span class="pre">b_{ih}</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use recurrent bias <code class="docutils literal notranslate"><span class="pre">b_{hh}</span></code>.
-Default: <code class="docutils literal notranslate"><span class="pre">True</span></code></p></li>
-<li><p><strong>nonlinearity</strong> – Activation function <span class="math notranslate nohighlight">\(\phi\)</span>.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.tanh()</span></code></p></li>
+<li><p><strong>input_size</strong> – The number of expected features in the input <code class="docutils literal notranslate"><span class="pre">x</span></code>.</p></li>
+<li><p><strong>hidden_size</strong> – The number of features in the hidden state <code class="docutils literal notranslate"><span class="pre">h</span></code>.</p></li>
+<li><p><strong>bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use input-side biases.
+Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>recurrent_bias</strong> – If <code class="docutils literal notranslate"><span class="pre">False</span></code>, the layer does not use recurrent biases.
+Default: <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p></li>
+<li><p><strong>nonlinearity</strong> – Nonlinearity <span class="math notranslate nohighlight">\(\phi\)</span> for the input encoder.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.tanh()</span></code>.</p></li>
+<li><p><strong>gate_nonlinearity</strong> – Activation for the update gate.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.sigmoid()</span></code>.</p></li>
 <li><p><strong>kernel_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">W_{ih}</span></code>.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code></p></li>
-<li><p><strong>recurrent_kernel_init</strong> – Initializer for the recurrent vector <code class="docutils literal notranslate"><span class="pre">w_{hh}</span></code>.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.normal_()</span></code></p></li>
-<li><p><strong>bias_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">b_{ih}</span></code> when <code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.
-Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code></p></li>
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code>.</p></li>
+<li><p><strong>recurrent_kernel_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">W_{hh}</span></code>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code>.</p></li>
+<li><p><strong>memory_kernel_init</strong> – Initializer for <code class="docutils literal notranslate"><span class="pre">W_{mm}</span></code>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.xavier_uniform_()</span></code>.</p></li>
+<li><p><strong>bias_init</strong> – Initializer for input-side biases when <code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.
+Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code>.</p></li>
+<li><p><strong>recurrent_bias_init</strong> – Initializer for recurrent biases when
+<code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>. Default: <code class="xref py py-func docutils literal notranslate"><span class="pre">torch.nn.init.zeros_()</span></code>.</p></li>
 <li><p><strong>device</strong> – The desired device of parameters.</p></li>
 <li><p><strong>dtype</strong> – The desired floating point type of parameters.</p></li>
 </ul>
@@ -520,32 +535,36 @@ Default: <code class="xref py py-func docutils literal notranslate"><span class=
 <dl>
 <dt>Inputs: input, h_0</dt><dd><ul class="simple">
 <li><p><strong>input</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">input_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(input_size,)</span></code>:
-tensor containing input features</p></li>
+Tensor containing input features.</p></li>
 <li><p><strong>h_0</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">hidden_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(hidden_size,)</span></code>:
-tensor containing the initial hidden state</p></li>
+Tensor containing the initial hidden state.</p></li>
 </ul>
 <p>If <strong>h_0</strong> is not provided, it defaults to zero.</p>
 </dd>
 <dt>Outputs: h_1</dt><dd><ul class="simple">
 <li><p><strong>h_1</strong> of shape <code class="docutils literal notranslate"><span class="pre">(batch,</span> <span class="pre">hidden_size)</span></code> or <code class="docutils literal notranslate"><span class="pre">(hidden_size,)</span></code>:
-tensor containing the next hidden state</p></li>
+Tensor containing the next hidden state.</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="field-list simple">
 <dt class="field-odd">Variables<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>weight_ih</strong> – the learnable input–hidden weights,
-of shape <code class="docutils literal notranslate"><span class="pre">(hidden_size,</span> <span class="pre">input_size)</span></code></p></li>
-<li><p><strong>vector_u</strong> – the learnable recurrent vector <code class="docutils literal notranslate"><span class="pre">w_{hh}</span></code>,
-shape <code class="docutils literal notranslate"><span class="pre">(hidden_size,)</span></code></p></li>
-<li><p><strong>bias_ih</strong> – the learnable input–hidden bias,
-of shape <code class="docutils literal notranslate"><span class="pre">(hidden_size)</span></code> if <code class="docutils literal notranslate"><span class="pre">bias=True</span></code></p></li>
+<li><p><strong>weight_ih</strong> – The learnable input-hidden weights,
+of shape <code class="docutils literal notranslate"><span class="pre">(hidden_size,</span> <span class="pre">input_size)</span></code>.</p></li>
+<li><p><strong>weight_hh</strong> – The learnable hidden-hidden weights,
+of shape <code class="docutils literal notranslate"><span class="pre">(hidden_size,</span> <span class="pre">hidden_size)</span></code>.</p></li>
+<li><p><strong>weight_mm</strong> – The learnable latent-hidden weights,
+of shape <code class="docutils literal notranslate"><span class="pre">(hidden_size,</span> <span class="pre">hidden_size)</span></code>.</p></li>
+<li><p><strong>bias_ih</strong> – The learnable input-hidden biases,
+of shape <code class="docutils literal notranslate"><span class="pre">(hidden_size)</span></code> if <code class="docutils literal notranslate"><span class="pre">bias=True</span></code>.</p></li>
+<li><p><strong>bias_hh</strong> – The learnable hidden-hidden biases,
+of shape <code class="docutils literal notranslate"><span class="pre">(hidden_size)</span></code> if <code class="docutils literal notranslate"><span class="pre">recurrent_bias=True</span></code>.</p></li>
 </ul>
 </dd>
 </dl>
 <p>Examples:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">IndRNNCell</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cell</span> <span class="o">=</span> <span class="n">MinimalRNNCell</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">10</span><span class="p">)</span>     <span class="c1"># (time_steps, batch, input_size)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">h</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>        <span class="c1"># (batch, hidden_size)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">out</span> <span class="o">=</span> <span class="p">[]</span>
@@ -556,15 +575,15 @@ of shape <code class="docutils literal notranslate"><span class="pre">(hidden_si
 </pre></div>
 </div>
 <dl class="py method">
-<dt class="sig sig-object py" id="torchrecurrent.IndRNNCell.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tanh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">normal_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/indrnn_cell.html#IndRNNCell.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.IndRNNCell.__init__" title="Link to this definition">#</a></dt>
+<dt class="sig sig-object py" id="torchrecurrent.MinimalRNNCell.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'tanh'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gate_nonlinearity</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'sigmoid'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">memory_kernel_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">xavier_uniform_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">recurrent_bias_init</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">&lt;function</span> <span class="pre">zeros_&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/torchrecurrent/cells/minimalrnn_cell.html#MinimalRNNCell.__init__"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#torchrecurrent.MinimalRNNCell.__init__" title="Link to this definition">#</a></dt>
 <dd><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p>
 </dd></dl>
 
 <p class="rubric">Methods</p>
 <div class="pst-scrollable-table-container"><table class="autosummary longtable table">
 <tbody>
-<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.IndRNNCell.__init__" title="torchrecurrent.IndRNNCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#torchrecurrent.MinimalRNNCell.__init__" title="torchrecurrent.MinimalRNNCell.__init__"><code class="xref py py-obj docutils literal notranslate"><span class="pre">__init__</span></code></a>(input_size, hidden_size[, bias, ...])</p></td>
 <td><p>Initialize internal Module state, shared by both nn.Module and ScriptModule.</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">add_module</span></code>(name, module)</p></td>
@@ -741,28 +760,31 @@ of shape <code class="docutils literal notranslate"><span class="pre">(hidden_si
 <tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_ih</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">vector_u</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_hh</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">weight_mm</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_ih</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias_hh</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hidden_size</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">input_size</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">hidden_size</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">recurrent_bias</span></code></p></td>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">bias</span></code></p></td>
 <td><p></p></td>
 </tr>
-<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
+<tr class="row-even"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">recurrent_bias</span></code></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">training</span></code></p></td>
 <td><p></p></td>
 </tr>
 </tbody>
@@ -783,20 +805,20 @@ of shape <code class="docutils literal notranslate"><span class="pre">(hidden_si
                   
 <div class="prev-next-area">
     <a class="left-prev"
-       href="torchrecurrent.ATRCell.html"
+       href="torchrecurrent.MGUCell.html"
        title="previous page">
       <i class="fa-solid fa-angle-left"></i>
       <div class="prev-next-info">
         <p class="prev-next-subtitle">previous</p>
-        <p class="prev-next-title">torchrecurrent.ATRCell</p>
+        <p class="prev-next-title">torchrecurrent.MGUCell</p>
       </div>
     </a>
     <a class="right-next"
-       href="torchrecurrent.JANETCell.html"
+       href="torchrecurrent.MiRU1Cell.html"
        title="next page">
       <div class="prev-next-info">
         <p class="prev-next-subtitle">next</p>
-        <p class="prev-next-title">torchrecurrent.JANETCell</p>
+        <p class="prev-next-title">torchrecurrent.MiRU1Cell</p>
       </div>
       <i class="fa-solid fa-angle-right"></i>
     </a>
@@ -819,8 +841,8 @@ of shape <code class="docutils literal notranslate"><span class="pre">(hidden_si
   </div>
   <nav id="pst-page-toc-nav" class="page-toc" aria-labelledby="pst-page-navigation-heading-2">
     <ul class="pst-show_toc_level nav section-nav flex-column">
-<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.IndRNNCell"><code class="docutils literal notranslate"><span class="pre">IndRNNCell</span></code></a><ul class="nav section-nav flex-column">
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.IndRNNCell.__init__"><code class="docutils literal notranslate"><span class="pre">IndRNNCell.__init__()</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.MinimalRNNCell"><code class="docutils literal notranslate"><span class="pre">MinimalRNNCell</span></code></a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#torchrecurrent.MinimalRNNCell.__init__"><code class="docutils literal notranslate"><span class="pre">MinimalRNNCell.__init__()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -830,7 +852,7 @@ of shape <code class="docutils literal notranslate"><span class="pre">(hidden_si
 
   
   <div class="tocsection editthispage">
-    <a href="https://github.com/MartinuzziFrancesco/torchrecurrent/edit/main/docs/generated/torchrecurrent.IndRNNCell.rst">
+    <a href="https://github.com/MartinuzziFrancesco/torchrecurrent/edit/main/docs/generated/torchrecurrent.MinimalRNNCell.rst">
       <i class="fa-solid fa-pencil"></i>
       
       

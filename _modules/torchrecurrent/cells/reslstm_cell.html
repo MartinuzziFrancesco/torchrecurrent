@@ -455,18 +455,15 @@
 <span class="sd">        dtype: The desired floating point type of parameters.</span>
 
 <span class="sd">    Inputs: input, (h_0, c_0)</span>
-<span class="sd">        - **input**: tensor of shape :math:`(L, H_{in})` for unbatched input,</span>
+<span class="sd">        - **input**: tensor of shape</span>
 <span class="sd">          :math:`(L, N, H_{in})` when ``batch_first=False`` or</span>
 <span class="sd">          :math:`(N, L, H_{in})` when ``batch_first=True`` containing the</span>
-<span class="sd">          features of the input sequence. The input can also be a packed</span>
-<span class="sd">          variable length sequence. See</span>
-<span class="sd">          :func:`torch.nn.utils.rnn.pack_padded_sequence` or</span>
-<span class="sd">          :func:`torch.nn.utils.rnn.pack_sequence` for details.</span>
-<span class="sd">        - **h_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
-<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">          features of the input sequence.</span>
+<span class="sd">        - **h_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`</span>
+<span class="sd">          containing</span>
 <span class="sd">          the initial hidden state. Defaults to zeros if not provided.</span>
-<span class="sd">        - **c_0**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
-<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">        - **c_0**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`</span>
+<span class="sd">          containing</span>
 <span class="sd">          the initial cell state. Defaults to zeros if not provided.</span>
 
 <span class="sd">        where:</span>
@@ -480,17 +477,16 @@
 <span class="sd">            \end{aligned}</span>
 
 <span class="sd">    Outputs: output, (h_n, c_n)</span>
-<span class="sd">        - **output**: tensor of shape :math:`(L, H_{out})` for unbatched input,</span>
+<span class="sd">        - **output**: tensor of shape</span>
 <span class="sd">          :math:`(L, N, H_{out})` when ``batch_first=False`` or</span>
 <span class="sd">          :math:`(N, L, H_{out})` when ``batch_first=True`` containing the</span>
 <span class="sd">          output features `(h_t)` from the last layer of the ResLSTM, for each</span>
-<span class="sd">          `t`. If a :class:`torch.nn.utils.rnn.PackedSequence` has been given as</span>
-<span class="sd">          the input, the output will also be a packed sequence.</span>
-<span class="sd">        - **h_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
-<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">          `t`.</span>
+<span class="sd">        - **h_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`</span>
+<span class="sd">          containing</span>
 <span class="sd">          the final hidden state for each element in the sequence.</span>
-<span class="sd">        - **c_n**: tensor of shape :math:`(\text{num_layers}, H_{out})` for</span>
-<span class="sd">          unbatched input or :math:`(\text{num_layers}, N, H_{out})` containing</span>
+<span class="sd">        - **c_n**: tensor of shape :math:`(\text{num_layers}, N, H_{out})`</span>
+<span class="sd">          containing</span>
 <span class="sd">          the final cell state for each element in the sequence.</span>
 
 <span class="sd">    Attributes:</span>
@@ -516,9 +512,6 @@
 <span class="sd">    .. note::</span>
 <span class="sd">        All the weights and biases are initialized according to the provided</span>
 <span class="sd">        initializers (`kernel_init`, `recurrent_kernel_init`, etc.).</span>
-
-<span class="sd">    .. note::</span>
-<span class="sd">        ``batch_first`` argument is ignored for unbatched inputs.</span>
 
 <span class="sd">    .. seealso::</span>
 <span class="sd">        :class:`ResLSTMCell`</span>
@@ -703,9 +696,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
             <span class="n">recurrent_kernel_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"recurrent_kernel"</span><span class="p">]</span>
         <span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"peephole_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span>
-            <span class="n">peephole_kernel_init</span><span class="p">,</span> <span class="s2">"normal"</span>
-        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"peephole_kernel"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">peephole_kernel_init</span><span class="p">,</span> <span class="s2">"normal"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"proj"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">proj_init</span><span class="p">,</span> <span class="s2">"xavier_uniform"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"residual"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">residual_init</span><span class="p">,</span> <span class="s2">"xavier_uniform"</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">]</span> <span class="o">=</span> <span class="n">resolve_init_name</span><span class="p">(</span><span class="n">bias_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">init_cfg</span><span class="p">[</span><span class="s2">"bias"</span><span class="p">])</span>

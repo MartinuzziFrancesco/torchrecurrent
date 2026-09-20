@@ -431,12 +431,11 @@
 <span class="sd">        dtype: Desired floating point type of parameters.</span>
 
 <span class="sd">    Inputs: input, (h_0, z_0)</span>
-<span class="sd">        - **input**: tensor of shape `(L, H_in)` for unbatched input,</span>
-<span class="sd">          `(L, N, H_in)` when ``batch_first=False``, or `(N, L, H_in)` when</span>
-<span class="sd">          ``batch_first=True`` containing input sequence features.</span>
-<span class="sd">        - **h_0**: tensor of shape `(num_layers, H_out)` for unbatched input or</span>
-<span class="sd">          `(num_layers, N, H_out)` containing the initial hidden state. Defaults</span>
-<span class="sd">          to zeros if not provided.</span>
+<span class="sd">        - **input**: tensor of shape `(L, N, H_in)` when ``batch_first=False``,</span>
+<span class="sd">          or `(N, L, H_in)` when ``batch_first=True`` containing input sequence</span>
+<span class="sd">          features.</span>
+<span class="sd">        - **h_0**: tensor of shape `(num_layers, N, H_out)` containing the</span>
+<span class="sd">          initial hidden state. Defaults to zeros if not provided.</span>
 <span class="sd">        - **z_0**: tensor of the same shape as `h_0`, containing the initial</span>
 <span class="sd">          control state. Defaults to zeros if not provided.</span>
 
@@ -451,12 +450,10 @@
 <span class="sd">            \end{aligned}</span>
 
 <span class="sd">    Outputs: output, (h_n, z_n)</span>
-<span class="sd">        - **output**: tensor of shape `(L, H_out)` for unbatched input,</span>
-<span class="sd">          `(L, N, H_out)` when ``batch_first=False``, or `(N, L, H_out)` when</span>
-<span class="sd">          ``batch_first=True`` containing the hidden states from the last layer</span>
-<span class="sd">          at each timestep.</span>
-<span class="sd">        - **h_n**: final hidden state for each layer,</span>
-<span class="sd">          shape `(num_layers, H_out)` (unbatched) or `(num_layers, N, H_out)`.</span>
+<span class="sd">        - **output**: tensor of shape `(L, N, H_out)` when ``batch_first=False``,</span>
+<span class="sd">          or `(N, L, H_out)` when ``batch_first=True`` containing the hidden</span>
+<span class="sd">          states from the last layer at each timestep.</span>
+<span class="sd">        - **h_n**: final hidden state for each layer, shape `(num_layers, N, H_out)`.</span>
 <span class="sd">        - **z_n**: final control state for each layer, same shape as `h_n`.</span>
 
 <span class="sd">    Attributes:</span>
