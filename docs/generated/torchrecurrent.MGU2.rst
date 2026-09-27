@@ -1,0 +1,87 @@
+﻿torchrecurrent.MGU2
+===================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MGU2
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MGU2.__init__
+      ~MGU2.add_module
+      ~MGU2.apply
+      ~MGU2.bfloat16
+      ~MGU2.buffers
+      ~MGU2.children
+      ~MGU2.compile
+      ~MGU2.cpu
+      ~MGU2.cuda
+      ~MGU2.double
+      ~MGU2.eval
+      ~MGU2.extra_repr
+      ~MGU2.float
+      ~MGU2.forward
+      ~MGU2.get_buffer
+      ~MGU2.get_extra_state
+      ~MGU2.get_parameter
+      ~MGU2.get_submodule
+      ~MGU2.half
+      ~MGU2.initialize_cells
+      ~MGU2.ipu
+      ~MGU2.load_state_dict
+      ~MGU2.modules
+      ~MGU2.mtia
+      ~MGU2.named_buffers
+      ~MGU2.named_children
+      ~MGU2.named_modules
+      ~MGU2.named_parameters
+      ~MGU2.parameters
+      ~MGU2.register_backward_hook
+      ~MGU2.register_buffer
+      ~MGU2.register_forward_hook
+      ~MGU2.register_forward_pre_hook
+      ~MGU2.register_full_backward_hook
+      ~MGU2.register_full_backward_pre_hook
+      ~MGU2.register_load_state_dict_post_hook
+      ~MGU2.register_load_state_dict_pre_hook
+      ~MGU2.register_module
+      ~MGU2.register_parameter
+      ~MGU2.register_state_dict_post_hook
+      ~MGU2.register_state_dict_pre_hook
+      ~MGU2.requires_grad_
+      ~MGU2.set_extra_state
+      ~MGU2.set_submodule
+      ~MGU2.share_memory
+      ~MGU2.state_dict
+      ~MGU2.to
+      ~MGU2.to_empty
+      ~MGU2.train
+      ~MGU2.type
+      ~MGU2.xpu
+      ~MGU2.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MGU2.T_destination
+      ~MGU2.call_super_init
+      ~MGU2.dump_patches
+      ~MGU2.input_size
+      ~MGU2.hidden_size
+      ~MGU2.bias
+      ~MGU2.dropout
+      ~MGU2.batch_first
+      ~MGU2.training
+   
+   

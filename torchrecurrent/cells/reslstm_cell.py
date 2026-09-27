@@ -344,9 +344,9 @@ class ResLSTMCell(DoubleStateCellBase):
         apply_init_(self.weight_proj, self.init_cfg["proj"])
         apply_init_(self.weight_res, self.init_cfg["residual"])
         apply_init_(self.weight_ph, self.init_cfg["peephole_kernel"])
-        if hasattr(self, "bias_ih"):
+        if isinstance(self.bias_ih, nn.Parameter):
             apply_init_(self.bias_ih, self.init_cfg["bias"])
-        if hasattr(self, "bias_hh"):
+        if isinstance(self.bias_hh, nn.Parameter):
             apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
 
     def forward(
