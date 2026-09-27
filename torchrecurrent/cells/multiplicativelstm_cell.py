@@ -319,11 +319,11 @@ class MultiplicativeLSTMCell(DoubleStateCellBase):
         apply_init_(self.weight_ih, self.init_cfg["kernel"])
         apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
         apply_init_(self.weight_mh, self.init_cfg["multiplicative_kernel"])
-        if hasattr(self, "bias_ih"):
+        if isinstance(self.bias_ih, nn.Parameter):
             apply_init_(self.bias_ih, self.init_cfg["bias"])
-        if hasattr(self, "bias_hh"):
+        if isinstance(self.bias_hh, nn.Parameter):
             apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
-        if hasattr(self, "bias_mh"):
+        if isinstance(self.bias_mh, nn.Parameter):
             apply_init_(self.bias_mh, self.init_cfg["multiplicative_bias"])
 
     def forward(

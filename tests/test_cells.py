@@ -1,3 +1,4 @@
+import inspect
 import sys
 
 import pytest
@@ -145,6 +146,21 @@ def test_cell_reset_parameters_after_construction(Cell, in_size, hid_size, doubl
     """reset_parameters() must remain callable after __init__, not just during it."""
     cell = Cell(in_size, hid_size)
     cell.reset_parameters()
+
+
+@pytest.mark.parametrize(
+    "Cell, in_size, hid_size", [c[:3] for c in CELL_CASES] + [(eLSTMCell, 3, 5)]
+)
+def test_cell_disabled_biases_stay_zero(Cell, in_size, hid_size):
+    """Non-zero bias initializers must not write into disabled (buffer) biases."""
+    kwargs = dict(
+        bias=False, recurrent_bias=False, bias_init="ones", recurrent_bias_init="ones"
+    )
+    accepted = inspect.signature(Cell.__init__).parameters
+    cell = Cell(in_size, hid_size, **{k: v for k, v in kwargs.items() if k in accepted})
+    cell.reset_parameters()
+    for name, buf in cell.named_buffers():
+        assert torch.count_nonzero(buf) == 0, name
 
 
 def test_reslstm_cell_parameter_shapes():

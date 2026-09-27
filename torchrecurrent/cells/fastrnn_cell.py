@@ -291,9 +291,9 @@ class FastRNNCell(SingleStateCellBase):
     def reset_parameters(self) -> None:
         apply_init_(self.weight_ih, self.init_cfg["kernel"])
         apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
-        if hasattr(self, "bias_ih"):
+        if isinstance(self.bias_ih, nn.Parameter):
             apply_init_(self.bias_ih, self.init_cfg["bias"])
-        if hasattr(self, "bias_hh"):
+        if isinstance(self.bias_hh, nn.Parameter):
             apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
         nn.init.constant_(self.alpha, self.alpha_init)
         nn.init.constant_(self.beta, self.beta_init)
@@ -575,9 +575,9 @@ class FastGRNNCell(SingleStateCellBase):
     def reset_parameters(self) -> None:
         apply_init_(self.weight_ih, self.init_cfg["kernel"])
         apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
-        if hasattr(self, "bias_ih"):
+        if isinstance(self.bias_ih, nn.Parameter):
             apply_init_(self.bias_ih, self.init_cfg["bias"])
-        if hasattr(self, "bias_hh"):
+        if isinstance(self.bias_hh, nn.Parameter):
             apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
         nn.init.constant_(self.zeta, self.zeta_init)
         nn.init.constant_(self.nu, self.nu_init)

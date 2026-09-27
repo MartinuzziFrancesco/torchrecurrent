@@ -1138,9 +1138,9 @@ class MGU3Cell(SingleStateCellBase):
         apply_init_(self.weight_ih, self.init_cfg["kernel"])
         apply_init_(self.weight_hh, self.init_cfg["recurrent_kernel"])
         apply_init_(self.bias_f, self.init_cfg["bias"])
-        if hasattr(self, "bias_ih"):
+        if isinstance(self.bias_ih, nn.Parameter):
             apply_init_(self.bias_ih, self.init_cfg["bias"])
-        if hasattr(self, "bias_hh"):
+        if isinstance(self.bias_hh, nn.Parameter):
             apply_init_(self.bias_hh, self.init_cfg["recurrent_bias"])
 
     def forward(self, inp: Tensor, state: Optional[Tensor] = None) -> Tensor:
