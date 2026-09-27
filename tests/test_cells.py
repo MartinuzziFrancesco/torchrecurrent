@@ -11,6 +11,7 @@ from torchrecurrent import (
     BRCell,
     CFNCell,
     DSGUCell,
+    eLSTMCell,
     coRNNCell,
     FastRNNCell,
     FastGRNNCell,
@@ -18,6 +19,9 @@ from torchrecurrent import (
     LEMCell,
     GatedAntisymmetricRNNCell,
     MGUCell,
+    MGU1Cell,
+    MGU2Cell,
+    MGU3Cell,
     MinimalRNNCell,
     IndRNNCell,
     IntersectionRNNCell,
@@ -66,6 +70,9 @@ CELL_CASES = [
     (JANETCell, 3, 5, True),
     (LEMCell, 3, 5, True),
     (MGUCell, 4, 8, False),
+    (MGU1Cell, 4, 8, False),
+    (MGU2Cell, 4, 8, False),
+    (MGU3Cell, 4, 8, False),
     (MinimalRNNCell, 3, 5, False),
     (IndRNNCell, 3, 5, False),
     (LiGRUCell, 6, 12, False),
@@ -668,3 +675,101 @@ def test_cell_compile_with_state(Cell, in_size, hid_size, double):
         h0 = torch.randn(B, hid_size)
         h = compiled(x, h0)
         assert h.shape == (B, hid_size)
+
+
+def _mgu_candidate_update(cell, x, h, forget_gate, weight_hh_h, bias_hh_h):
+    candidate = torch.tanh(
+        x @ cell.weight_ih.t()
+        + cell.bias_ih
+        + (forget_gate * h) @ weight_hh_h.t()
+        + bias_hh_h
+    )
+    return forget_gate * candidate + (1 - forget_gate) * h
+
+
+@pytest.mark.parametrize("Cell", [MGU1Cell, MGU2Cell, MGU3Cell])
+def test_mgu_variant_cells_match_paper_update(Cell):
+    torch.manual_seed(0)
+    cell = Cell(
+        3, 4, bias_init=torch.nn.init.normal_, recurrent_bias_init=torch.nn.init.normal_
+    )
+    x = torch.randn(2, 3)
+    h = torch.randn(2, 4)
+
+    if Cell is MGU3Cell:
+        forget_gate = torch.sigmoid(cell.bias_f).expand_as(h)
+        weight_hh_h, bias_hh_h = cell.weight_hh, cell.bias_hh
+    else:
+        weight_hh_f, weight_hh_h = cell.weight_hh.chunk(2, 0)
+        if Cell is MGU1Cell:
+            bias_hh_f, bias_hh_h = cell.bias_hh.chunk(2, 0)
+            forget_gate = torch.sigmoid(h @ weight_hh_f.t() + bias_hh_f)
+        else:
+            bias_hh_h = cell.bias_hh
+            forget_gate = torch.sigmoid(h @ weight_hh_f.t())
+
+    expected = _mgu_candidate_update(cell, x, h, forget_gate, weight_hh_h, bias_hh_h)
+    assert torch.allclose(cell(x, h), expected, atol=1e-6)
+
+
+def test_mgu_variant_cell_parameter_shapes():
+    assert MGU1Cell(3, 4).weight_hh.shape == (8, 4)
+    assert MGU1Cell(3, 4).bias_hh.shape == (8,)
+    assert MGU2Cell(3, 4).weight_hh.shape == (8, 4)
+    assert MGU2Cell(3, 4).bias_hh.shape == (4,)
+    cell = MGU3Cell(3, 4, bias=False, recurrent_bias=False)
+    assert cell.weight_ih.shape == (4, 3)
+    assert cell.weight_hh.shape == (4, 4)
+    assert isinstance(cell.bias_f, torch.nn.Parameter)
+
+
+def test_mgu_variant_gates_ignore_input():
+    """MGU1-3 gates must not see x: with h = 0, MGU2's gate is exactly 0.5."""
+    cell = MGU2Cell(3, 4, bias=False, recurrent_bias=False)
+    with torch.no_grad():
+        cell.weight_hh.zero_()
+    x = torch.randn(5, 3)
+    expected = 0.5 * torch.tanh(x @ cell.weight_ih.t())
+    assert torch.allclose(cell(x, torch.zeros(5, 4)), expected)
+
+
+def test_elstm_cell_shapes():
+    cell = eLSTMCell(3, 5)
+
+    assert cell.weight_ih.shape == (15, 3)
+    assert cell.weight_hh.shape == (5, 5)
+    assert cell.weight_c.shape == (10,)
+    assert cell.bias_ih.shape == (15,)
+    assert cell.bias_hh.shape == (5,)
+
+    h_u, c_u = cell(torch.randn(3))
+    assert h_u.shape == c_u.shape == (5,)
+    h, c = cell(torch.randn(4, 3), torch.randn(4, 5))
+    assert h.shape == c.shape == (4, 5)
+    assert not torch.allclose(h, c)
+
+
+def test_elstm_cell_reset_parameters_after_construction():
+    eLSTMCell(3, 5).reset_parameters()
+
+
+def test_elstm_cell_matches_paper_update():
+    torch.manual_seed(0)
+    cell = eLSTMCell(
+        3, 4, bias_init=torch.nn.init.normal_, recurrent_bias_init=torch.nn.init.normal_
+    )
+    x = torch.randn(2, 3)
+    c = torch.randn(2, 4)
+
+    w_f, w_z, w_o = cell.weight_ih.chunk(3, 0)
+    b_f, b_z, b_o = cell.bias_ih.chunk(3, 0)
+    v_f, v_z = cell.weight_c.chunk(2, 0)
+    f = torch.sigmoid(x @ w_f.t() + b_f + v_f * c)
+    z = torch.tanh(x @ w_z.t() + b_z + v_z * c)
+    expected_c = f * c + (1 - f) * z
+    o = torch.sigmoid(x @ w_o.t() + b_o + expected_c @ cell.weight_hh.t() + cell.bias_hh)
+    expected_h = o * expected_c
+
+    h, new_c = cell(x, c)
+    assert torch.allclose(new_c, expected_c, atol=1e-6)
+    assert torch.allclose(h, expected_h, atol=1e-6)

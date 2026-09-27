@@ -9,6 +9,7 @@ from torchrecurrent import (
     BR,
     CFN,
     DSGU,
+    eLSTM,
     coRNN,
     FastRNN,
     FastGRNN,
@@ -19,6 +20,9 @@ from torchrecurrent import (
     LightRU,
     MCLSTM,
     MGU,
+    MGU1,
+    MGU2,
+    MGU3,
     MinimalRNN,
     MultiplicativeLSTM,
     MUT1,
@@ -49,6 +53,7 @@ LAYER_CLASSES = [
     BR,
     CFN,
     DSGU,
+    eLSTM,
     coRNN,
     FastRNN,
     FastGRNN,
@@ -58,6 +63,9 @@ LAYER_CLASSES = [
     LightRU,
     MCLSTM,
     MGU,
+    MGU1,
+    MGU2,
+    MGU3,
     MinimalRNN,
     MultiplicativeLSTM,
     MUT1,
@@ -89,6 +97,7 @@ LAYER_CASES = [
     (BR, False),
     (CFN, False),
     (DSGU, False),
+    (eLSTM, False),
     (coRNN, True),
     (FastRNN, False),
     (FastGRNN, False),
@@ -98,6 +107,9 @@ LAYER_CASES = [
     (LightRU, False),
     (MCLSTM, True),
     (MGU, False),
+    (MGU1, False),
+    (MGU2, False),
+    (MGU3, False),
     (MinimalRNN, False),
     (MultiplicativeLSTM, True),
     (MUT1, False),
@@ -682,3 +694,25 @@ def test_repr_includes_nondefault_kwargs(Layer):
     # batch_first=True
     r = repr(Layer(3, 5, batch_first=True))
     assert "batch_first=True" in r
+
+
+def test_elstm_stacking_forwards_output_not_state():
+    """Layer k+1 must receive layer k's h(t) (output), not its c(t) (state)."""
+    seq_len, batch_size, num_layers = 4, 3, 2
+
+    layer = eLSTM(3, 5, num_layers=num_layers)
+    x = torch.randn(seq_len, batch_size, 3)
+
+    out, cn = layer(x)
+
+    c_prev = [torch.zeros(batch_size, 5) for _ in range(num_layers)]
+    expected = []
+    for t in range(seq_len):
+        layer_inp = x[t]
+        for layer_idx, cell in enumerate(layer.cells):
+            h, c_prev[layer_idx] = cell(layer_inp, c_prev[layer_idx])
+            layer_inp = h
+        expected.append(layer_inp)
+
+    assert torch.allclose(out, torch.stack(expected), atol=1e-6)
+    assert torch.allclose(cn, torch.stack(c_prev), atol=1e-6)

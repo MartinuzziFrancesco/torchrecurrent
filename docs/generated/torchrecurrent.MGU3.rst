@@ -1,0 +1,87 @@
+﻿torchrecurrent.MGU3
+===================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: MGU3
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~MGU3.__init__
+      ~MGU3.add_module
+      ~MGU3.apply
+      ~MGU3.bfloat16
+      ~MGU3.buffers
+      ~MGU3.children
+      ~MGU3.compile
+      ~MGU3.cpu
+      ~MGU3.cuda
+      ~MGU3.double
+      ~MGU3.eval
+      ~MGU3.extra_repr
+      ~MGU3.float
+      ~MGU3.forward
+      ~MGU3.get_buffer
+      ~MGU3.get_extra_state
+      ~MGU3.get_parameter
+      ~MGU3.get_submodule
+      ~MGU3.half
+      ~MGU3.initialize_cells
+      ~MGU3.ipu
+      ~MGU3.load_state_dict
+      ~MGU3.modules
+      ~MGU3.mtia
+      ~MGU3.named_buffers
+      ~MGU3.named_children
+      ~MGU3.named_modules
+      ~MGU3.named_parameters
+      ~MGU3.parameters
+      ~MGU3.register_backward_hook
+      ~MGU3.register_buffer
+      ~MGU3.register_forward_hook
+      ~MGU3.register_forward_pre_hook
+      ~MGU3.register_full_backward_hook
+      ~MGU3.register_full_backward_pre_hook
+      ~MGU3.register_load_state_dict_post_hook
+      ~MGU3.register_load_state_dict_pre_hook
+      ~MGU3.register_module
+      ~MGU3.register_parameter
+      ~MGU3.register_state_dict_post_hook
+      ~MGU3.register_state_dict_pre_hook
+      ~MGU3.requires_grad_
+      ~MGU3.set_extra_state
+      ~MGU3.set_submodule
+      ~MGU3.share_memory
+      ~MGU3.state_dict
+      ~MGU3.to
+      ~MGU3.to_empty
+      ~MGU3.train
+      ~MGU3.type
+      ~MGU3.xpu
+      ~MGU3.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~MGU3.T_destination
+      ~MGU3.call_super_init
+      ~MGU3.dump_patches
+      ~MGU3.input_size
+      ~MGU3.hidden_size
+      ~MGU3.bias
+      ~MGU3.dropout
+      ~MGU3.batch_first
+      ~MGU3.training
+   
+   

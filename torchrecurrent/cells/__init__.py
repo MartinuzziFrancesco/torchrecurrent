@@ -10,9 +10,10 @@ from .atr_cell import ATRCell, ATR
 from .br_cell import BR, BRCell, NBR, NBRCell
 from .cfn_cell import CFN, CFNCell
 from .mclstm_cell import MCLSTM, MCLSTMCell
-from .mgu_cell import MGU, MGUCell
+from .mgu_cell import MGU, MGUCell, MGU1, MGU1Cell, MGU2, MGU2Cell, MGU3, MGU3Cell
 from .minimalrnn_cell import MinimalRNN, MinimalRNNCell
 from .miru_cell import MiRU1, MiRU1Cell, MiRU2, MiRU2Cell
+from .elstm_cell import eLSTM, eLSTMCell
 from .cornn_cell import coRNN, coRNNCell
 from .fastrnn_cell import FastRNN, FastRNNCell, FastGRNN, FastGRNNCell
 from .indrnn_cell import IndRNN, IndRNNCell
@@ -58,12 +59,20 @@ __all__ = [
     "MCLSTMCell",
     "MGU",
     "MGUCell",
+    "MGU1",
+    "MGU1Cell",
+    "MGU2",
+    "MGU2Cell",
+    "MGU3",
+    "MGU3Cell",
     "MinimalRNN",
     "MinimalRNNCell",
     "MiRU1",
     "MiRU1Cell",
     "MiRU2",
     "MiRU2Cell",
+    "eLSTM",
+    "eLSTMCell",
     "coRNN",
     "coRNNCell",
     "FastRNN",

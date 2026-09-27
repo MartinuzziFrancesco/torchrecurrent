@@ -35,6 +35,9 @@ references and official implementations where available.
    * - :doc:`DSGU <generated/torchrecurrent.DSGU>`
      - `ACML 2016 <https://proceedings.mlr.press/v63/gao30.html>`__
      - –
+   * - :doc:`eLSTM <generated/torchrecurrent.eLSTM>`
+     - `ICLR 2024 <https://arxiv.org/abs/2305.19044>`__
+     - `IDSIA/rtrl-elstm <https://github.com/IDSIA/rtrl-elstm>`__
    * - :doc:`FastGRNN <generated/torchrecurrent.FastGRNN>`
      - `NeurIPS 2018 <https://arxiv.org/abs/1901.02358>`__
      - `Microsoft/EdgeML <https://github.com/Microsoft/EdgeML>`__
@@ -67,6 +70,15 @@ references and official implementations where available.
      - –
    * - :doc:`MGU <generated/torchrecurrent.MGU>`
      - `IJAC 2016 <https://arxiv.org/abs/1603.09420>`__
+     - –
+   * - :doc:`MGU1 <generated/torchrecurrent.MGU1>`
+     - `IEEE MWSCAS 2017 <https://doi.org/10.1109/MWSCAS.2017.8053242>`__
+     - –
+   * - :doc:`MGU2 <generated/torchrecurrent.MGU2>`
+     - `IEEE MWSCAS 2017 <https://doi.org/10.1109/MWSCAS.2017.8053242>`__
+     - –
+   * - :doc:`MGU3 <generated/torchrecurrent.MGU3>`
+     - `IEEE MWSCAS 2017 <https://doi.org/10.1109/MWSCAS.2017.8053242>`__
      - –
    * - :doc:`MinimalRNN <generated/torchrecurrent.MinimalRNN>`
      - `NeurIPS 2017 Workshop <https://arxiv.org/abs/1711.06788>`__
