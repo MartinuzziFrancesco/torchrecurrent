@@ -1,0 +1,88 @@
+﻿torchrecurrent.eLSTM
+====================
+
+.. currentmodule:: torchrecurrent
+
+.. autoclass:: eLSTM
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~eLSTM.__init__
+      ~eLSTM.add_module
+      ~eLSTM.apply
+      ~eLSTM.bfloat16
+      ~eLSTM.buffers
+      ~eLSTM.children
+      ~eLSTM.compile
+      ~eLSTM.cpu
+      ~eLSTM.cuda
+      ~eLSTM.double
+      ~eLSTM.eval
+      ~eLSTM.extra_repr
+      ~eLSTM.float
+      ~eLSTM.forward
+      ~eLSTM.get_buffer
+      ~eLSTM.get_extra_state
+      ~eLSTM.get_parameter
+      ~eLSTM.get_submodule
+      ~eLSTM.half
+      ~eLSTM.initialize_cells
+      ~eLSTM.ipu
+      ~eLSTM.load_state_dict
+      ~eLSTM.modules
+      ~eLSTM.mtia
+      ~eLSTM.named_buffers
+      ~eLSTM.named_children
+      ~eLSTM.named_modules
+      ~eLSTM.named_parameters
+      ~eLSTM.parameters
+      ~eLSTM.register_backward_hook
+      ~eLSTM.register_buffer
+      ~eLSTM.register_forward_hook
+      ~eLSTM.register_forward_pre_hook
+      ~eLSTM.register_full_backward_hook
+      ~eLSTM.register_full_backward_pre_hook
+      ~eLSTM.register_load_state_dict_post_hook
+      ~eLSTM.register_load_state_dict_pre_hook
+      ~eLSTM.register_module
+      ~eLSTM.register_parameter
+      ~eLSTM.register_state_dict_post_hook
+      ~eLSTM.register_state_dict_pre_hook
+      ~eLSTM.requires_grad_
+      ~eLSTM.set_extra_state
+      ~eLSTM.set_submodule
+      ~eLSTM.share_memory
+      ~eLSTM.state_dict
+      ~eLSTM.to
+      ~eLSTM.to_empty
+      ~eLSTM.train
+      ~eLSTM.type
+      ~eLSTM.xpu
+      ~eLSTM.zero_grad
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+   
+      ~eLSTM.T_destination
+      ~eLSTM.call_super_init
+      ~eLSTM.dump_patches
+      ~eLSTM.input_size
+      ~eLSTM.hidden_size
+      ~eLSTM.num_layers
+      ~eLSTM.batch_first
+      ~eLSTM.dropout
+      ~eLSTM.cells
+      ~eLSTM.training
+   
+   

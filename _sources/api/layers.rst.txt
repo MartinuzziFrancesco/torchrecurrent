@@ -13,6 +13,7 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.BR
    torchrecurrent.CFN
    torchrecurrent.DSGU
+   torchrecurrent.eLSTM
    torchrecurrent.coRNN
    torchrecurrent.FastRNN
    torchrecurrent.FastGRNN
@@ -25,6 +26,9 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.LiGRU
    torchrecurrent.MCLSTM
    torchrecurrent.MGU
+   torchrecurrent.MGU1
+   torchrecurrent.MGU2
+   torchrecurrent.MGU3
    torchrecurrent.MinimalRNN
    torchrecurrent.MiRU1
    torchrecurrent.MiRU2

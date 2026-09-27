@@ -13,6 +13,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.BRCell
    torchrecurrent.CFNCell
    torchrecurrent.DSGUCell
+   torchrecurrent.eLSTMCell
    torchrecurrent.coRNNCell
    torchrecurrent.FastRNNCell
    torchrecurrent.FastGRNNCell
@@ -25,6 +26,9 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.LiGRUCell
    torchrecurrent.MCLSTMCell
    torchrecurrent.MGUCell
+   torchrecurrent.MGU1Cell
+   torchrecurrent.MGU2Cell
+   torchrecurrent.MGU3Cell
    torchrecurrent.MinimalRNNCell
    torchrecurrent.MiRU1Cell
    torchrecurrent.MiRU2Cell
