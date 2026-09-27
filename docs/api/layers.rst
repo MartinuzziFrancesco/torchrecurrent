@@ -22,6 +22,7 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.JANET
    torchrecurrent.LEM
    torchrecurrent.LightRU
+   torchrecurrent.LipschitzRNN
    torchrecurrent.LiGRU
    torchrecurrent.MCLSTM
    torchrecurrent.MGU
@@ -38,6 +39,7 @@ This page documents all custom recurrent layers provided in the `torchrecurrent`
    torchrecurrent.RAN
    torchrecurrent.ResLSTM
    torchrecurrent.SCRN
+   torchrecurrent.SRNN
    torchrecurrent.SGU
    torchrecurrent.SGRN
    torchrecurrent.STAR

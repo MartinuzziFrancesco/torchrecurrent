@@ -62,6 +62,9 @@ references and official implementations where available.
    * - :doc:`LightRU <generated/torchrecurrent.LightRU>`
      - `MDPI Electronics 2023 <https://www.mdpi.com/2079-9292/13/16/3204>`__
      - –
+   * - :doc:`LipschitzRNN <generated/torchrecurrent.LipschitzRNN>`
+     - `ICLR 2021 <https://arxiv.org/abs/2006.12070>`__
+     - `erichson/LipschitzRNN <https://github.com/erichson/LipschitzRNN>`__
    * - :doc:`MCLSTM <generated/torchrecurrent.MCLSTM>`
      - `NIPS 2017 workshop <https://www.intel.com/content/dam/www/public/us/en/ai/documents/Sequence-Modeling-NIPS-2017.pdf>`__
      - –
@@ -116,6 +119,9 @@ references and official implementations where available.
    * - :doc:`SGRN <generated/torchrecurrent.SGRN>`
      - `IET 2018 <https://doi.org/10.1049/gtd2.12056>`__
      - –
+   * - :doc:`SRNN <generated/torchrecurrent.SRNN>`
+     - `AAAI 2021 <https://arxiv.org/abs/2007.07324>`__
+     - `rotmanmi/SRNN <https://github.com/rotmanmi/SRNN>`__
    * - :doc:`STAR <generated/torchrecurrent.STAR>`
      - `TPAMI 2022 <https://arxiv.org/abs/1911.11033>`__
      - `0zgur0/STAckable-Recurrent-network <https://github.com/0zgur0/STAckable-Recurrent-network>`__

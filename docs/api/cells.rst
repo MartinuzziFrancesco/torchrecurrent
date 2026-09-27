@@ -22,6 +22,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.JANETCell
    torchrecurrent.LEMCell
    torchrecurrent.LightRUCell
+   torchrecurrent.LipschitzRNNCell
    torchrecurrent.LiGRUCell
    torchrecurrent.MCLSTMCell
    torchrecurrent.MGUCell
@@ -38,6 +39,7 @@ This page documents all custom recurrent cells provided in the `torchrecurrent.c
    torchrecurrent.RANCell
    torchrecurrent.ResLSTMCell
    torchrecurrent.SCRNCell
+   torchrecurrent.SRNNCell
    torchrecurrent.SGUCell
    torchrecurrent.SGRNCell
    torchrecurrent.STARCell

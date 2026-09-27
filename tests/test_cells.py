@@ -23,6 +23,8 @@ from torchrecurrent import (
     IntersectionRNNCell,
     LiGRUCell,
     LightRUCell,
+    LipschitzRNNCell,
+    SRNNCell,
     MCLSTMCell,
     MultiplicativeLSTMCell,
     MUT1Cell,
@@ -70,6 +72,8 @@ CELL_CASES = [
     (IndRNNCell, 3, 5, False),
     (LiGRUCell, 6, 12, False),
     (LightRUCell, 3, 5, False),
+    (LipschitzRNNCell, 3, 5, False),
+    (SRNNCell, 3, 5, False),
     (MultiplicativeLSTMCell, 3, 5, True),
     (MUT1Cell, 3, 5, False),
     (MUT2Cell, 3, 5, False),
@@ -668,3 +672,63 @@ def test_cell_compile_with_state(Cell, in_size, hid_size, double):
         h0 = torch.randn(B, hid_size)
         h = compiled(x, h0)
         assert h.shape == (B, hid_size)
+
+
+def test_lipschitzrnn_cell_matches_paper_update():
+    torch.manual_seed(0)
+    cell = LipschitzRNNCell(
+        3,
+        4,
+        dt=0.2,
+        beta=0.6,
+        gamma=0.05,
+        bias_init=torch.nn.init.normal_,
+        recurrent_bias_init=torch.nn.init.normal_,
+    )
+    x, h = torch.randn(2, 3), torch.randn(2, 4)
+
+    m_a, m_w = cell.weight_hh.chunk(2, 0)
+    eye = torch.eye(4)
+    a = 0.6 * (m_a - m_a.t()) + 0.4 * (m_a + m_a.t()) - 0.05 * eye
+    w = 0.6 * (m_w - m_w.t()) + 0.4 * (m_w + m_w.t()) - 0.05 * eye
+    pre = h @ w.t() + cell.bias_hh + x @ cell.weight_ih.t() + cell.bias_ih
+    expected = h + 0.2 * h @ a.t() + 0.2 * torch.tanh(pre)
+
+    assert torch.allclose(cell(x, h), expected, atol=1e-6)
+
+
+def test_lipschitzrnn_cell_beta_one_gives_skew_symmetric_dynamics():
+    """With beta=1, gamma=0 and zero drive, A is skew-symmetric so ||h|| grows
+    only at second order in dt (h^T A h = 0)."""
+    cell = LipschitzRNNCell(3, 6, bias=False, recurrent_bias=False, beta=1.0, gamma=0.0)
+    with torch.no_grad():
+        cell.weight_ih.zero_()
+        cell.weight_hh[6:].zero_()
+    h = torch.randn(4, 6)
+    new_h = cell(torch.zeros(4, 3), h)
+    assert torch.allclose((new_h * h).sum(-1), (h * h).sum(-1), atol=1e-5)
+
+
+def test_srnn_cell_matches_paper_update():
+    torch.manual_seed(0)
+    cell = SRNNCell(3, 4, hyper_size=5, bias_init=torch.nn.init.normal_)
+    x, h = torch.randn(2, 3), torch.randn(2, 4)
+
+    hyper = torch.relu(x @ cell.weight_ih.t() + cell.bias_ih)
+    drive = (hyper @ cell.weight_ho.t() + cell.bias_ho) * torch.sigmoid(
+        x @ cell.weight_g.t() + cell.bias_g
+    )
+    shifted = torch.cat([h[:, -1:], h[:, :-1]], dim=1)
+    expected = torch.relu(shifted + drive)
+
+    assert cell.weight_ih.shape == (5, 3)
+    assert cell.weight_ho.shape == (4, 5)
+    assert torch.allclose(cell(x, h), expected, atol=1e-6)
+
+
+def test_srnn_cell_zero_drive_shifts_state():
+    cell = SRNNCell(3, 4, bias=False)
+    with torch.no_grad():
+        cell.weight_ho.zero_()
+    h = torch.tensor([[1.0, 2.0, 3.0, 4.0]])
+    assert torch.equal(cell(torch.randn(1, 3), h), torch.tensor([[4.0, 1.0, 2.0, 3.0]]))

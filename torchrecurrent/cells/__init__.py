@@ -21,6 +21,7 @@ from .janet_cell import JANET, JANETCell
 from .lem_cell import LEM, LEMCell
 from .ligru_cell import LiGRU, LiGRUCell
 from .lightru_cell import LightRU, LightRUCell
+from .lipschitzrnn_cell import LipschitzRNN, LipschitzRNNCell
 from .multiplicativelstm_cell import MultiplicativeLSTM, MultiplicativeLSTMCell
 from .mut_cell import MUT1Cell, MUT1, MUT2Cell, MUT2, MUT3Cell, MUT3
 from .nas_cell import NAS, NASCell
@@ -31,6 +32,7 @@ from .reslstm_cell import ResLSTM, ResLSTMCell
 from .scrn_cell import SCRN, SCRNCell
 from .sgu_cell import DSGU, DSGUCell, SGU, SGUCell
 from .sgrn_cell import SGRN, SGRNCell
+from .srnn_cell import SRNN, SRNNCell
 from .star_cell import STAR, STARCell
 from .taugru_cell import tauGRU, tauGRUCell
 from .trnn_cell import TRNN, TRNNCell, TGRU, TGRUCell, TLSTM, TLSTMCell
@@ -82,6 +84,8 @@ __all__ = [
     "LiGRUCell",
     "LightRU",
     "LightRUCell",
+    "LipschitzRNN",
+    "LipschitzRNNCell",
     "MultiplicativeLSTM",
     "MultiplicativeLSTMCell",
     "MUT1",
@@ -108,6 +112,8 @@ __all__ = [
     "SGUCell",
     "SGRN",
     "SGRNCell",
+    "SRNN",
+    "SRNNCell",
     "STAR",
     "STARCell",
     "tauGRU",
